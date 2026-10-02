@@ -6,7 +6,7 @@ import {
   Plus,
   Search,
 } from 'lucide-react';
-import TaskWorkspaceHeader from '@/components/MyComponents/TaskWorkspaceHeader';
+import TaskWorkspaceHeader from '@/components/pages/tasks/TaskWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { useStrings } from '@/lib/i18n';
 

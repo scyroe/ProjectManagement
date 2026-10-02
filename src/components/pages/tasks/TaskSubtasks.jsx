@@ -1,10 +1,10 @@
 import { CheckCircle2, Circle, ListChecks, Plus } from 'lucide-react';
 import { useMemo } from 'react';
+import { dateLabel, priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import { Button } from '@/components/ui/button';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import { dateLabel, priorityVariant } from './taskUtils';
 
 const TaskSubtasks = ({ task, tasks, onUpdateState, onAddSubtask }) => {
   const t = useStrings().taskSubtasks;

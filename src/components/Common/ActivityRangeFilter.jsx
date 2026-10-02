@@ -20,8 +20,8 @@ const ActivityRangeFilter = ({
             onClick={() => onPresetChange(value)}
             className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
               preset === value
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
             {t.presets[value]}

@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react';
+import ClientProgressCard from '@/components/Common/ClientProgressCard';
 import { Frame, FrameHeader, FramePanel } from '@/components/reui/frame';
 import {
   InputGroup,
@@ -8,7 +9,6 @@ import {
 import { VirtualGrid } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
 import ClientActivityExplorer from './ClientActivityExplorer';
-import ClientProgressCard from './ClientProgressCard';
 
 const Clients = ({
   clients,

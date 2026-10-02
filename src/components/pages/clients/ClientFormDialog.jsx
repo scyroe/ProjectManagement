@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useClientForm } from '@/hooks/use-client-form';
+import { useClientForm } from '@/hooks/clients/use-client-form';
 import { useStrings } from '@/lib/i18n';
 
 const ClientFormDialog = ({ client, onOpenChange, onSaved, open }) => {

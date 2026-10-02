@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useTaskDetails } from '@/hooks/use-task-details';
+import { useTaskDetails } from '@/hooks/tasks/use-task-details';
 import { useStrings } from '@/lib/i18n';
 
 const priorities = ['low', 'medium', 'high', 'urgent'];

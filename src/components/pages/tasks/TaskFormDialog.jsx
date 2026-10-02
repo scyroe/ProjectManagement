@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useTaskForm } from '@/hooks/use-task-form';
+import { useTaskForm } from '@/hooks/tasks/use-task-form';
 import { useStrings } from '@/lib/i18n';
 
 const priorities = ['low', 'medium', 'high', 'urgent'];

@@ -1,7 +1,7 @@
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Frame, FrameHeader, FramePanel } from '@/components/reui/frame';
 import { Button } from '@/components/ui/button';
-import { routes } from '@/hooks/use-app-route';
+import { routes } from '@/hooks/common/use-app-route';
 import { useStrings } from '@/lib/i18n';
 
 const Sidebar = ({

@@ -8,6 +8,11 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
+  CompactSectionHeader,
+  MetricCard,
+  ProgressRow,
+} from '@/components/Common/analytics-ui';
+import {
   Frame,
   FrameDescription,
   FrameHeader,
@@ -19,7 +24,6 @@ import { Input } from '@/components/ui/input';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { filterEntriesByRange, getRangeBounds } from '@/lib/activity';
 import { useLanguage, useStrings } from '@/lib/i18n';
-import { CompactSectionHeader, MetricCard, ProgressRow } from './analytics-ui';
 
 const dayInMs = 24 * 60 * 60 * 1000;
 
@@ -917,8 +921,8 @@ const Reports = ({ workspace, navigate }) => {
               onClick={() => setPreset(value)}
               className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 preset === value
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
               {strings.activity.presets[value]}

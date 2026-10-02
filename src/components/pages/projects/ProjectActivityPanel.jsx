@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronRight, ListTodo } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import ActivityPanel from '@/components/Common/ActivityPanel';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import ActivityPanel from './ActivityPanel';
 
 const ProjectActivityPanel = ({ entries, loading = false, tasks }) => {
   const t = useStrings().activity;

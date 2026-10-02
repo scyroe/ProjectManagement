@@ -7,7 +7,7 @@ import {
   FrameTitle,
 } from '@/components/reui/frame';
 import VirtualSelect from '@/components/ui/virtual-select';
-import { useProjectActivity } from '@/hooks/use-project-activity';
+import { useProjectActivity } from '@/hooks/projects/use-project-activity';
 import { useStrings } from '@/lib/i18n';
 import ProjectActivityPanel from './ProjectActivityPanel';
 

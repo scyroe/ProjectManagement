@@ -7,6 +7,8 @@ import {
   MessageSquare,
   Users,
 } from 'lucide-react';
+import ActivityPanel from '@/components/Common/ActivityPanel';
+import { priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import {
   Frame,
@@ -15,15 +17,13 @@ import {
   FramePanel,
   FrameTitle,
 } from '@/components/reui/frame';
-import { useTaskInspector } from '@/hooks/use-task-inspector';
+import { useTaskInspector } from '@/hooks/tasks/use-task-inspector';
 import { useStrings } from '@/lib/i18n';
-import ActivityPanel from './ActivityPanel';
 import TaskActivity from './TaskActivity';
 import TaskComments from './TaskComments';
 import TaskDetails from './TaskDetails';
 import TaskHistoryCalendar from './TaskHistoryCalendar';
 import TaskSubtasks from './TaskSubtasks';
-import { priorityVariant } from './taskUtils';
 
 const TaskInspector = ({
   task,
@@ -89,7 +89,7 @@ const TaskInspector = ({
               role="tab"
               aria-selected={tab === name}
               onClick={() => setTab(name)}
-              className={`flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${tab === name ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${tab === name ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
             >
               {name === 'details' ? (
                 <ListTodo className="size-3.5 shrink-0" />

@@ -1,4 +1,4 @@
-import { useAuthScreen } from '@/hooks/use-auth-screen';
+import { useAuthScreen } from '@/hooks/auth/use-auth-screen';
 import LoginScreen from './LoginScreen';
 import SignUpScreen from './SignUpScreen';
 

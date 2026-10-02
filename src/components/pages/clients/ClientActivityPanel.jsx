@@ -2,7 +2,7 @@ import { ChevronDown, ChevronRight, FolderKanban } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import ProjectActivityPanel from './ProjectActivityPanel';
+import ProjectActivityPanel from '../projects/ProjectActivityPanel';
 
 const ClientActivityPanel = ({
   entries,

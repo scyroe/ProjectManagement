@@ -7,7 +7,7 @@ import {
   FrameTitle,
 } from '@/components/reui/frame';
 import VirtualSelect from '@/components/ui/virtual-select';
-import { useClientActivity } from '@/hooks/use-client-activity';
+import { useClientActivity } from '@/hooks/clients/use-client-activity';
 import { useStrings } from '@/lib/i18n';
 import ClientActivityPanel from './ClientActivityPanel';
 

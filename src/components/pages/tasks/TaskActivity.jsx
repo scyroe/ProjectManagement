@@ -1,7 +1,7 @@
 import { Activity, Clock3 } from 'lucide-react';
+import { durationLabel } from '@/components/Common/taskUtils';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import { durationLabel } from './taskUtils';
 
 const TaskActivity = ({ history }) => {
   const strings = useStrings();

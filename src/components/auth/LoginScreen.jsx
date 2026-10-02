@@ -1,4 +1,4 @@
-import { useAuthForm } from '@/hooks/use-auth-form';
+import { useAuthForm } from '@/hooks/auth/use-auth-form';
 import AuthForm from './AuthForm';
 import AuthLayout from './AuthLayout';
 

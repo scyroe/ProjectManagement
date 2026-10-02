@@ -1,8 +1,8 @@
 import { CalendarDays, Clock3 } from 'lucide-react';
 import { useMemo } from 'react';
+import { durationLabel } from '@/components/Common/taskUtils';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import { durationLabel } from './taskUtils';
 
 const TaskHistoryCalendar = ({ history }) => {
   const t = useStrings().taskHistoryCalendar;

@@ -1,5 +1,6 @@
 import { FolderKanban, GripVertical } from 'lucide-react';
 import { useMemo } from 'react';
+import { dateLabel, priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import {
   Frame,
@@ -10,7 +11,6 @@ import {
 } from '@/components/reui/frame';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import { dateLabel, priorityVariant } from './taskUtils';
 
 const fallbackStates = [
   { id: 'backlog', name: 'Backlog', color: 'slate', is_completed: false },

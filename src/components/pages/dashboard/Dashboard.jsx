@@ -11,6 +11,11 @@ import {
   TriangleAlert,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import {
+  CompactSectionHeader,
+  MetricCard,
+} from '@/components/Common/analytics-ui';
+import { dateLabel, priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import {
   Frame,
@@ -30,8 +35,6 @@ import {
 import { VirtualList } from '@/components/ui/virtual-list';
 import VirtualSelect from '@/components/ui/virtual-select';
 import { useStrings } from '@/lib/i18n';
-import { CompactSectionHeader, MetricCard } from './analytics-ui';
-import { dateLabel, priorityVariant } from './taskUtils';
 
 const dayInMs = 24 * 60 * 60 * 1000;
 

@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useProjectForm } from '@/hooks/use-project-form';
+import { useProjectForm } from '@/hooks/projects/use-project-form';
 import { useStrings } from '@/lib/i18n';
 
 const statuses = ['planning', 'active', 'paused', 'completed', 'archived'];

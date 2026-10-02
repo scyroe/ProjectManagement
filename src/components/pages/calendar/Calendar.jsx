@@ -470,7 +470,7 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
               type="button"
               aria-pressed={view === name}
               onClick={() => setView(name)}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${view === name ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${view === name ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
             >
               {t.views[name]}
             </button>

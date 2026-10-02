@@ -3,9 +3,9 @@ import { Toaster } from 'sonner';
 import AuthScreen from '@/components/auth/AuthScreen';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import WorkspaceLayout from '@/components/layout/WorkspaceLayout';
-import { useAppRoute } from '@/hooks/use-app-route';
-import { useAuthSession } from '@/hooks/use-auth-session';
-import { useRealtimeSync } from '@/hooks/use-realtime-sync';
+import { useAuthSession } from '@/hooks/auth/use-auth-session';
+import { useAppRoute } from '@/hooks/common/use-app-route';
+import { useRealtimeSync } from '@/hooks/common/use-realtime-sync';
 import { LanguageProvider } from '@/lib/i18n';
 import { queryClient } from '@/lib/query-client';
 

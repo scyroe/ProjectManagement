@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import ClientProgressCard from '@/components/Common/ClientProgressCard';
 import {
   Frame,
   FrameHeader,
@@ -7,7 +8,6 @@ import {
 } from '@/components/reui/frame';
 import { VirtualGrid } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import ClientProgressCard from './ClientProgressCard';
 import ProjectActivityExplorer from './ProjectActivityExplorer';
 import ProjectBoard from './ProjectBoard';
 import ProjectOverview from './ProjectOverview';

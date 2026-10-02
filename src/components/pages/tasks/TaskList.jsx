@@ -7,6 +7,7 @@ import {
   Search,
   Square,
 } from 'lucide-react';
+import { dateLabel, priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import {
   Frame,
@@ -23,7 +24,6 @@ import {
 } from '@/components/ui/input-group';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
-import { dateLabel, priorityVariant } from './taskUtils';
 
 const TaskList = ({
   tasks,
@@ -116,8 +116,8 @@ const TaskList = ({
               onClick={() => onFilterChange(value)}
               className={`flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${
                 filter === value
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
               <Icon className="size-3.5 shrink-0" />
