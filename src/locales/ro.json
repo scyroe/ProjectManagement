@@ -1,0 +1,685 @@
+{
+  "common": {
+    "noProject": "Fără proiect",
+    "noState": "Fără stare",
+    "aTask": "o sarcină",
+    "today": "Astăzi",
+    "yesterday": "Ieri",
+    "daysAgoSuffix": "zile în urmă",
+    "expandCard": "Extinde cardul",
+    "restoreCard": "Restaurează cardul",
+    "noProjectData": "Nu există încă date despre proiecte.",
+    "activityLabels": {
+      "started": "a pornit",
+      "stopped": "a oprit",
+      "state_changed": "a actualizat starea pentru",
+      "updated": "a actualizat",
+      "commented": "a comentat la",
+      "created": "a creat"
+    }
+  },
+  "auth": {
+    "form": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@exemplu.com",
+      "passwordLabel": "Parolă",
+      "secureAccess": "Acces securizat",
+      "passwordPlaceholder": "Minimum 6 caractere",
+      "submitting": "Te rugăm așteaptă...",
+      "signUpSubmit": "Creează cont",
+      "signInSubmit": "Autentificare"
+    },
+    "layout": {
+      "brand": "Projectly",
+      "tagline": "Control calm pentru munca complexă",
+      "heading": "Fă ca fiecare proiect să avanseze cu un scop clar.",
+      "description": "Păstrează clienții, proiectele, sarcinile și timpul într-un singur spațiu de lucru, gândit pentru ziua de lucru.",
+      "featureOwnership": "Responsabilitate clară asupra sarcinilor",
+      "featurePrivate": "Privat în mod implicit",
+      "footer": "Proiectele rămân vizibile. Progresul rămâne onest.",
+      "signUpTitle": "Creează-ți contul de workspace",
+      "signUpDescription": "Creează un cont pentru a accesa sarcinile atribuite.",
+      "signInTitle": "Bine ai revenit",
+      "signInDescription": "Autentifică-te pentru a-ți încărca sarcinile din proiecte.",
+      "switchToSignIn": "Ai deja cont? Autentifică-te",
+      "switchToSignUp": "Ai nevoie de un cont? Creează unul"
+    }
+  },
+  "routes": {
+    "dashboard": "Panou principal",
+    "tasks": "Sarcini",
+    "projects": "Proiecte",
+    "clients": "Clienți",
+    "calendar": "Calendar",
+    "reports": "Rapoarte"
+  },
+  "layout": {
+    "emptyPage": {
+      "descriptionSuffix": "vizualizare."
+    },
+    "loadingScreen": "Se verifică sesiunea...",
+    "searchDialog": {
+      "title": "Caută în workspace",
+      "description": "Găsește sarcini, proiecte și clienți.",
+      "placeholder": "Caută în workspace...",
+      "noResults": "Nu s-au găsit elemente în workspace.",
+      "recentSearches": "Căutări recente",
+      "groups": {
+        "tasks": "Sarcini",
+        "projects": "Proiecte",
+        "clients": "Clienți"
+      }
+    },
+    "sidebar": {
+      "expand": "Extinde bara laterală",
+      "collapse": "Restrânge bara laterală"
+    },
+    "userPanel": {
+      "title": "Contul tău",
+      "email": "alex@exemplu.com",
+      "expand": "Extinde panoul de cont",
+      "collapse": "Restrânge panoul de cont",
+      "expandNotifications": "Extinde panoul de cont pentru notificări",
+      "notifications": "Notificări",
+      "account": "Cont",
+      "userName": "Alex Smith",
+      "userRole": "Administrator",
+      "newCount": "3 noi",
+      "settings": "Setări",
+      "notificationItems": [
+        {
+          "title": "Element nou atribuit",
+          "description": "O sarcină a fost adăugată în workspace-ul tău."
+        },
+        {
+          "title": "Raportul săptămânal este gata",
+          "description": "Activitatea proiectelor tale a fost rezumată."
+        },
+        {
+          "title": "Workspace actualizat",
+          "description": "Un membru nou s-a alăturat echipei tale."
+        }
+      ]
+    },
+    "workspaceHeader": {
+      "openNavigation": "Deschide navigarea",
+      "closeNavigation": "Închide navigarea",
+      "newTask": "Sarcină nouă",
+      "newProject": "Proiect nou",
+      "newClient": "Client nou",
+      "openSearch": "Deschide căutarea în workspace",
+      "searchTitle": "Caută în workspace",
+      "openAccountPanel": "Deschide panoul de cont",
+      "closeAccountPanel": "Închide panoul de cont"
+    }
+  },
+  "dashboard": {
+    "heading": "Reia-ți activitatea",
+    "description": "Continuă de unde ai rămas sau explorează altă secțiune a workspace-ului.",
+    "shortcutsTitle": "Scurtături workspace",
+    "shortcutsDescription": "Treci rapid între secțiunile pe care le folosești cel mai des.",
+    "shortcuts": [
+      {
+        "route": "tasks",
+        "label": "Sarcini",
+        "description": "Verifică-ți coada de sarcini"
+      },
+      {
+        "route": "projects",
+        "label": "Proiecte",
+        "description": "Vezi domeniul și termenele proiectelor"
+      },
+      {
+        "route": "clients",
+        "label": "Clienți",
+        "description": "Gestionează conturile clienților"
+      },
+      {
+        "route": "reports",
+        "label": "Rapoarte",
+        "description": "Revizuiește munca înregistrată"
+      },
+      {
+        "route": "calendar",
+        "label": "Calendar",
+        "description": "Verifică datele viitoare"
+      }
+    ],
+    "metrics": {
+      "current": "Sarcini curente",
+      "completed": "Finalizate",
+      "active": "Sarcină activă",
+      "dueSoon": "Scadente săptămâna asta",
+      "overdue": "Restante"
+    },
+    "quickAdd": "Adăugare rapidă",
+    "dueSoonTitle": "Scadente în curând",
+    "dueSoonDescription": "Sarcini care necesită atenție săptămâna aceasta",
+    "attentionTitle": "Necesită atenție",
+    "attentionDescription": "Sarcini restante și viitoare, plus cronometrul activ",
+    "allTasks": "Toate sarcinile",
+    "noDueSoon": "Nimic scadent în următoarele șapte zile.",
+    "noAttentionNeeded": "Nimic nu necesită atenție momentan.",
+    "overdueBadge": "Restantă",
+    "dueSoonBadge": "Scadentă în curând",
+    "stopTimer": "Oprește cronometrul",
+    "activityTrendTitle": "Tendința activității",
+    "activityTrendDescription": "Ultimele șapte zile comparate cu cele șapte anterioare",
+    "activityUp": "mai multă activitate",
+    "activityDown": "mai puțină activitate",
+    "activityEven": "fără schimbare",
+    "allActions": "Toate acțiunile",
+    "allProjects": "Toate proiectele",
+    "noFilteredActivity": "Nicio activitate nu corespunde acestor filtre.",
+    "projectProgressTitle": "Progresul proiectelor",
+    "projectProgressDescription": "Gradul de finalizare al proiectelor tale vizibile",
+    "recentActivityTitle": "Activitate recentă",
+    "recentActivityDescription": "Cele mai recente actualizări ale sarcinilor și înregistrări de timp",
+    "recentActivityEmpty": "Activitatea ta recentă va apărea aici."
+  },
+  "projectsPage": {
+    "title": "Proiecte",
+    "description": "Urmărește progresul livrării pentru fiecare proiect activ.",
+    "addProject": "Adaugă proiect",
+    "progressByClientTitle": "Progres pe client",
+    "editProject": "Editează proiectul"
+  },
+  "calendarPage": {
+    "title": "Calendar",
+    "description": "Planifică termenele sarcinilor și etapele proiectelor.",
+    "addTask": "Adaugă sarcină",
+    "today": "Astăzi",
+    "previousPeriod": "Perioada anterioară",
+    "nextPeriod": "Perioada următoare",
+    "views": {
+      "month": "Lună",
+      "week": "Săptămână",
+      "agenda": "Agendă"
+    },
+    "filters": {
+      "client": "Client",
+      "project": "Proiect",
+      "status": "Starea sarcinii",
+      "allClients": "Toți clienții",
+      "allProjects": "Toate proiectele",
+      "allStatuses": "Toate stările",
+      "openTasks": "Sarcini deschise",
+      "completedTasks": "Sarcini finalizate"
+    },
+    "activeFilters": "Filtre active",
+    "removeFilter": "Elimină filtrul",
+    "clearFilters": "Șterge filtrele",
+    "noMatchingEvents": "Niciun eveniment nu corespunde acestor filtre.",
+    "showEventsFor": "Arată evenimentele pentru",
+    "weekSummary": {
+      "title": "Volumul de lucru din această săptămână",
+      "due": "Sarcini scadente",
+      "overdue": "Sarcini restante",
+      "milestones": "Etape ale proiectelor"
+    },
+    "taskDue": "Termen sarcină",
+    "projectStart": "Început proiect",
+    "projectDeadline": "Termen proiect",
+    "project": "Proiect",
+    "client": "Client",
+    "status": "Stare",
+    "priority": "Prioritate",
+    "priorities": {
+      "low": "Scăzută",
+      "medium": "Medie",
+      "high": "Ridicată",
+      "urgent": "Urgentă"
+    },
+    "overdue": "Restant",
+    "more": "în plus",
+    "loading": "Se încarcă calendarul...",
+    "scheduleError": "Data sarcinii nu a putut fi salvată.",
+    "taskScheduled": "Data sarcinii a fost actualizată.",
+    "scheduleTask": "Setează data",
+    "dragToReschedule": "Trage pentru a reprograma",
+    "unscheduledTitle": "Sarcini fără termen",
+    "unscheduledDescription": "Sarcini deschise fără o dată scadentă",
+    "unscheduledEmpty": "Toate sarcinile deschise au un termen.",
+    "chooseDate": "Alege un termen pentru",
+    "noClient": "Fără client"
+  },
+  "clientsPage": {
+    "title": "Clienți",
+    "description": "Gestionează conturile clienților cărora le aparțin proiectele.",
+    "addClient": "Adaugă client",
+    "searchPlaceholder": "Caută clienți...",
+    "loading": "Se încarcă clienții...",
+    "empty": "Niciun client găsit.",
+    "projectsSuffix": "proiecte",
+    "progressLabel": "Progres",
+    "editClient": "Editează clientul",
+    "overdueTasks": "restante",
+    "dueSoonTasks": "scadente în curând",
+    "noImmediateRisk": "Fără riscuri imediate de livrare"
+  },
+  "projectBoard": {
+    "title": "Panou de proiecte",
+    "description": "Mută sarcinile prin fiecare etapă a proiectului"
+  },
+  "projectOverview": {
+    "completedWork": "Muncă finalizată",
+    "overdueWork": "Muncă restantă",
+    "contributors": "Contribuitori",
+    "title": "Prezentare generală proiecte",
+    "description": "Progres, risc de livrare și efort estimat",
+    "empty": "Nu există încă date despre proiecte.",
+    "overdueSuffix": "restante",
+    "estimatedSuffix": "estimate",
+    "editProject": "Editează proiectul",
+    "health": {
+      "onTrack": "În grafic",
+      "atRisk": "În risc",
+      "completed": "Finalizat"
+    },
+    "timeline": "Cronologie",
+    "moreMilestones": "alte etape",
+    "noMilestones": "Nicio sarcină datată"
+  },
+  "reports": {
+    "tabs": {
+      "executive": "Executiv",
+      "operational": "Operațional",
+      "productivity": "Productivitate"
+    },
+    "metrics": {
+      "totalTasks": "Total sarcini",
+      "completed": "Finalizate",
+      "dueThisWeek": "Scadente săptămâna asta",
+      "atRisk": "În risc",
+      "trackedTime": "Timp înregistrat",
+      "daysActive": "Zile active",
+      "currentFocus": "Focus curent"
+    },
+    "operationalHealthTitle": "Sănătate operațională",
+    "operationalHealthDescription": "Finalizare generală și ritm de livrare",
+    "completeSuffix": "finalizat",
+    "completionRate": "Rata de finalizare",
+    "doneSuffix": "finalizate",
+    "activeSuffix": "active",
+    "portfolioMixTitle": "Structura portofoliului",
+    "portfolioMixDescription": "Distribuția curentă a sarcinilor pe stare",
+    "noStatusData": "Nu există încă date despre stări.",
+    "executiveWatchlistTitle": "Listă de urmărire executivă",
+    "executiveWatchlistDescription": "Elemente ce necesită atenție înainte de următoarea revizuire",
+    "overdueBadge": "Restantă",
+    "dueSoonBadge": "Scadentă în curând",
+    "noDeliveryRisks": "Niciun risc de livrare iminent.",
+    "recentActivityTitle": "Activitate recentă",
+    "recentActivityDescriptionExecutive": "Actualizări cheie din workspace",
+    "noRecentActivity": "Nicio activitate recentă înregistrată.",
+    "workCompletedTitle": "Muncă finalizată",
+    "workCompletedDescription": "Rata de finalizare la nivelul workspace-ului",
+    "completionLabel": "Finalizare",
+    "workByStatusTitle": "Muncă pe stare",
+    "workByStatusDescription": "Sănătatea cozii și structura sarcinilor",
+    "priorityWatchlistTitle": "Listă de urmărire prioritară",
+    "priorityWatchlistDescription": "Sarcini care merită atenție săptămâna aceasta",
+    "noAttentionNeeded": "Nimic nu necesită atenție momentan.",
+    "recentActivityDescriptionOperational": "Actualizări proaspete din workspace",
+    "recentActivityFallbackOperational": "Activitatea recentă a sarcinilor va apărea aici.",
+    "timeAllocationTitle": "Alocarea timpului",
+    "timeAllocationDescription": "Unde este investit efortul chiar acum",
+    "noTimeAllocation": "Nu există încă date despre alocarea timpului.",
+    "estimatedSuffix": "estimat",
+    "noEstimate": "Fără estimare pentru sarcină",
+    "rangeLabel": "Intervalul de activitate al raportului",
+    "rangeFrom": "Data de început a raportului",
+    "rangeTo": "Data de sfârșit a raportului",
+    "exportCsv": "Exportă CSV",
+    "actionFilter": "Filtrează activitatea după acțiune",
+    "allActions": "Toate acțiunile",
+    "entityFilter": "Filtrează activitatea după tipul elementului",
+    "allEntities": "Toate elementele",
+    "entityTypes": {
+      "task": "Sarcină",
+      "project": "Proiect",
+      "client": "Client"
+    },
+    "projectFilter": "Filtrează activitatea după proiect",
+    "allProjects": "Toate proiectele",
+    "activitySearch": "Caută în activitate",
+    "activityLoadError": "Activitatea din workspace nu a putut fi încărcată.",
+    "activityLoadedSuffix": "evenimente de activitate încărcate",
+    "loadMoreActivity": "Încarcă mai multă activitate",
+    "loadingMoreActivity": "Se încarcă mai multă activitate...",
+    "csv": {
+      "date": "Data",
+      "action": "Acțiune",
+      "entityType": "Tipul elementului",
+      "entity": "Element",
+      "project": "Proiect",
+      "person": "Persoană",
+      "duration": "Minute înregistrate"
+    },
+    "priorityMomentumTitle": "Prioritate și ritm",
+    "priorityMomentumDescription": "Cât de rapid avansează munca",
+    "completionVelocity": "Viteza de finalizare",
+    "tasksClosedSuffix": "sarcini închise în workspace-ul curent",
+    "dueThisWeekLabel": "Scadente săptămâna asta",
+    "overdueLabel": "Restante",
+    "trackedActivityLabel": "Activitate înregistrată",
+    "itemsSuffix": "elemente",
+    "recentWorkTitle": "Muncă recentă",
+    "recentWorkDescription": "Cele mai recente actualizări de sarcini și activitate cronometrată",
+    "recentActivityFallbackProductivity": "Activitatea recentă de productivitate va apărea aici.",
+    "noProject": "Fără proiect",
+    "noDueDate": "Fără termen",
+    "aTask": "o sarcină"
+  },
+  "settingsDialog": {
+    "appearanceBadge": "Aspect",
+    "title": "Setări",
+    "description": "Alege stilul vizual pentru workspace-ul tău.",
+    "styleTitle": "Stil",
+    "styleDescription": "Presetări de culori inspirate din ReUI",
+    "styles": [
+      {
+        "id": "nova",
+        "name": "Nova",
+        "description": "Albastru rece și precis"
+      },
+      {
+        "id": "vega",
+        "name": "Vega",
+        "description": "Turcoaz calm și compact"
+      },
+      {
+        "id": "maia",
+        "name": "Maia",
+        "description": "Chihlimbar cald și deschis"
+      }
+    ],
+    "colorModeTitle": "Mod de culoare",
+    "colorModeDescription": "Alege cum ar trebui să arate workspace-ul.",
+    "light": "Luminos",
+    "dark": "Întunecat",
+    "languageTitle": "Limbă",
+    "languageDescription": "Alege limba de afișare a workspace-ului.",
+    "english": "Engleză",
+    "romanian": "Română",
+    "workspaceDefaultsTitle": "Preferințe implicite pentru workspace",
+    "workspaceDefaultsDescription": "Alege vizualizarea inițială pentru sarcini și calendar.",
+    "defaultTaskFilterTitle": "Filtru implicit pentru sarcini",
+    "weekStartTitle": "Prima zi a săptămânii",
+    "sunday": "Duminică",
+    "monday": "Luni",
+    "taskFilters": {
+      "current": "Sarcini curente",
+      "active": "Sarcină activă",
+      "completed": "Sarcini finalizate",
+      "dueSoon": "Scadente săptămâna aceasta",
+      "overdue": "Restante"
+    }
+  },
+  "activity": {
+    "presets": {
+      "today": "Astăzi",
+      "last7": "Ultimele 7 zile",
+      "last30": "Ultimele 30 de zile",
+      "last90": "Ultimele 90 de zile",
+      "custom": "Personalizat"
+    },
+    "rangeTo": "până la",
+    "empty": "Nicio activitate în acest interval",
+    "emptyDescription": "Încearcă un alt interval de date.",
+    "loading": "Se încarcă activitatea...",
+    "noTasks": "Acest proiect nu are încă sarcini.",
+    "noProjects": "Acest client nu are încă proiecte.",
+    "overallTitle": "Contribuitori în total",
+    "byTaskTitle": "Pe sarcină",
+    "entriesSuffix": "intrări",
+    "tasksSuffix": "sarcini",
+    "projectActivityTitle": "Activitate proiect",
+    "clientActivityTitle": "Activitate client",
+    "selectProject": "Selectează un proiect",
+    "selectClient": "Selectează un client",
+    "selectProjectPrompt": "Alege un proiect mai sus pentru a vedea cine a lucrat și când.",
+    "selectClientPrompt": "Alege un client mai sus pentru a vedea proiectele, sarcinile și contribuitorii."
+  },
+  "taskActivity": {
+    "actions": {
+      "created": "Sarcină creată",
+      "started": "Cronometru pornit",
+      "stopped": "Cronometru oprit",
+      "state_changed": "Stare schimbată",
+      "updated": "Sarcină actualizată",
+      "commented": "Comentariu adăugat"
+    },
+    "empty": "Nicio activitate înregistrată încă",
+    "emptyDescription": "Modificările și înregistrările de timp vor apărea aici.",
+    "trackedSuffix": "înregistrat"
+  },
+  "taskComments": {
+    "commentLabel": "Comentariu",
+    "empty": "Niciun comentariu încă",
+    "emptyDescription": "Adaugă prima actualizare la această sarcină.",
+    "placeholder": "Scrie o actualizare sau o întrebare...",
+    "posting": "Se publică...",
+    "submit": "Publică comentariu"
+  },
+  "taskDetails": {
+    "titleLabel": "Titlu",
+    "descriptionLabel": "Descriere",
+    "descriptionPlaceholder": "Adaugă o descriere...",
+    "projectsLabel": "Proiecte",
+    "loadingProjects": "Se încarcă proiectele...",
+    "selectProjects": "Selectează unul sau mai multe proiecte",
+    "noProjects": "Niciun proiect găsit",
+    "priorityLabel": "Prioritate",
+    "dueDateLabel": "Termen limită",
+    "estimateLabel": "Estimare (minute)",
+    "tagsLabel": "Etichete",
+    "tagsPlaceholder": "design, cercetare",
+    "markNotCompleted": "Marchează ca nefinalizată",
+    "markCompleted": "Marchează ca finalizată",
+    "saving": "Se salvează...",
+    "save": "Salvează modificările"
+  },
+  "taskForm": {
+    "taskBadge": "Sarcină nouă",
+    "taskTitle": "Creează o sarcină",
+    "taskDescription": "Adaugă o sarcină nouă în workspace-ul tău.",
+    "subtaskBadge": "Subsarcină nouă",
+    "subtaskTitle": "Creează o subsarcină",
+    "subtaskDescription": "Adaugă o subsarcină sub",
+    "titleLabel": "Titlu",
+    "descriptionLabel": "Descriere",
+    "descriptionPlaceholder": "Adaugă o descriere...",
+    "clientLabel": "Client",
+    "loadingClients": "Se încarcă clienții...",
+    "selectClient": "Selectează un client",
+    "projectLabel": "Proiect",
+    "loadingProjects": "Se încarcă proiectele...",
+    "selectProject": "Selectează un proiect",
+    "priorityLabel": "Prioritate",
+    "dueDateLabel": "Termen limită",
+    "estimateLabel": "Estimare (minute)",
+    "tagsLabel": "Etichete",
+    "tagsPlaceholder": "design, cercetare",
+    "cancel": "Anulează",
+    "saving": "Se creează...",
+    "create": "Creează sarcina"
+  },
+  "clientForm": {
+    "badge": "Client nou",
+    "editBadge": "Editare client",
+    "title": "Adaugă un client",
+    "editTitle": "Editează clientul",
+    "description": "Creează un client pentru a-i atașa proiecte și sarcini.",
+    "editDescription": "Actualizează datele de contact și notițele clientului.",
+    "nameLabel": "Nume",
+    "companyLabel": "Companie",
+    "emailLabel": "Email",
+    "phoneLabel": "Telefon",
+    "notesLabel": "Note",
+    "notesPlaceholder": "Adaugă orice context util...",
+    "cancel": "Anulează",
+    "saving": "Se creează...",
+    "create": "Creează clientul",
+    "save": "Salvează modificările"
+  },
+  "projectForm": {
+    "badge": "Proiect nou",
+    "editBadge": "Editare proiect",
+    "title": "Adaugă un proiect",
+    "editTitle": "Editează proiectul",
+    "description": "Creează un proiect și atribuie-l unuia sau mai multor clienți.",
+    "editDescription": "Actualizează detaliile proiectului și clienții asociați.",
+    "nameLabel": "Nume",
+    "codeLabel": "Cod",
+    "codePlaceholder": "ex. ACME-01",
+    "clientLabel": "Clienți",
+    "loadingClients": "Se încarcă clienții...",
+    "selectClient": "Selectează unul sau mai mulți clienți",
+    "noClients": "Niciun client găsit",
+    "descriptionLabel": "Descriere",
+    "descriptionPlaceholder": "Adaugă o descriere...",
+    "statusLabel": "Stare",
+    "budgetLabel": "Buget",
+    "startDateLabel": "Data de început",
+    "dueDateLabel": "Termen limită",
+    "cancel": "Anulează",
+    "saving": "Se creează...",
+    "create": "Creează proiectul",
+    "save": "Salvează modificările"
+  },
+  "taskActionNote": {
+    "stopTitle": "La ce ai lucrat?",
+    "stopDescription": "Adaugă o actualizare înainte să oprești cronometrul.",
+    "stopPlaceholder": "Descrie ce ai finalizat sau unde ai rămas...",
+    "stopSubmit": "Oprește sarcina",
+    "completeTitle": "Adaugă un rezumat al finalizării",
+    "completeDescription": "Rezuma rezultatul înainte de a marca sarcina finalizată.",
+    "completePlaceholder": "Ce s-a finalizat? Include detalii utile pentru predare...",
+    "completeSubmit": "Marchează ca finalizată",
+    "cancel": "Anulează"
+  },
+  "taskHistoryCalendar": {
+    "empty": "Nicio activitate înregistrată încă",
+    "emptyDescription": "Pornește sau actualizează această sarcină pentru a construi calendarul de activitate.",
+    "event": "eveniment",
+    "events": "evenimente"
+  },
+  "taskInspector": {
+    "emptyState": "Selectează o sarcină pentru a o inspecta.",
+    "focusedTaskPrefix": "Sarcină în focus",
+    "tabListLabel": "Vizualizări informații sarcină",
+    "tabs": {
+      "details": "Detalii",
+      "calendar": "Calendar",
+      "activity": "Activitate",
+      "team": "Echipă",
+      "subtasks": "Subsarcini",
+      "comments": "Comentarii"
+    }
+  },
+  "taskList": {
+    "title": "Sarcinile mele",
+    "description": "Coada de lucru curentă",
+    "visible": "vizibile",
+    "workingNow": "Lucrezi acum",
+    "searchPlaceholder": "Caută sarcini...",
+    "tabListLabel": "Filtre sarcini",
+    "filters": {
+      "current": "Sarcini curente",
+      "active": "Sarcină activă",
+      "completed": "Sarcini finalizate",
+      "due-soon": "Scadente săptămâna asta",
+      "overdue": "Restante"
+    },
+    "loading": "Se încarcă sarcinile...",
+    "empty": "Nicio sarcină găsită.",
+    "workingStatus": "În desfășurare · Cronometru pornit",
+    "stopTask": "Oprește sarcina",
+    "startTask": "Pornește sarcina",
+    "workingBadge": "În lucru",
+    "newTask": "Sarcină nouă"
+  },
+  "taskSubtasks": {
+    "empty": "Nicio subsarcină încă",
+    "emptyDescription": "Sarcinile derivate din această sarcină vor apărea aici.",
+    "progressTitle": "Progres subsarcini",
+    "completedSuffix": "finalizate",
+    "reopenSubtask": "Redeschide subsarcina",
+    "completeSubtask": "Finalizează subsarcina",
+    "addSubtask": "Adaugă subsarcină"
+  },
+  "taskWorkspaceHeader": {
+    "current": "Curente",
+    "completed": "Finalizate",
+    "active": "Active"
+  },
+  "toasts": {
+    "taskDetails": {
+      "loadOptionsError": "Nu s-au putut încărca opțiunile de proiect",
+      "noSuitableState": "Nu este configurată nicio stare de sarcină potrivită",
+      "signInToComplete": "Autentifică-te pentru a finaliza o sarcină",
+      "completionSummaryRequired": "Adaugă un rezumat înainte de a finaliza această sarcină",
+      "addCompletionSummaryError": "Nu s-a putut adăuga rezumatul finalizării",
+      "stopTimerError": "Nu s-a putut opri cronometrul sarcinii",
+      "updateStatusError": "Nu s-a putut actualiza starea sarcinii",
+      "taskCompleted": "Sarcină finalizată",
+      "taskReopened": "Sarcină redeschisă",
+      "titleRequired": "Titlul sarcinii este obligatoriu",
+      "projectRequired": "Selectează cel puțin un proiect pentru această sarcină",
+      "updateTaskError": "Nu s-a putut actualiza sarcina",
+      "linkProjectsError": "Sarcina a fost actualizată, dar unele proiecte nu au putut fi asociate",
+      "taskUpdated": "Detaliile sarcinii au fost actualizate"
+    },
+    "taskForm": {
+      "loadOptionsError": "Nu s-au putut încărca opțiunile de proiect",
+      "titleRequired": "Titlul sarcinii este obligatoriu",
+      "projectRequired": "Selectează cel puțin un proiect pentru această sarcină",
+      "signInToCreate": "Autentifică-te pentru a crea o sarcină",
+      "noSuitableState": "Nu este configurată nicio stare de sarcină potrivită",
+      "createTaskError": "Nu s-a putut crea sarcina",
+      "linkProjectsError": "Sarcina a fost creată, dar unele proiecte nu au putut fi asociate",
+      "taskCreated": "Sarcină creată",
+      "subtaskCreated": "Subsarcină creată"
+    },
+    "clientForm": {
+      "nameRequired": "Numele clientului este obligatoriu",
+      "createClientError": "Nu s-a putut crea clientul",
+      "updateClientError": "Nu s-a putut actualiza clientul",
+      "clientCreated": "Client creat",
+      "clientUpdated": "Client actualizat"
+    },
+    "clients": {
+      "loadError": "Nu s-au putut încărca clienții"
+    },
+    "projectForm": {
+      "loadOptionsError": "Nu s-au putut încărca opțiunile de client",
+      "nameRequired": "Numele proiectului este obligatoriu",
+      "codeRequired": "Codul proiectului este obligatoriu",
+      "clientRequired": "Selectează cel puțin un client pentru acest proiect",
+      "createProjectError": "Nu s-a putut crea proiectul",
+      "updateProjectError": "Nu s-a putut actualiza proiectul",
+      "linkClientsError": "Proiectul a fost creat, dar unii clienți nu au putut fi asociați",
+      "projectCreated": "Proiect creat",
+      "projectUpdated": "Proiect actualizat"
+    },
+    "taskInspector": {
+      "loadHistoryError": "Nu s-a putut încărca istoricul sarcinii",
+      "signInToComment": "Autentifică-te pentru a adăuga un comentariu",
+      "addCommentError": "Nu s-a putut adăuga comentariul"
+    },
+    "taskWorkspace": {
+      "signInToLoad": "Autentifică-te pentru a-ți încărca sarcinile din Supabase.",
+      "signInToTrack": "Autentifică-te pentru a înregistra timpul pe sarcină",
+      "stopActiveFirst": "Oprește sarcina activă înainte de a porni alta",
+      "startTaskError": "Nu s-a putut porni sarcina",
+      "stopTaskError": "Nu s-a putut opri sarcina",
+      "addStopCommentError": "Sarcina a fost oprită, dar actualizarea nu a putut fi adăugată",
+      "updateStatusError": "Nu s-a putut actualiza starea sarcinii",
+      "statusUpdated": "Starea sarcinii a fost actualizată"
+    },
+    "authForm": {
+      "accountCreated": "Cont creat. Verifică-ți emailul pentru a confirma contul."
+    }
+  }
+}

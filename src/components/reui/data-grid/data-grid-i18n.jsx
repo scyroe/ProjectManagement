@@ -1,0 +1,50 @@
+const DEFAULT_DATA_GRID_LABELS = {
+  sortAscending: 'Asc',
+  sortDescending: 'Desc',
+  pinColumnStart: 'Pin to left',
+  pinColumnEnd: 'Pin to right',
+  moveColumnStart: 'Move to left',
+  moveColumnEnd: 'Move to right',
+  columnsMenu: 'Columns',
+  unpinColumn: (title) => `Unpin ${title} column`,
+  toggleColumns: 'Toggle Columns',
+  rowCreate: 'Add row',
+  pinRow: 'Pin row',
+  unpinRow: 'Unpin row',
+  selectRow: 'Select row',
+  selectAll: 'Select all',
+  expandRow: 'Expand row',
+  collapseRow: 'Collapse row',
+  dragToReorder: 'Drag to reorder',
+  dragToReorderRow: 'Drag to reorder row',
+  reorderingUnavailable: 'Reordering unavailable',
+  loading: 'Loading...',
+  empty: 'No data available',
+  allRowsLoaded: 'All records loaded',
+  rowsPerPage: 'Rows per page',
+  paginationInfo: ({ from, to, count }) => `${from} - ${to} of ${count}`,
+  previousPage: 'Go to previous page',
+  nextPage: 'Go to next page',
+  goToPage: (page) => `Go to page ${page}`,
+  paginationEllipsis: '...',
+  filterSelectedCount: (count) => `${count} selected`,
+  filterNoResults: 'No results found.',
+  filterClear: 'Clear filters',
+};
+
+const DEFAULT_DATA_GRID_I18N = Object.freeze({
+  labels: Object.freeze(DEFAULT_DATA_GRID_LABELS),
+});
+
+/**
+ * A shallow merge per section, deliberately: a deep merge would leak a
+ * default back into a function-valued label the consumer replaced. With no
+ * overrides the frozen default is returned as-is, so the merge is free to
+ * run on every render without producing a new identity.
+ */
+export function mergeDataGridI18n(overrides) {
+  if (!overrides?.labels) return DEFAULT_DATA_GRID_I18N;
+  return {
+    labels: { ...DEFAULT_DATA_GRID_LABELS, ...overrides.labels },
+  };
+}

@@ -1,0 +1,673 @@
+{
+  "common": {
+    "noProject": "No project",
+    "noState": "No state",
+    "aTask": "a task",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgoSuffix": "days ago",
+    "expandCard": "Expand card",
+    "restoreCard": "Restore card",
+    "noProjectData": "No project data yet.",
+    "activityLabels": {
+      "started": "started",
+      "stopped": "stopped",
+      "state_changed": "updated the state of",
+      "updated": "updated",
+      "commented": "commented on",
+      "created": "created"
+    }
+  },
+  "auth": {
+    "form": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "secureAccess": "Secure access",
+      "passwordPlaceholder": "At least 6 characters",
+      "submitting": "Please wait...",
+      "signUpSubmit": "Create account",
+      "signInSubmit": "Sign in"
+    },
+    "layout": {
+      "brand": "Projectly",
+      "tagline": "Calm control for complex work",
+      "heading": "Make every project move with purpose.",
+      "description": "Keep clients, projects, tasks, and time in one focused workspace built for the workday.",
+      "featureOwnership": "Clear task ownership",
+      "featurePrivate": "Private by default",
+      "footer": "Projects stay visible. Progress stays honest.",
+      "signUpTitle": "Create your workspace account",
+      "signUpDescription": "Create an account to access your assigned tasks.",
+      "signInTitle": "Welcome back",
+      "signInDescription": "Sign in to load your project tasks.",
+      "switchToSignIn": "Already have an account? Sign in",
+      "switchToSignUp": "Need an account? Create one"
+    }
+  },
+  "routes": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "projects": "Projects",
+    "clients": "Clients",
+    "calendar": "Calendar",
+    "reports": "Reports"
+  },
+  "layout": {
+    "emptyPage": {
+      "descriptionSuffix": "view."
+    },
+    "loadingScreen": "Checking your session...",
+    "searchDialog": {
+      "title": "Search workspace",
+      "description": "Find tasks, projects, and clients.",
+      "placeholder": "Search workspace...",
+      "noResults": "No matching workspace items.",
+      "recentSearches": "Recent searches",
+      "groups": {
+        "tasks": "Tasks",
+        "projects": "Projects",
+        "clients": "Clients"
+      }
+    },
+    "sidebar": {
+      "expand": "Expand sidebar",
+      "collapse": "Collapse sidebar"
+    },
+    "userPanel": {
+      "title": "Your account",
+      "email": "alex@example.com",
+      "expand": "Expand account panel",
+      "collapse": "Collapse account panel",
+      "expandNotifications": "Expand account panel for notifications",
+      "notifications": "Notifications",
+      "account": "Account",
+      "userName": "Alex Smith",
+      "userRole": "Administrator",
+      "newCount": "3 new",
+      "settings": "Settings",
+      "notificationItems": [
+        {
+          "title": "New item assigned",
+          "description": "A task was added to your workspace."
+        },
+        {
+          "title": "Weekly report is ready",
+          "description": "Your project activity was summarized."
+        },
+        {
+          "title": "Workspace updated",
+          "description": "A new member joined your team."
+        }
+      ]
+    },
+    "workspaceHeader": {
+      "openNavigation": "Open navigation",
+      "closeNavigation": "Close navigation",
+      "newTask": "New task",
+      "newProject": "New project",
+      "newClient": "New client",
+      "openSearch": "Open workspace search",
+      "searchTitle": "Search workspace",
+      "openAccountPanel": "Open account panel",
+      "closeAccountPanel": "Close account panel"
+    }
+  },
+  "dashboard": {
+    "heading": "Jump back into your work",
+    "description": "Pick up where you left off or explore another workspace view.",
+    "shortcutsTitle": "Workspace shortcuts",
+    "shortcutsDescription": "Move quickly between the views you use most.",
+    "shortcuts": [
+      {
+        "route": "tasks",
+        "label": "Tasks",
+        "description": "Review your queue"
+      },
+      {
+        "route": "projects",
+        "label": "Projects",
+        "description": "See project scope and deadlines"
+      },
+      {
+        "route": "clients",
+        "label": "Clients",
+        "description": "Manage client accounts"
+      },
+      {
+        "route": "reports",
+        "label": "Reports",
+        "description": "Review tracked work"
+      },
+      {
+        "route": "calendar",
+        "label": "Calendar",
+        "description": "Check upcoming dates"
+      }
+    ],
+    "metrics": {
+      "current": "Current tasks",
+      "completed": "Completed",
+      "active": "Active task",
+      "dueSoon": "Due this week",
+      "overdue": "Overdue"
+    },
+    "quickAdd": "Quick add",
+    "dueSoonTitle": "Due soon",
+    "dueSoonDescription": "Tasks that need attention this week",
+    "attentionTitle": "Needs attention",
+    "attentionDescription": "Overdue and upcoming tasks, plus your active timer",
+    "allTasks": "All tasks",
+    "noDueSoon": "Nothing is due in the next seven days.",
+    "noAttentionNeeded": "Nothing needs attention right now.",
+    "overdueBadge": "Overdue",
+    "dueSoonBadge": "Due soon",
+    "stopTimer": "Stop timer",
+    "activityTrendTitle": "Activity trend",
+    "activityTrendDescription": "Recent seven days compared with the prior seven days",
+    "activityUp": "more activity",
+    "activityDown": "less activity",
+    "activityEven": "no change",
+    "allActions": "All actions",
+    "allProjects": "All projects",
+    "noFilteredActivity": "No activity matches these filters.",
+    "projectProgressTitle": "Project progress",
+    "projectProgressDescription": "Completion across your visible projects",
+    "recentActivityTitle": "Recent activity",
+    "recentActivityDescription": "Your latest task updates and time entries",
+    "recentActivityEmpty": "Your recent activity will appear here."
+  },
+  "projectsPage": {
+    "title": "Projects",
+    "description": "Track delivery progress across every active engagement.",
+    "addProject": "Add project",
+    "progressByClientTitle": "Progress by client",
+    "editProject": "Edit project"
+  },
+  "calendarPage": {
+    "title": "Calendar",
+    "description": "Plan task deadlines and project milestones.",
+    "addTask": "Add task",
+    "today": "Today",
+    "previousPeriod": "Previous period",
+    "nextPeriod": "Next period",
+    "views": {
+      "month": "Month",
+      "week": "Week",
+      "agenda": "Agenda"
+    },
+    "filters": {
+      "client": "Client",
+      "project": "Project",
+      "status": "Task status",
+      "allClients": "All clients",
+      "allProjects": "All projects",
+      "allStatuses": "All task statuses",
+      "openTasks": "Open tasks",
+      "completedTasks": "Completed tasks"
+    },
+    "activeFilters": "Active filters",
+    "removeFilter": "Clear filter",
+    "clearFilters": "Clear filters",
+    "noMatchingEvents": "No events match these filters.",
+    "showEventsFor": "Show events for",
+    "weekSummary": {
+      "title": "This week's workload",
+      "due": "Tasks due",
+      "overdue": "Overdue tasks",
+      "milestones": "Project milestones"
+    },
+    "taskDue": "Task due",
+    "projectStart": "Project starts",
+    "projectDeadline": "Project deadline",
+    "project": "Project",
+    "client": "Client",
+    "status": "Status",
+    "priority": "Priority",
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "overdue": "Overdue",
+    "more": "more",
+    "loading": "Loading calendar...",
+    "scheduleError": "Could not schedule this task.",
+    "taskScheduled": "Task date updated.",
+    "scheduleTask": "Set date",
+    "dragToReschedule": "Drag to reschedule",
+    "unscheduledTitle": "Unscheduled tasks",
+    "unscheduledDescription": "Open tasks without a due date",
+    "unscheduledEmpty": "All open tasks have a due date.",
+    "chooseDate": "Choose a due date for",
+    "noClient": "No client"
+  },
+  "clientsPage": {
+    "title": "Clients",
+    "description": "Manage the client accounts your projects belong to.",
+    "addClient": "Add client",
+    "searchPlaceholder": "Search clients...",
+    "loading": "Loading clients...",
+    "empty": "No clients found.",
+    "projectsSuffix": "projects",
+    "progressLabel": "Progress",
+    "editClient": "Edit client",
+    "overdueTasks": "overdue",
+    "dueSoonTasks": "due soon",
+    "noImmediateRisk": "No immediate delivery risks"
+  },
+  "projectBoard": {
+    "title": "Project board",
+    "description": "Move work through each project stage"
+  },
+  "projectOverview": {
+    "completedWork": "Completed work",
+    "overdueWork": "Overdue work",
+    "contributors": "Contributors",
+    "title": "Project overview",
+    "description": "Progress, delivery risk, and estimated effort",
+    "empty": "No project data yet.",
+    "overdueSuffix": "overdue",
+    "estimatedSuffix": "estimated",
+    "editProject": "Edit project",
+    "health": {
+      "onTrack": "On track",
+      "atRisk": "At risk",
+      "completed": "Complete"
+    },
+    "timeline": "Timeline",
+    "moreMilestones": "more milestones",
+    "noMilestones": "No dated tasks"
+  },
+  "reports": {
+    "tabs": {
+      "executive": "Executive",
+      "operational": "Operational",
+      "productivity": "Productivity"
+    },
+    "metrics": {
+      "totalTasks": "Total tasks",
+      "completed": "Completed",
+      "dueThisWeek": "Due this week",
+      "atRisk": "At risk",
+      "trackedTime": "Tracked time",
+      "daysActive": "Days active",
+      "currentFocus": "Current focus"
+    },
+    "operationalHealthTitle": "Operational health",
+    "operationalHealthDescription": "Overall completion and delivery momentum",
+    "completeSuffix": "complete",
+    "completionRate": "Completion rate",
+    "doneSuffix": "done",
+    "activeSuffix": "active",
+    "portfolioMixTitle": "Portfolio mix",
+    "portfolioMixDescription": "Current task distribution by state",
+    "noStatusData": "No status data yet.",
+    "executiveWatchlistTitle": "Executive watchlist",
+    "executiveWatchlistDescription": "Items requiring attention before the next review",
+    "overdueBadge": "Overdue",
+    "dueSoonBadge": "Due soon",
+    "noDeliveryRisks": "No immediate delivery risks.",
+    "recentActivityTitle": "Recent activity",
+    "recentActivityDescriptionExecutive": "Key updates from the workspace",
+    "noRecentActivity": "No recent activity recorded.",
+    "workCompletedTitle": "Work completed",
+    "workCompletedDescription": "Completion rate across the workspace",
+    "completionLabel": "Completion",
+    "workByStatusTitle": "Work by status",
+    "workByStatusDescription": "Queue health and task mix",
+    "priorityWatchlistTitle": "Priority watchlist",
+    "priorityWatchlistDescription": "Tasks that deserve attention this week",
+    "noAttentionNeeded": "Nothing needs attention right now.",
+    "recentActivityDescriptionOperational": "Fresh updates across the workspace",
+    "recentActivityFallbackOperational": "Recent task activity will show up here.",
+    "timeAllocationTitle": "Time allocation",
+    "timeAllocationDescription": "Where effort is being spent right now",
+    "noTimeAllocation": "No time allocation data yet.",
+    "estimatedSuffix": "estimated",
+    "noEstimate": "No task estimate",
+    "rangeLabel": "Report activity range",
+    "rangeFrom": "Report start date",
+    "rangeTo": "Report end date",
+    "exportCsv": "Export CSV",
+    "actionFilter": "Filter activity by action",
+    "allActions": "All actions",
+    "entityFilter": "Filter activity by entity type",
+    "allEntities": "All entities",
+    "entityTypes": {
+      "task": "Task",
+      "project": "Project",
+      "client": "Client"
+    },
+    "projectFilter": "Filter activity by project",
+    "allProjects": "All projects",
+    "activitySearch": "Search activity",
+    "activityLoadError": "Workspace activity could not be loaded.",
+    "activityLoadedSuffix": "activity events loaded",
+    "loadMoreActivity": "Load more activity",
+    "loadingMoreActivity": "Loading more activity...",
+    "csv": {
+      "date": "Date",
+      "action": "Action",
+      "entityType": "Entity type",
+      "entity": "Entity",
+      "project": "Project",
+      "person": "Person",
+      "duration": "Tracked minutes"
+    },
+    "priorityMomentumTitle": "Priority and momentum",
+    "priorityMomentumDescription": "How quickly work is moving forward",
+    "completionVelocity": "Completion velocity",
+    "tasksClosedSuffix": "tasks closed in the current workspace",
+    "dueThisWeekLabel": "Due this week",
+    "overdueLabel": "Overdue",
+    "trackedActivityLabel": "Tracked activity",
+    "itemsSuffix": "items",
+    "recentWorkTitle": "Recent work",
+    "recentWorkDescription": "Latest task updates and timed activity",
+    "recentActivityFallbackProductivity": "Recent productivity activity will appear here.",
+    "noProject": "No project",
+    "noDueDate": "No due date",
+    "aTask": "a task"
+  },
+  "settingsDialog": {
+    "appearanceBadge": "Appearance",
+    "title": "Settings",
+    "description": "Choose the visual style for your workspace.",
+    "styleTitle": "Style",
+    "styleDescription": "ReUI-inspired token presets",
+    "styles": [
+      { "id": "nova", "name": "Nova", "description": "Cool blue and precise" },
+      { "id": "vega", "name": "Vega", "description": "Calm teal and compact" },
+      { "id": "maia", "name": "Maia", "description": "Warm amber and open" }
+    ],
+    "colorModeTitle": "Color mode",
+    "colorModeDescription": "Choose how the workspace should appear.",
+    "light": "Light",
+    "dark": "Dark",
+    "languageTitle": "Language",
+    "languageDescription": "Choose the display language for the workspace.",
+    "english": "English",
+    "romanian": "Romanian",
+    "workspaceDefaultsTitle": "Workspace defaults",
+    "workspaceDefaultsDescription": "Choose the starting view for tasks and calendars.",
+    "defaultTaskFilterTitle": "Default task filter",
+    "weekStartTitle": "Week starts on",
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "taskFilters": {
+      "current": "Current tasks",
+      "active": "Active task",
+      "completed": "Completed tasks",
+      "dueSoon": "Due this week",
+      "overdue": "Overdue"
+    }
+  },
+  "activity": {
+    "presets": {
+      "today": "Today",
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "last90": "Last 90 days",
+      "custom": "Custom"
+    },
+    "rangeTo": "to",
+    "empty": "No activity in this range",
+    "emptyDescription": "Try a different date range.",
+    "loading": "Loading activity...",
+    "noTasks": "This project has no tasks yet.",
+    "noProjects": "This client has no projects yet.",
+    "overallTitle": "Overall contributors",
+    "byTaskTitle": "By task",
+    "entriesSuffix": "entries",
+    "tasksSuffix": "tasks",
+    "projectActivityTitle": "Project activity",
+    "clientActivityTitle": "Client activity",
+    "selectProject": "Select a project",
+    "selectClient": "Select a client",
+    "selectProjectPrompt": "Pick a project above to see who worked on it and when.",
+    "selectClientPrompt": "Pick a client above to see projects, tasks, and contributors."
+  },
+  "taskActivity": {
+    "actions": {
+      "created": "Task created",
+      "started": "Timer started",
+      "stopped": "Timer stopped",
+      "state_changed": "Status changed",
+      "updated": "Task updated",
+      "commented": "Comment added"
+    },
+    "empty": "No activity recorded yet",
+    "emptyDescription": "Changes and time entries will appear here.",
+    "trackedSuffix": "tracked"
+  },
+  "taskComments": {
+    "commentLabel": "Comment",
+    "empty": "No comments yet",
+    "emptyDescription": "Add the first update to this task.",
+    "placeholder": "Write an update or question...",
+    "posting": "Posting...",
+    "submit": "Post comment"
+  },
+  "taskDetails": {
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Add a description...",
+    "projectsLabel": "Projects",
+    "loadingProjects": "Loading projects...",
+    "selectProjects": "Select one or more projects",
+    "noProjects": "No projects found",
+    "priorityLabel": "Priority",
+    "dueDateLabel": "Due date",
+    "estimateLabel": "Estimate (minutes)",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "design, research",
+    "markNotCompleted": "Mark not completed",
+    "markCompleted": "Mark completed",
+    "saving": "Saving...",
+    "save": "Save changes"
+  },
+  "taskForm": {
+    "taskBadge": "New task",
+    "taskTitle": "Create a task",
+    "taskDescription": "Add a new task to your workspace.",
+    "subtaskBadge": "New subtask",
+    "subtaskTitle": "Create a subtask",
+    "subtaskDescription": "Add a subtask under",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Add a description...",
+    "clientLabel": "Client",
+    "loadingClients": "Loading clients...",
+    "selectClient": "Select a client",
+    "projectLabel": "Project",
+    "loadingProjects": "Loading projects...",
+    "selectProject": "Select a project",
+    "priorityLabel": "Priority",
+    "dueDateLabel": "Due date",
+    "estimateLabel": "Estimate (minutes)",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "design, research",
+    "cancel": "Cancel",
+    "saving": "Creating...",
+    "create": "Create task"
+  },
+  "clientForm": {
+    "badge": "New client",
+    "editBadge": "Edit client",
+    "title": "Add a client",
+    "editTitle": "Edit client",
+    "description": "Create a client to attach projects and tasks to.",
+    "editDescription": "Update this client's contact details and notes.",
+    "nameLabel": "Name",
+    "companyLabel": "Company",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Add any useful context...",
+    "cancel": "Cancel",
+    "saving": "Creating...",
+    "create": "Create client",
+    "save": "Save changes"
+  },
+  "projectForm": {
+    "badge": "New project",
+    "editBadge": "Edit project",
+    "title": "Add a project",
+    "editTitle": "Edit project",
+    "description": "Create a project and assign it to one or more clients.",
+    "editDescription": "Update this project's details and client assignments.",
+    "nameLabel": "Name",
+    "codeLabel": "Code",
+    "codePlaceholder": "e.g. ACME-01",
+    "clientLabel": "Clients",
+    "loadingClients": "Loading clients...",
+    "selectClient": "Select one or more clients",
+    "noClients": "No clients found",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Add a description...",
+    "statusLabel": "Status",
+    "budgetLabel": "Budget",
+    "startDateLabel": "Start date",
+    "dueDateLabel": "Due date",
+    "cancel": "Cancel",
+    "saving": "Creating...",
+    "create": "Create project",
+    "save": "Save changes"
+  },
+  "taskActionNote": {
+    "stopTitle": "What did you work on?",
+    "stopDescription": "Add a work update before stopping the timer.",
+    "stopPlaceholder": "Describe what you completed or where you left off...",
+    "stopSubmit": "Stop task",
+    "completeTitle": "Add a completion summary",
+    "completeDescription": "Summarize the outcome before marking this task complete.",
+    "completePlaceholder": "What was completed? Include any useful handoff details...",
+    "completeSubmit": "Mark completed",
+    "cancel": "Cancel"
+  },
+  "taskHistoryCalendar": {
+    "empty": "No activity recorded yet",
+    "emptyDescription": "Start or update this task to build its activity calendar.",
+    "event": "event",
+    "events": "events"
+  },
+  "taskInspector": {
+    "emptyState": "Select a task to inspect it.",
+    "focusedTaskPrefix": "Focused task",
+    "tabListLabel": "Task information views",
+    "tabs": {
+      "details": "Details",
+      "calendar": "Calendar",
+      "activity": "Activity",
+      "team": "Team",
+      "subtasks": "Subtasks",
+      "comments": "Comments"
+    }
+  },
+  "taskList": {
+    "title": "My tasks",
+    "description": "Current work queue",
+    "visible": "visible",
+    "workingNow": "Working now",
+    "searchPlaceholder": "Search tasks...",
+    "tabListLabel": "Task filters",
+    "filters": {
+      "current": "Current tasks",
+      "active": "Active task",
+      "completed": "Completed tasks",
+      "due-soon": "Due this week",
+      "overdue": "Overdue"
+    },
+    "loading": "Loading tasks...",
+    "empty": "No tasks found.",
+    "workingStatus": "In progress · Timer running",
+    "stopTask": "Stop task",
+    "startTask": "Start task",
+    "workingBadge": "Working",
+    "newTask": "New task"
+  },
+  "taskSubtasks": {
+    "empty": "No subtasks yet",
+    "emptyDescription": "Child tasks linked to this task will appear here.",
+    "progressTitle": "Subtask progress",
+    "completedSuffix": "completed",
+    "reopenSubtask": "Reopen subtask",
+    "completeSubtask": "Complete subtask",
+    "addSubtask": "Add subtask"
+  },
+  "taskWorkspaceHeader": {
+    "current": "Current",
+    "completed": "Completed",
+    "active": "Active"
+  },
+  "toasts": {
+    "taskDetails": {
+      "loadOptionsError": "Could not load project options",
+      "noSuitableState": "No suitable task state is configured",
+      "signInToComplete": "Sign in to complete a task",
+      "completionSummaryRequired": "Add a completion summary before completing this task",
+      "addCompletionSummaryError": "Could not add completion summary",
+      "stopTimerError": "Could not stop the task timer",
+      "updateStatusError": "Could not update task status",
+      "taskCompleted": "Task completed",
+      "taskReopened": "Task reopened",
+      "titleRequired": "Task title is required",
+      "projectRequired": "Select at least one project for this task",
+      "updateTaskError": "Could not update task",
+      "linkProjectsError": "Task updated, but some projects could not be linked",
+      "taskUpdated": "Task details updated"
+    },
+    "taskInspector": {
+      "loadHistoryError": "Could not load task history",
+      "signInToComment": "Sign in to add a comment",
+      "addCommentError": "Could not add comment"
+    },
+    "taskForm": {
+      "loadOptionsError": "Could not load project options",
+      "titleRequired": "Task title is required",
+      "projectRequired": "Select at least one project for this task",
+      "signInToCreate": "Sign in to create a task",
+      "noSuitableState": "No suitable task state is configured",
+      "createTaskError": "Could not create task",
+      "linkProjectsError": "Task created, but some projects could not be linked",
+      "taskCreated": "Task created",
+      "subtaskCreated": "Subtask created"
+    },
+    "clientForm": {
+      "nameRequired": "Client name is required",
+      "createClientError": "Could not create client",
+      "updateClientError": "Could not update client",
+      "clientCreated": "Client created",
+      "clientUpdated": "Client updated"
+    },
+    "clients": {
+      "loadError": "Could not load clients"
+    },
+    "projectForm": {
+      "loadOptionsError": "Could not load client options",
+      "nameRequired": "Project name is required",
+      "codeRequired": "Project code is required",
+      "clientRequired": "Select at least one client for this project",
+      "createProjectError": "Could not create project",
+      "updateProjectError": "Could not update project",
+      "linkClientsError": "Project created, but some clients could not be linked",
+      "projectCreated": "Project created",
+      "projectUpdated": "Project updated"
+    },
+    "taskWorkspace": {
+      "signInToLoad": "Sign in to load your tasks from Supabase.",
+      "signInToTrack": "Sign in to track task time",
+      "stopActiveFirst": "Stop the active task before starting another one",
+      "startTaskError": "Could not start task",
+      "stopTaskError": "Could not stop task",
+      "addStopCommentError": "Task stopped, but the work update could not be added",
+      "updateStatusError": "Could not update task status",
+      "statusUpdated": "Task status updated"
+    },
+    "authForm": {
+      "accountCreated": "Account created. Check your email to confirm your account."
+    }
+  }
+}

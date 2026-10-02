@@ -1,0 +1,228 @@
+import { Check, Globe, Moon, Palette, Sun } from 'lucide-react';
+import { useMemo } from 'react';
+import { Badge } from '@/components/reui/badge';
+import { Frame, FramePanel } from '@/components/reui/frame';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { supportedLanguages, useLanguage } from '@/lib/i18n';
+
+const swatchByStyleId = {
+  nova: 'bg-blue-500',
+  vega: 'bg-teal-500',
+  maia: 'bg-amber-500',
+};
+
+const SettingsDialog = ({
+  open,
+  onOpenChange,
+  colorMode,
+  onColorModeChange,
+  style,
+  onStyleChange,
+  defaultTaskFilter,
+  onDefaultTaskFilterChange,
+  weekStartsOn,
+  onWeekStartsOnChange,
+}) => {
+  const { language, setLanguage, strings } = useLanguage();
+  const t = strings.settingsDialog;
+  const styleOptions = useMemo(
+    () =>
+      t.styles.map((option) => ({
+        ...option,
+        swatch: swatchByStyleId[option.id],
+      })),
+    [t.styles],
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <div className="space-y-1 pr-8">
+          <div className="flex items-center gap-2 text-primary">
+            <Palette className="size-4" />
+            <Badge variant="secondary" size="sm">
+              {t.appearanceBadge}
+            </Badge>
+          </div>
+          <DialogTitle className="text-xl font-semibold">{t.title}</DialogTitle>
+          <DialogDescription>{t.description}</DialogDescription>
+        </div>
+
+        <Frame className="mt-6" stacked dense maximizable={false}>
+          <FramePanel className="space-y-5 p-4 shadow-none">
+            <section>
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold">{t.styleTitle}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {t.styleDescription}
+                </p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {styleOptions.map((option) => {
+                  const selected = style === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => onStyleChange(option.id)}
+                      className={`relative rounded-lg border p-3 text-left transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 ${selected ? 'border-primary bg-primary/5' : 'hover:border-primary/40 hover:bg-muted/50'}`}
+                    >
+                      <span
+                        className={`mb-3 block size-5 rounded-full ${option.swatch}`}
+                      />
+                      <span className="block text-sm font-medium">
+                        {option.name}
+                      </span>
+                      <span className="mt-1 block text-[0.78125rem] leading-4 text-muted-foreground">
+                        {option.description}
+                      </span>
+                      {selected && (
+                        <Check className="absolute top-3 right-3 size-4 text-primary" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section>
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold">{t.colorModeTitle}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {t.colorModeDescription}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  ['light', t.light, Sun],
+                  ['dark', t.dark, Moon],
+                ].map(([value, label, Icon]) => {
+                  const selected = colorMode === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => onColorModeChange(value)}
+                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 ${selected ? 'border-primary bg-primary/5 text-primary' : 'hover:border-primary/40 hover:bg-muted/50'}`}
+                    >
+                      <Icon className="size-4" />
+                      {label}
+                      {selected && <Check className="ml-auto size-4" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section>
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold">{t.languageTitle}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {t.languageDescription}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {supportedLanguages.map(({ id }) => {
+                  const selected = language === id;
+                  const label = id === 'en' ? t.english : t.romanian;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setLanguage(id)}
+                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 ${selected ? 'border-primary bg-primary/5 text-primary' : 'hover:border-primary/40 hover:bg-muted/50'}`}
+                    >
+                      <Globe className="size-4" />
+                      {label}
+                      {selected && <Check className="ml-auto size-4" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+            <section>
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold">
+                  {t.workspaceDefaultsTitle}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {t.workspaceDefaultsDescription}
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <label
+                    className="text-xs font-medium"
+                    htmlFor="default-task-filter"
+                  >
+                    {t.defaultTaskFilterTitle}
+                  </label>
+                  <Select
+                    value={defaultTaskFilter}
+                    onValueChange={onDefaultTaskFilterChange}
+                  >
+                    <SelectTrigger id="default-task-filter">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[
+                        ['current', t.taskFilters.current],
+                        ['active', t.taskFilters.active],
+                        ['completed', t.taskFilters.completed],
+                        ['due-soon', t.taskFilters.dueSoon],
+                        ['overdue', t.taskFilters.overdue],
+                      ].map(([value, label]) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <label
+                    className="text-xs font-medium"
+                    htmlFor="week-start-day"
+                  >
+                    {t.weekStartTitle}
+                  </label>
+                  <Select
+                    value={String(weekStartsOn)}
+                    onValueChange={(value) =>
+                      onWeekStartsOnChange(Number(value))
+                    }
+                  >
+                    <SelectTrigger id="week-start-day">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">{t.sunday}</SelectItem>
+                      <SelectItem value="1">{t.monday}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </section>
+          </FramePanel>
+        </Frame>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default SettingsDialog;

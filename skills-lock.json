@@ -1,17 +1,203 @@
 {
   "version": 1,
   "skills": {
+    "aggregation": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/aggregation/SKILL.md",
+      "computedHash": "e6d6bd9b69ca5f6d35c279e2a3018f2f2a7f22bcd7a7ee454a95e7087d33f542"
+    },
+    "api-not-found": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/api-not-found/SKILL.md",
+      "computedHash": "eac3850b893ac6373fd7ea864e02b75e020d1c9930bfbe855b2fe757dce60232"
+    },
+    "cell-selection": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/cell-selection/SKILL.md",
+      "computedHash": "2f19a1fec9e9979937cfdd0f9fa0df42330de6810a2c8208545e4450ec538f8a"
+    },
+    "cell-spanning": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/cell-spanning/SKILL.md",
+      "computedHash": "aff33c3b1f9594734b9ce3f4eb6bb25b5404103f57528ad497af2bc49ef5eb52"
+    },
+    "client-vs-server": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/client-vs-server/SKILL.md",
+      "computedHash": "7b77cc1ba6972a424773ba0e062886af834cbbee2711f2248f58c2934c2f4015"
+    },
+    "column-faceting": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/column-faceting/SKILL.md",
+      "computedHash": "4259dd914d172f69ed0cc7035462035e2f683204cd0ad6e73754e5a8b30c2c99"
+    },
+    "column-filtering": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/column-filtering/SKILL.md",
+      "computedHash": "8920c05230e7cf22e88871f0d81f5fe2d8c7236adf76fc44952df50c749f3003"
+    },
+    "column-ordering": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/column-ordering/SKILL.md",
+      "computedHash": "0a65f0732231621160be991b1217e9e0acbda32e07c6a707e9709fd12c00d329"
+    },
+    "column-pinning": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/column-pinning/SKILL.md",
+      "computedHash": "b6a8970c330082ebad66257104a55ce247ab26cc3a81e130f9f3772618e2228d"
+    },
+    "column-resizing": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/column-resizing/SKILL.md",
+      "computedHash": "afd160bebc338ae78775f748941fe02ebc7b1ee383aeeb108789a3c52b2b3fcb"
+    },
+    "column-sizing": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/column-sizing/SKILL.md",
+      "computedHash": "0da7465449e19ca1f4f65c854451f21fc5892b5027653266ef31bac27a5cf18d"
+    },
+    "column-visibility": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/column-visibility/SKILL.md",
+      "computedHash": "1f63a079c5291dee8d5a2f28f52951aa9a9e2efe8b34c9d47a0e28879b07efdb"
+    },
+    "core": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/core/SKILL.md",
+      "computedHash": "d81becf0ae934cc7baf97e2b584702cd38065414be24961b3461deb1fdfe9eae"
+    },
+    "create-table-hook": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/alpine-table/skills/create-table-hook/SKILL.md",
+      "computedHash": "28cca16bfc5ef4db47cd406c2b3626957e14e998da0c1d91fb73e79394e9d1b5"
+    },
+    "custom-features": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/custom-features/SKILL.md",
+      "computedHash": "844384feea4efd3b341d090c30c5529d3e39f4ce61b386e8ec0a0bfdd114c616"
+    },
+    "devtools": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/angular-table-devtools/skills/devtools/SKILL.md",
+      "computedHash": "2f85df3cc2780a2a310bc30bc4a91a24913c210cedba2068464175baa3888fcc"
+    },
+    "expanding": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/expanding/SKILL.md",
+      "computedHash": "1fef45194a8be05fcd2cd677ab581a56ad233b8320a38eaf5de2658609d31e1b"
+    },
+    "fuzzy-ranking": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/match-sorter-utils/skills/fuzzy-ranking/SKILL.md",
+      "computedHash": "3f32f35232b06c0356ff1cac7528a8836c334657ada217bf5d07f5c75c9db761"
+    },
+    "getting-started": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/alpine-table/skills/getting-started/SKILL.md",
+      "computedHash": "6e39ba5527d7549caa54b99805481b7a6ab193ce1684e584bf40d85881e343ae"
+    },
+    "global-filtering": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/global-filtering/SKILL.md",
+      "computedHash": "3c4f40d1214032d3d48be887a833c739063842d3d9ab67bb6f902aff3b50750b"
+    },
+    "grouping": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/grouping/SKILL.md",
+      "computedHash": "f55b1f2112b5768ba566dcf5f71533bb5a6dcb972a70ed9ce5971c8a3531fc72"
+    },
+    "migrate-v8-to-v9": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/angular-table/skills/migrate-v8-to-v9/SKILL.md",
+      "computedHash": "3db079b79b63adee36546012e67e764c524af9aef110858497414abc4e54e504"
+    },
+    "pagination": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/pagination/SKILL.md",
+      "computedHash": "da07e5e509c3dda4d7f249aa8febfa29859d2be93db7df645c5b3ad6e6e5ca47"
+    },
+    "row-pinning": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/row-pinning/SKILL.md",
+      "computedHash": "39157f381830f1b152f6873ea84ebd95fcd60e769f3d9a3920f099be8f13a569"
+    },
+    "row-selection": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/row-selection/SKILL.md",
+      "computedHash": "dd6fc35d59f43b3291daa24dced647aeccb3b3e085c2ede2b032ee06e431f84e"
+    },
     "rsbuild-best-practices": {
       "source": "rstackjs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/rsbuild-best-practices/SKILL.md",
       "computedHash": "ddccd14661c8a319cdd34c423bc750a373aef280679e25484261ada5c882f4f4"
     },
+    "sorting": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/sorting/SKILL.md",
+      "computedHash": "1a6c0a55eb223e8ce59470ed96432a74bab96710e5a5fe7d932501a2f53568c0"
+    },
+    "table-features": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/table-features/SKILL.md",
+      "computedHash": "5c8279c272544ca199a527184940a1d69b40be846627a328391cc98100d454fc"
+    },
+    "table-state": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/alpine-table/skills/table-state/SKILL.md",
+      "computedHash": "8a37c60c1f6a52eee994aa942d3256fc5fcef07639f91e06b2c239b35f4da496"
+    },
+    "typescript": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/table-core/skills/typescript/SKILL.md",
+      "computedHash": "b81ef58ca2dde9cef59f20f1b920282933eb7675c7a5b9787eeaabbef46573f2"
+    },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/react-best-practices/SKILL.md",
       "computedHash": "6b526d013e28073246a36f99b529bc43745d30832ecfa8217b359c34f260ca6b"
+    },
+    "with-tanstack-query": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/angular-table/skills/with-tanstack-query/SKILL.md",
+      "computedHash": "33226025a8bac5d23b6dd365a7d25e2c660268d229c9c8decd3648f67d231502"
+    },
+    "with-tanstack-virtual": {
+      "source": "TanStack/table",
+      "sourceType": "github",
+      "skillPath": "packages/angular-table/skills/with-tanstack-virtual/SKILL.md",
+      "computedHash": "46f30c35d0715e7969609de419c11a4f24edcd53b1859a2ece9136dc91225a05"
     }
   }
 }
