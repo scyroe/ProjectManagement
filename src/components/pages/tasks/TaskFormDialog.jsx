@@ -88,12 +88,12 @@ const TaskFormDialog = ({ onCreated, onOpenChange, open, parentTask }) => {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="new-task-projects">{t.projectsLabel}</Label>
+              <Label htmlFor="new-task-projects">{t.projectLabel}</Label>
               <MultiSelect
                 id="new-task-projects"
                 disabled={loadingOptions || Boolean(parentTask)}
                 placeholder={
-                  loadingOptions ? t.loadingProjects : t.selectProjects
+                  loadingOptions ? t.loadingProjects : t.selectProject
                 }
                 emptyLabel={t.noProjects}
                 values={form.projectIds}

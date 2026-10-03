@@ -7,6 +7,13 @@ import {
   Search,
   Square,
 } from 'lucide-react';
+import { m as motion } from 'motion/react';
+import { useEffect } from 'react';
+import {
+  AnimatedTabIndicator,
+  AnimatedTabPanel,
+} from '@/components/Common/animated-tabs';
+import { useAnimationsEnabled } from '@/components/Common/animation-preferences';
 import { dateLabel, priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import {
@@ -38,9 +45,19 @@ const TaskList = ({
   runningTaskId,
   onToggleTimer,
   onNewTask,
+  recentlyCreatedTaskId,
+  onTaskAnimationComplete,
 }) => {
+  const animationsEnabled = useAnimationsEnabled();
   const strings = useStrings();
   const t = strings.taskList;
+
+  useEffect(() => {
+    if (!animationsEnabled && recentlyCreatedTaskId) {
+      onTaskAnimationComplete?.(recentlyCreatedTaskId);
+    }
+  }, [animationsEnabled, onTaskAnimationComplete, recentlyCreatedTaskId]);
+
   return (
     <Frame className="h-full min-h-0" stacked dense>
       <FrameHeader className="gap-2 border-b p-3 sm:gap-3 sm:p-4">
@@ -114,119 +131,153 @@ const TaskList = ({
               role="tab"
               aria-selected={filter === value}
               onClick={() => onFilterChange(value)}
-              className={`flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${
+              className={`relative flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${
                 filter === value
-                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  ? 'text-primary-foreground'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
-              <Icon className="size-3.5 shrink-0" />
-              {label}
+              {filter === value && (
+                <AnimatedTabIndicator layoutId="task-list-filter-tabs" />
+              )}
+              <span className="relative z-10 flex items-center gap-1.5">
+                <Icon className="size-3.5 shrink-0" />
+                <span>{label}</span>
+              </span>
             </button>
           ))}
         </div>
       </FrameHeader>
       <FramePanel className="min-h-0 flex-1 overflow-hidden p-0 shadow-none">
-        {loading && (
-          <p className="p-6 text-center text-sm text-muted-foreground">
-            {t.loading}
-          </p>
-        )}
-        {!loading && error && (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-            {error}
-          </p>
-        )}
-        {!loading && !error && tasks.length > 0 && (
-          <VirtualList
-            ariaLabel={t.title}
-            className="h-full p-2 sm:p-3"
-            estimateSize={56}
-            itemClassName="pb-1"
-            items={tasks}
-            renderItem={(task) => (
-              <div
-                className={`relative w-full rounded-lg border p-2 text-left transition-colors ${
-                  runningTaskId === task.id
-                    ? 'border-success/50 bg-success/5 shadow-sm ring-1 ring-success/20'
-                    : selectedId === task.id
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border/70 hover:border-border hover:bg-muted/50'
-                }`}
-              >
-                <button
-                  type="button"
-                  aria-label={task.title}
-                  className="absolute inset-0 z-0 rounded-lg focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                  onClick={() => onSelect(task.id)}
-                />
-                <div className="pointer-events-none relative z-10 flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="block truncate text-sm font-semibold">
-                      {task.title}
-                    </span>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {runningTaskId === task.id && (
-                      <span className="hidden items-center gap-1 text-[0.78125rem] font-semibold uppercase tracking-wide text-success-foreground sm:flex">
-                        <span className="size-1.5 animate-pulse rounded-full bg-success" />
-                        {t.workingBadge}
-                      </span>
-                    )}
-                    <Badge
-                      size="sm"
-                      variant={priorityVariant[task.priority] ?? 'secondary'}
-                    >
-                      {task.priority}
-                    </Badge>
-                    {!task.state?.is_completed && (
-                      <Button
-                        type="button"
-                        size="icon-xs"
-                        variant={
-                          runningTaskId === task.id ? 'destructive' : 'ghost'
-                        }
-                        aria-label={
-                          runningTaskId === task.id
-                            ? `Stop ${task.title}`
-                            : `Start ${task.title}`
-                        }
-                        title={
-                          runningTaskId === task.id ? t.stopTask : t.startTask
-                        }
-                        className="pointer-events-auto relative z-10"
-                        onClick={() => onToggleTimer(task)}
-                      >
-                        {runningTaskId === task.id ? <Square /> : <Play />}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                <div className="pointer-events-none relative z-10 mt-1 flex min-w-0 items-center justify-between gap-2 text-xs text-muted-foreground">
-                  <span
-                    className={`min-w-0 flex-1 truncate ${
+        <AnimatedTabPanel activeId={filter} className="h-full">
+          {loading && (
+            <p className="p-6 text-center text-sm text-muted-foreground">
+              {t.loading}
+            </p>
+          )}
+          {!loading && error && (
+            <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+              {error}
+            </p>
+          )}
+          {!loading && !error && tasks.length > 0 && (
+            <VirtualList
+              ariaLabel={t.title}
+              className="h-full p-2 sm:p-3"
+              estimateSize={56}
+              itemClassName="pb-1"
+              items={tasks}
+              renderItem={(task) => {
+                const taskCard = (
+                  <div
+                    className={`relative w-full rounded-lg border p-2 text-left transition-colors ${
                       runningTaskId === task.id
-                        ? 'font-medium text-success-foreground'
-                        : undefined
+                        ? 'border-success/50 bg-success/5 shadow-sm ring-1 ring-success/20'
+                        : selectedId === task.id
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border/70 hover:border-border hover:bg-muted/50'
                     }`}
                   >
-                    {task.project?.name ?? strings.common.noProject}
-                    <span aria-hidden="true"> · </span>
-                    {runningTaskId === task.id
-                      ? t.workingStatus
-                      : (task.state?.name ?? strings.common.noState)}
-                  </span>
-                  <span className="shrink-0">{dateLabel(task.due_date)}</span>
-                </div>
-              </div>
-            )}
-          />
-        )}
-        {!loading && !error && !tasks.length && (
-          <p className="p-6 text-center text-sm text-muted-foreground">
-            {t.empty}
-          </p>
-        )}
+                    <button
+                      type="button"
+                      aria-label={task.title}
+                      className="absolute inset-0 z-0 rounded-lg focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                      onClick={() => onSelect(task.id)}
+                    />
+                    <div className="pointer-events-none relative z-10 flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <span className="block truncate text-sm font-semibold">
+                          {task.title}
+                        </span>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {runningTaskId === task.id && (
+                          <span className="hidden items-center gap-1 text-[0.78125rem] font-semibold uppercase tracking-wide text-success-foreground sm:flex">
+                            <span className="size-1.5 animate-pulse rounded-full bg-success" />
+                            {t.workingBadge}
+                          </span>
+                        )}
+                        <Badge
+                          size="sm"
+                          variant={
+                            priorityVariant[task.priority] ?? 'secondary'
+                          }
+                        >
+                          {task.priority}
+                        </Badge>
+                        {!task.state?.is_completed && (
+                          <Button
+                            type="button"
+                            size="icon-xs"
+                            variant={
+                              runningTaskId === task.id
+                                ? 'destructive'
+                                : 'ghost'
+                            }
+                            aria-label={
+                              runningTaskId === task.id
+                                ? `Stop ${task.title}`
+                                : `Start ${task.title}`
+                            }
+                            title={
+                              runningTaskId === task.id
+                                ? t.stopTask
+                                : t.startTask
+                            }
+                            className="pointer-events-auto relative z-10"
+                            onClick={() => onToggleTimer(task)}
+                          >
+                            {runningTaskId === task.id ? <Square /> : <Play />}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="pointer-events-none relative z-10 mt-1 flex min-w-0 items-center justify-between gap-2 text-xs text-muted-foreground">
+                      <span
+                        className={`min-w-0 flex-1 truncate ${
+                          runningTaskId === task.id
+                            ? 'font-medium text-success-foreground'
+                            : undefined
+                        }`}
+                      >
+                        {task.project?.name ?? strings.common.noProject}
+                        <span aria-hidden="true"> · </span>
+                        {runningTaskId === task.id
+                          ? t.workingStatus
+                          : (task.state?.name ?? strings.common.noState)}
+                      </span>
+                      <span className="shrink-0">
+                        {dateLabel(task.due_date)}
+                      </span>
+                    </div>
+                  </div>
+                );
+
+                if (!animationsEnabled || task.id !== recentlyCreatedTaskId) {
+                  return taskCard;
+                }
+
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.24, ease: 'easeOut' }}
+                    onAnimationComplete={() =>
+                      onTaskAnimationComplete?.(task.id)
+                    }
+                  >
+                    {taskCard}
+                  </motion.div>
+                );
+              }}
+            />
+          )}
+          {!loading && !error && !tasks.length && (
+            <p className="p-6 text-center text-sm text-muted-foreground">
+              {t.empty}
+            </p>
+          )}
+        </AnimatedTabPanel>
       </FramePanel>
     </Frame>
   );

@@ -1,4 +1,13 @@
-import { Check, Globe, Moon, Palette, Sun } from 'lucide-react';
+import {
+  Check,
+  Globe,
+  Monitor,
+  Moon,
+  Palette,
+  Pause,
+  Play,
+  Sun,
+} from 'lucide-react';
 import { useMemo } from 'react';
 import { Badge } from '@/components/reui/badge';
 import { Frame, FramePanel } from '@/components/reui/frame';
@@ -28,6 +37,8 @@ const SettingsDialog = ({
   onOpenChange,
   colorMode,
   onColorModeChange,
+  animationMode,
+  onAnimationModeChange,
   style,
   onStyleChange,
   defaultTaskFilter,
@@ -105,8 +116,9 @@ const SettingsDialog = ({
                   {t.colorModeDescription}
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {[
+                  ['auto', t.auto, Monitor],
                   ['light', t.light, Sun],
                   ['dark', t.dark, Moon],
                 ].map(([value, label, Icon]) => {
@@ -117,6 +129,37 @@ const SettingsDialog = ({
                       type="button"
                       aria-pressed={selected}
                       onClick={() => onColorModeChange(value)}
+                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 ${selected ? 'border-primary bg-primary/5 text-primary' : 'hover:border-primary/40 hover:bg-muted/50'}`}
+                    >
+                      <Icon className="size-4" />
+                      {label}
+                      {selected && <Check className="ml-auto size-4" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section>
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold">{t.animationsTitle}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {t.animationsDescription}
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  ['auto', t.animationsAuto, Monitor],
+                  ['on', t.animationsOn, Play],
+                  ['off', t.animationsOff, Pause],
+                ].map(([value, label, Icon]) => {
+                  const selected = animationMode === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => onAnimationModeChange(value)}
                       className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 ${selected ? 'border-primary bg-primary/5 text-primary' : 'hover:border-primary/40 hover:bg-muted/50'}`}
                     >
                       <Icon className="size-4" />

@@ -63,7 +63,7 @@ const TaskSubtasks = ({ task, tasks, onUpdateState, onAddSubtask }) => {
         </div>
         <div className="h-2 w-24 overflow-hidden rounded-full bg-background">
           <div
-            className="h-full rounded-full bg-success"
+            className="h-full rounded-full bg-success transition-[width] duration-500 ease-out"
             style={{ width: `${(completedCount / subtasks.length) * 100}%` }}
           />
         </div>

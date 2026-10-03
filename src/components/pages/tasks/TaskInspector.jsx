@@ -8,6 +8,10 @@ import {
   Users,
 } from 'lucide-react';
 import ActivityPanel from '@/components/Common/ActivityPanel';
+import {
+  AnimatedTabIndicator,
+  AnimatedTabPanel,
+} from '@/components/Common/animated-tabs';
 import { priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import {
@@ -89,49 +93,54 @@ const TaskInspector = ({
               role="tab"
               aria-selected={tab === name}
               onClick={() => setTab(name)}
-              className={`flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${tab === name ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+              className={`relative flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${tab === name ? 'text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
             >
-              {name === 'details' ? (
-                <ListTodo className="size-3.5 shrink-0" />
-              ) : name === 'calendar' ? (
-                <CalendarDays className="size-3.5 shrink-0" />
-              ) : name === 'activity' ? (
-                <Activity className="size-3.5 shrink-0" />
-              ) : name === 'team' ? (
-                <Users className="size-3.5 shrink-0" />
-              ) : name === 'subtasks' ? (
-                <ListChecks className="size-3.5 shrink-0" />
-              ) : (
-                <MessageSquare className="size-3.5 shrink-0" />
+              {tab === name && (
+                <AnimatedTabIndicator layoutId="task-inspector-tabs" />
               )}
-              {t.tabs[name]}
+              {name === 'details' ? (
+                <ListTodo className="relative z-10 size-3.5 shrink-0" />
+              ) : name === 'calendar' ? (
+                <CalendarDays className="relative z-10 size-3.5 shrink-0" />
+              ) : name === 'activity' ? (
+                <Activity className="relative z-10 size-3.5 shrink-0" />
+              ) : name === 'team' ? (
+                <Users className="relative z-10 size-3.5 shrink-0" />
+              ) : name === 'subtasks' ? (
+                <ListChecks className="relative z-10 size-3.5 shrink-0" />
+              ) : (
+                <MessageSquare className="relative z-10 size-3.5 shrink-0" />
+              )}
+              <span className="relative z-10">{t.tabs[name]}</span>
             </button>
           ))}
         </div>
       </FrameHeader>
       <FramePanel className="min-h-0 flex-1 overflow-auto p-2.5 shadow-none">
-        {tab === 'details' ? (
-          <TaskDetails
-            task={task}
-            onUpdated={onTaskUpdated}
-            onRequestCompletion={onRequestCompletion}
-          />
-        ) : tab === 'calendar' ? (
-          <TaskHistoryCalendar history={history} />
-        ) : tab === 'activity' ? (
-          <TaskActivity history={history} />
-        ) : tab === 'team' ? (
-          <ActivityPanel entries={history} />
-        ) : tab === 'subtasks' ? (
-          <TaskSubtasks
-            task={task}
-            tasks={tasks}
-            onUpdateState={onUpdateState}
-            onAddSubtask={onAddSubtask}
-          />
-        ) : (
-          <TaskComments history={history} onAddComment={addComment} />
-        )}
+        <AnimatedTabPanel activeId={tab} className="min-h-full">
+          {tab === 'details' ? (
+            <TaskDetails
+              task={task}
+              onUpdated={onTaskUpdated}
+              onRequestCompletion={onRequestCompletion}
+            />
+          ) : tab === 'calendar' ? (
+            <TaskHistoryCalendar history={history} />
+          ) : tab === 'activity' ? (
+            <TaskActivity history={history} />
+          ) : tab === 'team' ? (
+            <ActivityPanel entries={history} />
+          ) : tab === 'subtasks' ? (
+            <TaskSubtasks
+              task={task}
+              tasks={tasks}
+              onUpdateState={onUpdateState}
+              onAddSubtask={onAddSubtask}
+            />
+          ) : (
+            <TaskComments history={history} onAddComment={addComment} />
+          )}
+        </AnimatedTabPanel>
       </FramePanel>
     </Frame>
   );

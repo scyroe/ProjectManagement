@@ -1,3 +1,4 @@
+import { m as motion } from 'motion/react';
 import {
   Frame,
   FrameDescription,
@@ -5,6 +6,7 @@ import {
   FramePanel,
   FrameTitle,
 } from '@/components/reui/frame';
+import { useAnimationsEnabled } from './animation-preferences';
 
 export function MetricCard({
   label,
@@ -14,36 +16,46 @@ export function MetricCard({
   loading = false,
   onClick,
 }) {
+  const animationsEnabled = useAnimationsEnabled();
+  const canAnimate = onClick && animationsEnabled;
+
   return (
-    <Frame
-      className={`min-h-20 ${onClick ? 'cursor-pointer transition-colors hover:border-primary/50 hover:bg-primary/5' : ''}`}
-      dense
-      onClick={onClick}
-      onKeyDown={
-        onClick
-          ? (event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                onClick();
-              }
-            }
-          : undefined
-      }
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
+    <motion.div
+      className="h-full"
+      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+      whileHover={canAnimate ? { y: -2 } : undefined}
+      whileTap={canAnimate ? { scale: 0.985 } : undefined}
     >
-      <FramePanel className="flex flex-1 items-start justify-between p-3 shadow-none">
-        <div>
-          <p className="text-[0.78125rem] font-medium uppercase tracking-wide text-muted-foreground">
-            {label}
-          </p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight">
-            {loading ? '-' : value}
-          </p>
-        </div>
-        <Icon className={`size-4 ${color}`} />
-      </FramePanel>
-    </Frame>
+      <Frame
+        className={`h-full min-h-20 ${onClick ? 'cursor-pointer transition-colors hover:border-primary/50 hover:bg-primary/5' : ''}`}
+        dense
+        onClick={onClick}
+        onKeyDown={
+          onClick
+            ? (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onClick();
+                }
+              }
+            : undefined
+        }
+        role={onClick ? 'button' : undefined}
+        tabIndex={onClick ? 0 : undefined}
+      >
+        <FramePanel className="flex flex-1 items-start justify-between p-3 shadow-none">
+          <div>
+            <p className="text-[0.78125rem] font-medium uppercase tracking-wide text-muted-foreground">
+              {label}
+            </p>
+            <p className="mt-1 text-2xl font-semibold tracking-tight">
+              {loading ? '-' : value}
+            </p>
+          </div>
+          <Icon className={`size-4 ${color}`} />
+        </FramePanel>
+      </Frame>
+    </motion.div>
   );
 }
 
@@ -91,7 +103,7 @@ export function ProgressRow({
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-muted">
         <div
-          className={`h-full rounded-full ${barClassName}`}
+          className={`h-full rounded-full ${barClassName} transition-[width] duration-500 ease-out`}
           style={{ width: `${progress}%` }}
         />
       </div>

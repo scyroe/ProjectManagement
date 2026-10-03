@@ -407,7 +407,7 @@ const Dashboard = ({ workspace, navigate }) => {
                         </div>
                         <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
                           <div
-                            className="h-full rounded-full bg-primary"
+                            className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>

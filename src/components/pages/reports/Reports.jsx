@@ -13,6 +13,10 @@ import {
   ProgressRow,
 } from '@/components/Common/analytics-ui';
 import {
+  AnimatedTabIndicator,
+  AnimatedTabPanel,
+} from '@/components/Common/animated-tabs';
+import {
   Frame,
   FrameDescription,
   FrameHeader,
@@ -385,7 +389,7 @@ const Reports = ({ workspace, navigate }) => {
               </div>
               <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-background">
                 <div
-                  className="h-full rounded-full bg-primary"
+                  className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
@@ -427,7 +431,7 @@ const Reports = ({ workspace, navigate }) => {
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className="h-full rounded-full bg-primary"
+                    className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
                     style={{ width: `${(count / maxStatusCount) * 100}%` }}
                   />
                 </div>
@@ -567,7 +571,7 @@ const Reports = ({ workspace, navigate }) => {
               </div>
               <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-background">
                 <div
-                  className="h-full rounded-full bg-primary"
+                  className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
@@ -604,7 +608,7 @@ const Reports = ({ workspace, navigate }) => {
                       </div>
                       <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
                         <div
-                          className="h-full rounded-full bg-success"
+                          className="h-full rounded-full bg-success transition-[width] duration-500 ease-out"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -641,7 +645,7 @@ const Reports = ({ workspace, navigate }) => {
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className="h-full rounded-full bg-primary"
+                    className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
                     style={{ width: `${(count / maxStatusCount) * 100}%` }}
                   />
                 </div>
@@ -919,13 +923,18 @@ const Reports = ({ workspace, navigate }) => {
               type="button"
               aria-pressed={preset === value}
               onClick={() => setPreset(value)}
-              className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
+              className={`relative rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 preset === value
-                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  ? 'text-primary-foreground'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
-              {strings.activity.presets[value]}
+              {preset === value && (
+                <AnimatedTabIndicator layoutId="reports-range-tabs" />
+              )}
+              <span className="relative z-10">
+                {strings.activity.presets[value]}
+              </span>
             </button>
           ))}
         </fieldset>
@@ -1041,24 +1050,35 @@ const Reports = ({ workspace, navigate }) => {
           )}
         </div>
       )}
-      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border bg-muted/30 p-1.5">
+      <div
+        className="flex flex-wrap items-center gap-1.5 rounded-lg border bg-muted/30 p-1.5"
+        role="tablist"
+        aria-label={t.tabListLabel}
+      >
         {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
+            role="tab"
+            aria-selected={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
+            className={`relative rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
               activeTab === tab.id
-                ? 'bg-primary text-primary-foreground shadow-sm'
+                ? 'text-primary-foreground'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
-            {tab.label}
+            {activeTab === tab.id && (
+              <AnimatedTabIndicator layoutId="reports-content-tabs" />
+            )}
+            <span className="relative z-10">{tab.label}</span>
           </button>
         ))}
       </div>
 
-      {renderCurrentView()}
+      <AnimatedTabPanel activeId={activeTab} className="min-h-0 flex-1">
+        {renderCurrentView()}
+      </AnimatedTabPanel>
     </div>
   );
 };

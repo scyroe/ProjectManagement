@@ -3,7 +3,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -42,6 +42,12 @@ export function useTaskWorkspace({
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState(defaultTaskFilter);
   const [historyVersion, setHistoryVersion] = useState(0);
+  const [recentlyCreatedTaskId, setRecentlyCreatedTaskId] = useState(null);
+  const clearRecentlyCreatedTask = useCallback((taskId) => {
+    setRecentlyCreatedTaskId((currentTaskId) =>
+      currentTaskId === taskId ? null : currentTaskId,
+    );
+  }, []);
 
   const {
     data: tasks = [],
@@ -222,6 +228,7 @@ export function useTaskWorkspace({
   };
 
   const handleTaskCreated = (createdTask) => {
+    setRecentlyCreatedTaskId(createdTask.id);
     queryClient.setQueryData(tasksQueryKey, (current = []) => [
       ...current,
       createdTask,
@@ -347,12 +354,14 @@ export function useTaskWorkspace({
     error,
     filter,
     handleTaskCreated,
+    clearRecentlyCreatedTask,
     handleProjectUpdated,
     handleTaskUpdated,
     historyVersion,
     loadMoreWorkspaceActivity: fetchNextWorkspaceActivityPage,
     loading,
     query,
+    recentlyCreatedTaskId,
     runningTaskId,
     searchResults,
     selected,

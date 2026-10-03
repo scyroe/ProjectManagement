@@ -286,6 +286,7 @@
       "operational": "Operațional",
       "productivity": "Productivitate"
     },
+    "tabListLabel": "Vizualizări raport",
     "metrics": {
       "totalTasks": "Total sarcini",
       "completed": "Finalizate",
@@ -396,8 +397,14 @@
     ],
     "colorModeTitle": "Mod de culoare",
     "colorModeDescription": "Alege cum ar trebui să arate workspace-ul.",
+    "auto": "Automat",
     "light": "Luminos",
     "dark": "Întunecat",
+    "animationsTitle": "Animații",
+    "animationsDescription": "Urmează preferința sistemului pentru mișcare redusă sau activează ori dezactivează permanent animațiile.",
+    "animationsAuto": "Automat",
+    "animationsOn": "Pornite",
+    "animationsOff": "Oprite",
     "languageTitle": "Limbă",
     "languageDescription": "Alege limba de afișare a workspace-ului.",
     "english": "Engleză",

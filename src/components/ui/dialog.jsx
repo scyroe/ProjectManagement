@@ -12,7 +12,7 @@ const DialogClose = DialogPrimitive.Close;
 const DialogBackdrop = ({ className, ...props }) => (
   <DialogPrimitive.Backdrop
     className={cn(
-      'fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity data-closed:opacity-0',
+      'fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ease-out data-[starting-style]:opacity-0 data-closed:opacity-0',
       className,
     )}
     {...props}
@@ -24,7 +24,7 @@ const DialogContent = ({ className, children, ...props }) => (
     <DialogBackdrop />
     <DialogPrimitive.Popup
       className={cn(
-        'fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-card p-6 text-card-foreground shadow-xl outline-none transition-all data-closed:scale-95 data-closed:opacity-0',
+        'fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-card p-6 text-card-foreground shadow-xl outline-none transition-all duration-300 ease-out data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-closed:scale-95 data-closed:opacity-0',
         className,
       )}
       {...props}

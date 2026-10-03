@@ -19,6 +19,10 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  AnimatedTabIndicator,
+  AnimatedTabPanel,
+} from '@/components/Common/animated-tabs';
+import {
   Frame,
   FrameHeader,
   FramePanel,
@@ -470,9 +474,12 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
               type="button"
               aria-pressed={view === name}
               onClick={() => setView(name)}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${view === name ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
+              className={`relative rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${view === name ? 'text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
             >
-              {t.views[name]}
+              {view === name && (
+                <AnimatedTabIndicator layoutId="calendar-view-tabs" />
+              )}
+              <span className="relative z-10">{t.views[name]}</span>
             </button>
           ))}
         </fieldset>
@@ -664,80 +671,82 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
             </div>
           </FrameHeader>
           <FramePanel className="min-w-0 max-h-[72vh] overflow-auto p-0 shadow-none">
-            {loading ? (
-              <p className="p-6 text-sm text-muted-foreground">{t.loading}</p>
-            ) : (
-              <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-                {view === 'agenda' ? (
-                  <AgendaView
-                    days={range.days}
-                    eventsByDate={eventsByDate}
-                    formatDate={(date, options) =>
-                      formatDate(date, locale, options)
-                    }
-                    renderEvent={renderEvent}
-                  />
-                ) : (
-                  <div className="min-w-155">
-                    <div className="sticky top-0 z-10 grid grid-cols-7 border-b bg-muted/90 backdrop-blur">
-                      {weekdayLabels.map(({ key, label }) => (
-                        <div
-                          key={key}
-                          className="px-2 py-2 text-center text-xs font-medium text-muted-foreground"
-                        >
-                          {label}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-7">
-                      {range.days.map((day) => {
-                        const key = dateKey(day);
-                        const dayEvents = eventsByDate.get(key) ?? [];
-                        const isOutsideMonth =
-                          view === 'month' &&
-                          day.getMonth() !== focusDate.getMonth();
-                        const visibleCount = view === 'week' ? 5 : 3;
-                        return (
-                          <CalendarDateDropZone
+            <AnimatedTabPanel activeId={view} className="min-w-0">
+              {loading ? (
+                <p className="p-6 text-sm text-muted-foreground">{t.loading}</p>
+              ) : (
+                <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                  {view === 'agenda' ? (
+                    <AgendaView
+                      days={range.days}
+                      eventsByDate={eventsByDate}
+                      formatDate={(date, options) =>
+                        formatDate(date, locale, options)
+                      }
+                      renderEvent={renderEvent}
+                    />
+                  ) : (
+                    <div className="min-w-155">
+                      <div className="sticky top-0 z-10 grid grid-cols-7 border-b bg-muted/90 backdrop-blur">
+                        {weekdayLabels.map(({ key, label }) => (
+                          <div
                             key={key}
-                            date={day}
-                            className={`min-h-28 border-b border-r p-1.5 ${isOutsideMonth ? 'bg-muted/20' : ''}`}
+                            className="px-2 py-2 text-center text-xs font-medium text-muted-foreground"
                           >
-                            <div className="mb-1 flex items-center justify-between">
-                              <span
-                                className={`flex size-7 items-center justify-center rounded-full text-xs ${key === todayKey ? 'bg-primary font-semibold text-primary-foreground' : isOutsideMonth ? 'text-muted-foreground/60' : 'text-foreground'}`}
-                              >
-                                {day.getDate()}
-                              </span>
-                              {dayEvents.length > 0 && (
-                                <span className="pr-1 text-[0.6875rem] tabular-nums text-muted-foreground">
-                                  {dayEvents.length}
-                                </span>
-                              )}
-                            </div>
-                            <div className="space-y-1">
-                              {dayEvents
-                                .slice(0, visibleCount)
-                                .map((event) => renderEvent(event, true))}
-                              {dayEvents.length > visibleCount && (
-                                <button
-                                  type="button"
-                                  className="px-1.5 text-[0.6875rem] text-primary hover:underline"
-                                  aria-label={`${t.showEventsFor} ${formatDate(day, locale, { month: 'short', day: 'numeric' })}`}
-                                  onClick={() => handleShowDayEvents(day)}
+                            {label}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-7">
+                        {range.days.map((day) => {
+                          const key = dateKey(day);
+                          const dayEvents = eventsByDate.get(key) ?? [];
+                          const isOutsideMonth =
+                            view === 'month' &&
+                            day.getMonth() !== focusDate.getMonth();
+                          const visibleCount = view === 'week' ? 5 : 3;
+                          return (
+                            <CalendarDateDropZone
+                              key={key}
+                              date={day}
+                              className={`min-h-28 border-b border-r p-1.5 ${isOutsideMonth ? 'bg-muted/20' : ''}`}
+                            >
+                              <div className="mb-1 flex items-center justify-between">
+                                <span
+                                  className={`flex size-7 items-center justify-center rounded-full text-xs ${key === todayKey ? 'bg-primary font-semibold text-primary-foreground' : isOutsideMonth ? 'text-muted-foreground/60' : 'text-foreground'}`}
                                 >
-                                  +{dayEvents.length - visibleCount} {t.more}
-                                </button>
-                              )}
-                            </div>
-                          </CalendarDateDropZone>
-                        );
-                      })}
+                                  {day.getDate()}
+                                </span>
+                                {dayEvents.length > 0 && (
+                                  <span className="pr-1 text-[0.6875rem] tabular-nums text-muted-foreground">
+                                    {dayEvents.length}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="space-y-1">
+                                {dayEvents
+                                  .slice(0, visibleCount)
+                                  .map((event) => renderEvent(event, true))}
+                                {dayEvents.length > visibleCount && (
+                                  <button
+                                    type="button"
+                                    className="px-1.5 text-[0.6875rem] text-primary hover:underline"
+                                    aria-label={`${t.showEventsFor} ${formatDate(day, locale, { month: 'short', day: 'numeric' })}`}
+                                    onClick={() => handleShowDayEvents(day)}
+                                  >
+                                    +{dayEvents.length - visibleCount} {t.more}
+                                  </button>
+                                )}
+                              </div>
+                            </CalendarDateDropZone>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </DndContext>
-            )}
+                  )}
+                </DndContext>
+              )}
+            </AnimatedTabPanel>
           </FramePanel>
         </Frame>
 

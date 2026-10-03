@@ -244,7 +244,7 @@ const ProjectOverview = ({ onEditProject, projects = [], tasks }) => {
                     </div>
                     <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full rounded-full bg-primary"
+                        className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
                         style={{ width: `${progress}%` }}
                       />
                     </div>

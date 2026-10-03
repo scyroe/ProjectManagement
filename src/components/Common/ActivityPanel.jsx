@@ -5,6 +5,7 @@ import {
   groupEntriesByUser,
 } from '@/lib/activity';
 import ActivityRangeFilter from './ActivityRangeFilter';
+import { AnimatedTabPanel } from './animated-tabs';
 import ContributorSummary from './ContributorSummary';
 
 const ActivityPanel = ({ entries, showTask = false }) => {
@@ -24,7 +25,9 @@ const ActivityPanel = ({ entries, showTask = false }) => {
         custom={custom}
         onCustomChange={setCustom}
       />
-      <ContributorSummary groups={groups} showTask={showTask} />
+      <AnimatedTabPanel activeId={preset} className="min-h-0">
+        <ContributorSummary groups={groups} showTask={showTask} />
+      </AnimatedTabPanel>
     </div>
   );
 };

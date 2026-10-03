@@ -286,6 +286,7 @@
       "operational": "Operational",
       "productivity": "Productivity"
     },
+    "tabListLabel": "Report views",
     "metrics": {
       "totalTasks": "Total tasks",
       "completed": "Completed",
@@ -384,8 +385,14 @@
     ],
     "colorModeTitle": "Color mode",
     "colorModeDescription": "Choose how the workspace should appear.",
+    "auto": "Auto",
     "light": "Light",
     "dark": "Dark",
+    "animationsTitle": "Animations",
+    "animationsDescription": "Follow your system reduced-motion preference, or always turn animations on or off.",
+    "animationsAuto": "Auto",
+    "animationsOn": "On",
+    "animationsOff": "Off",
     "languageTitle": "Language",
     "languageDescription": "Choose the display language for the workspace.",
     "english": "English",

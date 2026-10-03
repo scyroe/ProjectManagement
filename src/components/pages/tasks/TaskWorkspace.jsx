@@ -9,11 +9,13 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
   const {
     error,
     filter,
+    clearRecentlyCreatedTask,
     handleTaskUpdated,
     historyVersion,
     loading,
     query,
     runningTaskId,
+    recentlyCreatedTaskId,
     selected,
     setFilter,
     setQuery,
@@ -55,6 +57,8 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
               runningTaskId={runningTaskId}
               onToggleTimer={handleTimerToggle}
               onNewTask={onNewTask}
+              recentlyCreatedTaskId={recentlyCreatedTaskId}
+              onTaskAnimationComplete={clearRecentlyCreatedTask}
             />
           }
           second={
