@@ -1,6 +1,7 @@
-import { Search } from 'lucide-react';
+import { Building2, Search } from 'lucide-react';
 import ClientProgressCard from '@/components/Common/ClientProgressCard';
 import { Frame, FrameHeader, FramePanel } from '@/components/reui/frame';
+import { Button } from '@/components/ui/button';
 import {
   InputGroup,
   InputGroupAddon,
@@ -15,6 +16,7 @@ const Clients = ({
   error,
   loading,
   onEditClient,
+  onNewClient,
   query,
   setQuery,
 }) => {
@@ -56,9 +58,23 @@ const Clients = ({
               )}
             />
           )}
-          {!loading && !error && !clients.length && (
+          {!loading && !error && !clients.length && !query.trim() && (
+            <div className="grid justify-items-center gap-2 px-4 py-10 text-center">
+              <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+                <Building2 aria-hidden="true" />
+              </span>
+              <p className="text-sm font-semibold">{t.empty}</p>
+              <p className="max-w-sm text-sm text-muted-foreground">
+                {t.emptyDescription}
+              </p>
+              <Button type="button" className="mt-2" onClick={onNewClient}>
+                {t.createFirstClient}
+              </Button>
+            </div>
+          )}
+          {!loading && !error && !clients.length && query.trim() && (
             <p className="p-6 text-center text-sm text-muted-foreground">
-              {t.empty}
+              {t.noMatchingClients}
             </p>
           )}
         </FramePanel>

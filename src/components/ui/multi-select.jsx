@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { Badge } from '@/components/reui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { getFieldIcon } from '@/components/ui/field-icon';
 import {
   Popover,
   PopoverContent,
@@ -20,6 +21,7 @@ const MultiSelect = ({
   required = false,
   values,
 }) => {
+  const Icon = getFieldIcon({ id });
   const selectedOptions = useMemo(
     () => options.filter((option) => values.includes(option.value)),
     [options, values],
@@ -43,8 +45,11 @@ const MultiSelect = ({
             variant="outline"
             aria-required={required || undefined}
             disabled={disabled}
-            className="h-auto min-h-9 w-full justify-between font-normal"
+            className="group/multi-select h-auto min-h-9 w-full justify-between font-normal"
           >
+            <span className="-ml-2.5 flex w-9 shrink-0 items-center justify-center self-stretch rounded-l-lg border-r bg-muted/70 text-muted-foreground group-focus-visible/multi-select:border-ring">
+              <Icon aria-hidden="true" className="size-4" />
+            </span>
             <span className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
               {selectedOptions.length ? (
                 selectedOptions.map((option) => (
@@ -56,7 +61,9 @@ const MultiSelect = ({
                 <span className="text-muted-foreground">{placeholder}</span>
               )}
             </span>
-            <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+            <span className="-mr-2.5 flex w-8 shrink-0 items-center justify-center self-stretch rounded-r-lg border-l bg-muted/70 text-muted-foreground group-focus-visible/multi-select:border-ring">
+              <ChevronsUpDown className="size-4" aria-hidden="true" />
+            </span>
           </Button>
         }
       />

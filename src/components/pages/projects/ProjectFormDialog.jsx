@@ -24,10 +24,17 @@ import { useStrings } from '@/lib/i18n';
 
 const statuses = ['planning', 'active', 'paused', 'completed', 'archived'];
 
-const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
+const ProjectFormDialog = ({
+  onCreateTask,
+  onOpenChange,
+  onSaved,
+  open,
+  project,
+}) => {
   const t = useStrings().projectForm;
   const { clients, form, handleSubmit, loadingOptions, saving, updateField } =
     useProjectForm({
+      onCreateTask,
       onSaved: (savedProject) => {
         onSaved(savedProject);
         onOpenChange(false);
@@ -133,64 +140,73 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
               rows={3}
             />
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-2">
-              <FieldLabel htmlFor="new-project-status">
-                {t.statusLabel}
-              </FieldLabel>
-              <Select
-                value={form.status}
-                onValueChange={(value) => updateField('status', value)}
-              >
-                <SelectTrigger id="new-project-status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {statuses.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <details className="rounded-lg border p-3">
+            <summary className="cursor-pointer text-sm font-medium">
+              {t.moreOptions}
+            </summary>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <FieldLabel htmlFor="new-project-status">
+                  {t.statusLabel}
+                </FieldLabel>
+                <Select
+                  value={form.status}
+                  onValueChange={(value) => updateField('status', value)}
+                >
+                  <SelectTrigger id="new-project-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <FieldLabel htmlFor="new-project-budget">
+                  {t.budgetLabel}
+                </FieldLabel>
+                <Input
+                  id="new-project-budget"
+                  type="number"
+                  min="0"
+                  value={form.budget}
+                  onChange={(event) =>
+                    updateField('budget', event.target.value)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <FieldLabel htmlFor="new-project-start-date">
+                  {t.startDateLabel}
+                </FieldLabel>
+                <Input
+                  id="new-project-start-date"
+                  type="date"
+                  value={form.startDate}
+                  onChange={(event) =>
+                    updateField('startDate', event.target.value)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <FieldLabel htmlFor="new-project-due-date">
+                  {t.dueDateLabel}
+                </FieldLabel>
+                <Input
+                  id="new-project-due-date"
+                  type="date"
+                  value={form.dueDate}
+                  onChange={(event) =>
+                    updateField('dueDate', event.target.value)
+                  }
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <FieldLabel htmlFor="new-project-budget">
-                {t.budgetLabel}
-              </FieldLabel>
-              <Input
-                id="new-project-budget"
-                type="number"
-                min="0"
-                value={form.budget}
-                onChange={(event) => updateField('budget', event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <FieldLabel htmlFor="new-project-start-date">
-                {t.startDateLabel}
-              </FieldLabel>
-              <Input
-                id="new-project-start-date"
-                type="date"
-                value={form.startDate}
-                onChange={(event) =>
-                  updateField('startDate', event.target.value)
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <FieldLabel htmlFor="new-project-due-date">
-                {t.dueDateLabel}
-              </FieldLabel>
-              <Input
-                id="new-project-due-date"
-                type="date"
-                value={form.dueDate}
-                onChange={(event) => updateField('dueDate', event.target.value)}
-              />
-            </div>
-          </div>
+          </details>
           <div className="flex justify-end gap-2 border-t pt-4">
             <Button
               type="button"

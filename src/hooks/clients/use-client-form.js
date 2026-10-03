@@ -13,7 +13,7 @@ const emptyForm = () => ({
   notes: '',
 });
 
-export function useClientForm({ client, onSaved, open }) {
+export function useClientForm({ client, onCreateProject, onSaved, open }) {
   const t = useStrings().toasts.clientForm;
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
@@ -67,7 +67,16 @@ export function useClientForm({ client, onSaved, open }) {
       });
     } else {
       onSaved(data);
-      toast.success(client ? t.clientUpdated : t.clientCreated);
+      if (!client && onCreateProject) {
+        toast.success(t.clientCreated, {
+          action: {
+            label: t.createProjectNext,
+            onClick: onCreateProject,
+          },
+        });
+      } else {
+        toast.success(client ? t.clientUpdated : t.clientCreated);
+      }
     }
     setSaving(false);
   };

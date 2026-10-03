@@ -1,5 +1,6 @@
 import { ListPlus, Save } from 'lucide-react';
 import { useMemo } from 'react';
+import { profileLabel } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,8 +25,16 @@ import { useStrings } from '@/lib/i18n';
 
 const priorities = ['low', 'medium', 'high', 'urgent'];
 
-const TaskFormDialog = ({ onCreated, onOpenChange, open, parentTask }) => {
-  const t = useStrings().taskForm;
+const TaskFormDialog = ({
+  initialProjectId,
+  onCreated,
+  onOpenChange,
+  onStartTask,
+  open,
+  parentTask,
+}) => {
+  const strings = useStrings();
+  const t = strings.taskForm;
   const {
     applyTemplate,
     form,
@@ -41,6 +50,8 @@ const TaskFormDialog = ({ onCreated, onOpenChange, open, parentTask }) => {
     templates,
     updateField,
   } = useTaskForm({
+    initialProjectId,
+    onStartTask,
     onCreated: (task) => {
       onCreated(task);
       onOpenChange(false);
@@ -56,6 +67,15 @@ const TaskFormDialog = ({ onCreated, onOpenChange, open, parentTask }) => {
       })),
     [projects],
   );
+  const assigneeLabel =
+    form.assignedTo === 'me'
+      ? t.assignToMe
+      : form.assignedTo === 'unassigned'
+        ? t.unassigned
+        : profileLabel(
+            profiles.find((profile) => profile.id === form.assignedTo),
+            strings.teamWorkload.unknownMember,
+          );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -198,14 +218,17 @@ const TaskFormDialog = ({ onCreated, onOpenChange, open, parentTask }) => {
                 onValueChange={(value) => updateField('assignedTo', value)}
               >
                 <SelectTrigger id="new-task-assignee" className="w-full">
-                  <SelectValue />
+                  <SelectValue>{assigneeLabel}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="me">{t.assignToMe}</SelectItem>
                   <SelectItem value="unassigned">{t.unassigned}</SelectItem>
                   {profiles.map((profile) => (
                     <SelectItem key={profile.id} value={profile.id}>
-                      {profile.display_name} (@{profile.username})
+                      {profileLabel(
+                        profile,
+                        strings.teamWorkload.unknownMember,
+                      )}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -227,87 +250,96 @@ const TaskFormDialog = ({ onCreated, onOpenChange, open, parentTask }) => {
                 required={form.repeatUnit !== 'none'}
               />
             </div>
-            <div className="space-y-2">
-              <FieldLabel htmlFor="new-task-estimate">
-                {t.estimateLabel}
-              </FieldLabel>
-              <Input
-                id="new-task-estimate"
-                type="number"
-                min="1"
-                value={form.estimateMinutes}
-                onChange={(event) =>
-                  updateField('estimateMinutes', event.target.value)
-                }
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-2">
-              <FieldLabel htmlFor="new-task-repeat">{t.repeatLabel}</FieldLabel>
-              <Select
-                value={form.repeatUnit}
-                onValueChange={(value) => updateField('repeatUnit', value)}
-              >
-                <SelectTrigger id="new-task-repeat" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">{t.repeatNever}</SelectItem>
-                  <SelectItem value="day">{t.repeatDay}</SelectItem>
-                  <SelectItem value="week">{t.repeatWeek}</SelectItem>
-                  <SelectItem value="month">{t.repeatMonth}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {form.repeatUnit !== 'none' && (
-              <>
-                <div className="space-y-2">
-                  <FieldLabel
-                    htmlFor="new-task-repeat-interval"
-                    isRequired
-                    isComplete={
-                      Number.isInteger(Number(form.repeatInterval)) &&
-                      Number(form.repeatInterval) > 0
-                    }
-                  >
-                    {t.repeatEvery}
-                  </FieldLabel>
-                  <Input
-                    id="new-task-repeat-interval"
-                    type="number"
-                    min="1"
-                    value={form.repeatInterval}
-                    onChange={(event) =>
-                      updateField('repeatInterval', event.target.value)
-                    }
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <FieldLabel htmlFor="new-task-repeat-until">
-                    {t.repeatUntil}
-                  </FieldLabel>
-                  <Input
-                    id="new-task-repeat-until"
-                    type="date"
-                    min={form.dueDate || undefined}
-                    value={form.repeatUntil}
-                    onChange={(event) =>
-                      updateField('repeatUntil', event.target.value)
-                    }
-                  />
-                </div>
-              </>
-            )}
-            <div className="space-y-2">
-              <FieldLabel htmlFor="new-task-tags">{t.tagsLabel}</FieldLabel>
-              <Input
-                id="new-task-tags"
-                value={form.tags}
-                placeholder={t.tagsPlaceholder}
-                onChange={(event) => updateField('tags', event.target.value)}
-              />
-            </div>
           </div>
+          <details className="rounded-lg border p-3">
+            <summary className="cursor-pointer text-sm font-medium">
+              {t.moreOptions}
+            </summary>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 sm:items-end">
+              <div className="space-y-2">
+                <FieldLabel htmlFor="new-task-estimate">
+                  {t.estimateLabel}
+                </FieldLabel>
+                <Input
+                  id="new-task-estimate"
+                  type="number"
+                  min="1"
+                  value={form.estimateMinutes}
+                  onChange={(event) =>
+                    updateField('estimateMinutes', event.target.value)
+                  }
+                />
+              </div>
+              <div className="flex min-w-0 flex-col gap-2">
+                <FieldLabel htmlFor="new-task-repeat">
+                  {t.repeatLabel}
+                </FieldLabel>
+                <Select
+                  value={form.repeatUnit}
+                  onValueChange={(value) => updateField('repeatUnit', value)}
+                >
+                  <SelectTrigger id="new-task-repeat" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t.repeatNever}</SelectItem>
+                    <SelectItem value="day">{t.repeatDay}</SelectItem>
+                    <SelectItem value="week">{t.repeatWeek}</SelectItem>
+                    <SelectItem value="month">{t.repeatMonth}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {form.repeatUnit !== 'none' && (
+                <>
+                  <div className="space-y-2">
+                    <FieldLabel
+                      htmlFor="new-task-repeat-interval"
+                      isRequired
+                      isComplete={
+                        Number.isInteger(Number(form.repeatInterval)) &&
+                        Number(form.repeatInterval) > 0
+                      }
+                    >
+                      {t.repeatEvery}
+                    </FieldLabel>
+                    <Input
+                      id="new-task-repeat-interval"
+                      type="number"
+                      min="1"
+                      value={form.repeatInterval}
+                      onChange={(event) =>
+                        updateField('repeatInterval', event.target.value)
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FieldLabel htmlFor="new-task-repeat-until">
+                      {t.repeatUntil}
+                    </FieldLabel>
+                    <Input
+                      id="new-task-repeat-until"
+                      type="date"
+                      min={form.dueDate || undefined}
+                      value={form.repeatUntil}
+                      onChange={(event) =>
+                        updateField('repeatUntil', event.target.value)
+                      }
+                    />
+                  </div>
+                </>
+              )}
+              <div className="space-y-2">
+                <FieldLabel htmlFor="new-task-tags">{t.tagsLabel}</FieldLabel>
+                <Input
+                  id="new-task-tags"
+                  value={form.tags}
+                  placeholder={t.tagsPlaceholder}
+                  onChange={(event) => updateField('tags', event.target.value)}
+                />
+              </div>
+            </div>
+          </details>
           <div className="flex justify-end gap-2 border-t pt-4">
             <Button
               type="button"

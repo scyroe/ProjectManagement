@@ -15,6 +15,7 @@ import ProjectOverview from './ProjectOverview';
 const Projects = ({
   clientProgress = [],
   onEditProject,
+  onNewProject,
   searchQuery = '',
   workspace,
   userId,
@@ -49,6 +50,7 @@ const Projects = ({
     <div className="min-h-0 flex-1 space-y-4 overflow-auto pb-2">
       <ProjectOverview
         onEditProject={onEditProject}
+        onNewProject={onNewProject}
         projects={visibleProjects}
         tasks={workspace.tasks}
         userId={userId}

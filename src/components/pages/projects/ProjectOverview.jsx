@@ -4,6 +4,7 @@ import {
   CalendarDays,
   CheckCircle2,
   Clock3,
+  FolderKanban,
   Pencil,
   Users,
 } from 'lucide-react';
@@ -28,7 +29,13 @@ const dayInMs = 24 * 60 * 60 * 1000;
 
 const toDate = (value) => (value ? new Date(`${value}T00:00:00`) : null);
 
-const ProjectOverview = ({ onEditProject, projects = [], tasks, userId }) => {
+const ProjectOverview = ({
+  onEditProject,
+  onNewProject,
+  projects = [],
+  tasks,
+  userId,
+}) => {
   const strings = useStrings();
   const t = strings.projectOverview;
   const queryClient = useQueryClient();
@@ -288,13 +295,18 @@ const ProjectOverview = ({ onEditProject, projects = [], tasks, userId }) => {
                 return (
                   <div className="rounded-lg border p-3">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">
-                          {project.name}
-                        </p>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          {project.code}
-                        </p>
+                      <div className="flex min-w-0 items-start gap-2">
+                        <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                          <FolderKanban className="size-4" aria-hidden="true" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold">
+                            {project.name}
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {project.code}
+                          </p>
+                        </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-2">
@@ -499,9 +511,20 @@ const ProjectOverview = ({ onEditProject, projects = [], tasks, userId }) => {
               }}
             />
           ) : (
-            <p className="p-5 text-center text-sm text-muted-foreground">
-              {t.empty}
-            </p>
+            <div className="grid justify-items-center gap-2 px-4 py-10 text-center">
+              <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+                <FolderKanban aria-hidden="true" />
+              </span>
+              <p className="text-sm font-semibold">{t.empty}</p>
+              <p className="max-w-sm text-sm text-muted-foreground">
+                {t.emptyDescription}
+              </p>
+              {onNewProject && (
+                <Button type="button" className="mt-2" onClick={onNewProject}>
+                  {t.createProject}
+                </Button>
+              )}
+            </div>
           )}
         </FramePanel>
       </Frame>

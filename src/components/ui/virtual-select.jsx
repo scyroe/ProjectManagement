@@ -1,6 +1,7 @@
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { getFieldIcon } from '@/components/ui/field-icon';
 import { Input } from '@/components/ui/input';
 import {
   Popover,
@@ -20,6 +21,7 @@ const VirtualSelect = ({
   triggerClassName = 'w-full',
   value,
 }) => {
+  const Icon = getFieldIcon({ id });
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const strings = useStrings();
@@ -58,12 +60,17 @@ const VirtualSelect = ({
             variant="outline"
             aria-label={ariaLabel}
             aria-expanded={open}
-            className={`w-full justify-between font-normal ${triggerClassName}`}
+            className={`group/virtual-select w-full justify-between font-normal ${triggerClassName}`}
           >
+            <span className="-my-2 -ml-2.5 flex w-9 shrink-0 items-center justify-center self-stretch rounded-l-lg border-r bg-muted/70 text-muted-foreground group-focus-visible/virtual-select:border-ring">
+              <Icon aria-hidden="true" className="size-4" />
+            </span>
             <span className="truncate">
               {selectedOption?.label ?? placeholder}
             </span>
-            <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+            <span className="-my-2 -mr-2.5 flex w-8 shrink-0 items-center justify-center self-stretch rounded-r-lg border-l bg-muted/70 text-muted-foreground group-focus-visible/virtual-select:border-ring">
+              <ChevronsUpDown className="size-4" aria-hidden="true" />
+            </span>
           </Button>
         }
       />

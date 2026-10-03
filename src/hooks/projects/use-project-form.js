@@ -17,7 +17,7 @@ const emptyForm = () => ({
   budget: '',
 });
 
-export function useProjectForm({ onSaved, open, project }) {
+export function useProjectForm({ onCreateTask, onSaved, open, project }) {
   const t = useStrings().toasts.projectForm;
   const [form, setForm] = useState(emptyForm);
   const [clients, setClients] = useState([]);
@@ -135,13 +135,23 @@ export function useProjectForm({ onSaved, open, project }) {
       toast.error(t.linkClientsError, { description: linkError.message });
     }
 
-    onSaved({
+    const savedProject = {
       ...data,
       linked_clients: clients.filter((client) =>
         form.clientIds.includes(client.id),
       ),
-    });
-    toast.success(project ? t.projectUpdated : t.projectCreated);
+    };
+    onSaved(savedProject);
+    if (!project && onCreateTask) {
+      toast.success(t.projectCreated, {
+        action: {
+          label: t.addFirstTaskNext,
+          onClick: () => onCreateTask(savedProject),
+        },
+      });
+    } else {
+      toast.success(project ? t.projectUpdated : t.projectCreated);
+    }
     setSaving(false);
   };
 

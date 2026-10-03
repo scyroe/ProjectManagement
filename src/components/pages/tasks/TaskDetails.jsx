@@ -1,5 +1,6 @@
 import { CheckCircle2, Circle, Save } from 'lucide-react';
 import { useMemo } from 'react';
+import { profileLabel } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +20,8 @@ import { useStrings } from '@/lib/i18n';
 const priorities = ['low', 'medium', 'high', 'urgent'];
 
 const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
-  const t = useStrings().taskDetails;
+  const strings = useStrings();
+  const t = strings.taskDetails;
   const {
     form,
     handleCompletionToggle,
@@ -41,6 +43,13 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
       })),
     [projects],
   );
+  const assigneeLabel =
+    form.assignedTo === 'unassigned'
+      ? t.unassigned
+      : profileLabel(
+          profiles.find((profile) => profile.id === form.assignedTo),
+          strings.teamWorkload.unknownMember,
+        );
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
@@ -101,13 +110,13 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
             onValueChange={(value) => updateField('assignedTo', value)}
           >
             <SelectTrigger id="task-assignee" className="w-full">
-              <SelectValue />
+              <SelectValue>{assigneeLabel}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="unassigned">{t.unassigned}</SelectItem>
               {profiles.map((profile) => (
                 <SelectItem key={profile.id} value={profile.id}>
-                  {profile.display_name} (@{profile.username})
+                  {profileLabel(profile, strings.teamWorkload.unknownMember)}
                 </SelectItem>
               ))}
             </SelectContent>

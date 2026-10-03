@@ -13,6 +13,11 @@ export const dateLabel = (value) => {
     : 'No due date';
 };
 
+export const profileLabel = (profile, fallback) => {
+  const displayName = profile?.display_name?.trim();
+  return displayName || fallback;
+};
+
 export const durationLabel = (minutes) => {
   return minutes
     ? `${Math.floor(minutes / 60) ? `${Math.floor(minutes / 60)}h ` : ''}${minutes % 60 || ''}${minutes % 60 ? 'm' : ''}`.trim()

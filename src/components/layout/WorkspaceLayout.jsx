@@ -71,6 +71,7 @@ const WorkspaceLayout = ({
   const [taskFormDialog, setTaskFormDialog] = useState({
     open: false,
     parentTask: null,
+    initialProjectId: null,
   });
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [clientForm, setClientForm] = useState({ open: false, client: null });
@@ -95,7 +96,10 @@ const WorkspaceLayout = ({
   });
   const clientsState = useClients({
     enabled:
-      activeRoute === 'clients' || activeRoute === 'projects' || searchOpen,
+      activeRoute === 'clients' ||
+      activeRoute === 'projects' ||
+      activeRoute === 'dashboard' ||
+      searchOpen,
   });
   const calendarState = useCalendar({
     enabled: activeRoute === 'calendar' || searchOpen,
@@ -133,8 +137,8 @@ const WorkspaceLayout = ({
   const openProjectForm = (project = null) =>
     setProjectForm({ open: true, project });
 
-  const openTaskForm = (parentTask = null) =>
-    setTaskFormDialog({ open: true, parentTask });
+  const openTaskForm = (parentTask = null, initialProjectId = null) =>
+    setTaskFormDialog({ open: true, parentTask, initialProjectId });
 
   useEffect(() => {
     const dialogOpen =
@@ -290,6 +294,10 @@ const WorkspaceLayout = ({
                     <Dashboard
                       workspace={workspace}
                       navigate={navigate}
+                      clients={clientsState.allClients}
+                      clientsError={clientsState.error}
+                      clientsLoading={clientsState.loading}
+                      onNewClient={() => openClientForm()}
                       onNewProject={() => openProjectForm()}
                       onNewTask={() => openTaskForm()}
                       userId={userId}
@@ -305,6 +313,7 @@ const WorkspaceLayout = ({
                       workspace={workspace}
                       userId={userId}
                       onEditProject={openProjectForm}
+                      onNewProject={() => openProjectForm()}
                       clientProgress={clientsState.clients}
                       searchQuery={projectSearchQuery}
                     />
@@ -314,6 +323,7 @@ const WorkspaceLayout = ({
                       error={clientsState.error}
                       loading={clientsState.loading}
                       onEditClient={openClientForm}
+                      onNewClient={() => openClientForm()}
                       query={clientsState.query}
                       setQuery={clientsState.setQuery}
                     />
@@ -386,13 +396,16 @@ const WorkspaceLayout = ({
         <TaskFormDialog
           open={taskFormDialog.open}
           parentTask={taskFormDialog.parentTask}
+          initialProjectId={taskFormDialog.initialProjectId}
           onOpenChange={(open) =>
             setTaskFormDialog((current) => ({ ...current, open }))
           }
           onCreated={workspace.handleTaskCreated}
+          onStartTask={(task) => workspace.toggleTimer(task)}
         />
         <ClientFormDialog
           client={clientForm.client}
+          onCreateProject={() => openProjectForm()}
           open={clientForm.open}
           onOpenChange={(open) =>
             setClientForm((current) => ({ ...current, open }))
@@ -405,6 +418,7 @@ const WorkspaceLayout = ({
         />
         <ProjectFormDialog
           open={projectForm.open}
+          onCreateTask={(project) => openTaskForm(null, project.id)}
           onOpenChange={(open) =>
             setProjectForm((current) => ({ ...current, open }))
           }

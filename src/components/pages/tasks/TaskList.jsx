@@ -273,9 +273,19 @@ const TaskList = ({
             />
           )}
           {!loading && !error && !tasks.length && (
-            <p className="p-6 text-center text-sm text-muted-foreground">
-              {t.empty}
-            </p>
+            <div className="grid justify-items-center gap-2 px-4 py-10 text-center">
+              <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+                <ListTodo aria-hidden="true" />
+              </span>
+              <p className="text-sm font-semibold">{t.empty}</p>
+              <p className="max-w-sm text-sm text-muted-foreground">
+                {t.emptyDescription}
+              </p>
+              <Button type="button" className="mt-2" onClick={onNewTask}>
+                <Plus aria-hidden="true" />
+                {t.newTask}
+              </Button>
+            </div>
           )}
         </AnimatedTabPanel>
       </FramePanel>

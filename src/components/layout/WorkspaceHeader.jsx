@@ -1,13 +1,23 @@
 import {
+  ChevronDown,
+  FolderPlus,
+  ListPlus,
   PanelLeftClose,
   PanelLeftOpen,
   PanelRightClose,
   PanelRightOpen,
   Plus,
   Search,
+  UserPlus,
 } from 'lucide-react';
 import TaskWorkspaceHeader from '@/components/pages/tasks/TaskWorkspaceHeader';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useStrings } from '@/lib/i18n';
 
 const WorkspaceHeader = ({
@@ -26,10 +36,6 @@ const WorkspaceHeader = ({
   const strings = useStrings();
   const t = strings.layout.workspaceHeader;
   const CurrentIcon = currentPage?.icon;
-  const quickAdd = {
-    projects: { onClick: onNewProject, label: t.newProject },
-    clients: { onClick: onNewClient, label: t.newClient },
-  }[activeRoute] ?? { onClick: onNewTask, label: t.newTask };
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6">
@@ -53,15 +59,34 @@ const WorkspaceHeader = ({
       </div>
       <div className="flex items-center gap-2">
         {activeRoute === 'tasks' && <TaskWorkspaceHeader {...taskMetrics} />}
-        <Button
-          variant="ghost"
-          size="icon-lg"
-          aria-label={quickAdd.label}
-          title={quickAdd.label}
-          onClick={quickAdd.onClick}
-        >
-          <Plus />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button aria-label={t.createMenu} className="gap-2">
+                <Plus aria-hidden="true" />
+                <span className="hidden sm:inline">{t.createMenu}</span>
+                <ChevronDown
+                  aria-hidden="true"
+                  className="hidden size-3.5 sm:inline"
+                />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end" className="min-w-44">
+            <DropdownMenuItem onClick={onNewTask}>
+              <ListPlus aria-hidden="true" />
+              {t.newTask}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onNewProject}>
+              <FolderPlus aria-hidden="true" />
+              {t.newProject}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onNewClient}>
+              <UserPlus aria-hidden="true" />
+              {t.newClient}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button
           variant="ghost"
           size="icon-lg"

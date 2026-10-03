@@ -6,11 +6,15 @@ import { supabase } from '@/lib/supabase';
 const taskSelect =
   'id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,parent_task_id,state_id,project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed)';
 
-const emptyForm = (parentTask) => ({
+const emptyForm = (parentTask, initialProjectId) => ({
   title: '',
   description: '',
   priority: 'medium',
-  projectIds: parentTask?.project?.id ? [parentTask.project.id] : [],
+  projectIds: parentTask?.project?.id
+    ? [parentTask.project.id]
+    : initialProjectId
+      ? [initialProjectId]
+      : [],
   dueDate: '',
   estimateMinutes: '',
   repeatInterval: '1',
@@ -20,9 +24,17 @@ const emptyForm = (parentTask) => ({
   tags: '',
 });
 
-export function useTaskForm({ onCreated, open, parentTask }) {
+export function useTaskForm({
+  initialProjectId,
+  onCreated,
+  onStartTask,
+  open,
+  parentTask,
+}) {
   const t = useStrings().toasts.taskForm;
-  const [form, setForm] = useState(() => emptyForm(parentTask));
+  const [form, setForm] = useState(() =>
+    emptyForm(parentTask, initialProjectId),
+  );
   const [projects, setProjects] = useState([]);
   const [profiles, setProfiles] = useState([]);
   const [templates, setTemplates] = useState([]);
@@ -32,8 +44,8 @@ export function useTaskForm({ onCreated, open, parentTask }) {
   const [savingTemplate, setSavingTemplate] = useState(false);
 
   useEffect(() => {
-    if (open) setForm(emptyForm(parentTask));
-  }, [open, parentTask]);
+    if (open) setForm(emptyForm(parentTask, initialProjectId));
+  }, [initialProjectId, open, parentTask]);
 
   useEffect(() => {
     if (!open) return;
@@ -247,13 +259,23 @@ export function useTaskForm({ onCreated, open, parentTask }) {
       toast.error(t.linkProjectsError, { description: linkError.message });
     }
 
-    onCreated({
+    const createdTask = {
       ...data,
       linked_projects: form.projectIds.map((projectId) => ({
         project: projects.find((project) => project.id === projectId),
       })),
-    });
-    toast.success(parentTask ? t.subtaskCreated : t.taskCreated);
+    };
+    onCreated(createdTask);
+    if (onStartTask) {
+      toast.success(parentTask ? t.subtaskCreated : t.taskCreated, {
+        action: {
+          label: t.startTaskNext,
+          onClick: () => onStartTask(createdTask),
+        },
+      });
+    } else {
+      toast.success(parentTask ? t.subtaskCreated : t.taskCreated);
+    }
     setSaving(false);
   };
 

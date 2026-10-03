@@ -1,6 +1,7 @@
 import {
   Activity,
   ArrowRight,
+  Building2,
   CalendarDays,
   CheckCircle2,
   FolderKanban,
@@ -61,8 +62,12 @@ const relativeLabel = (value, common) => {
 };
 
 const Dashboard = ({
+  clients = [],
+  clientsError = '',
+  clientsLoading = false,
   workspace,
   navigate,
+  onNewClient,
   onNewProject,
   onNewTask,
   userId,
@@ -85,6 +90,27 @@ const Dashboard = ({
     tasks,
     toggleTimer,
   } = workspace;
+  const projectCount = useMemo(
+    () =>
+      new Set(
+        clients.flatMap((client) =>
+          client.projects.map((project) => project.id),
+        ),
+      ).size,
+    [clients],
+  );
+  const setupLoading = clientsLoading || loading;
+  const setupUnavailable = Boolean(clientsError || error);
+  const setupSteps = [
+    !setupLoading && !setupUnavailable && clients.length > 0,
+    !setupLoading && !setupUnavailable && projectCount > 0,
+    !loading && !setupUnavailable && tasks.length > 0,
+  ];
+  const completedSetupSteps = setupSteps.filter(Boolean).length;
+  const setupComplete =
+    !setupLoading &&
+    !setupUnavailable &&
+    completedSetupSteps === setupSteps.length;
   const todayKey = new Date().setHours(0, 0, 0, 0);
   const {
     attentionTasks,
@@ -216,21 +242,75 @@ const Dashboard = ({
       });
     }
   };
+  const reopenOnboarding = () => {
+    setShowOnboarding(true);
+    try {
+      window.localStorage.removeItem(onboardingKey);
+    } catch (error) {
+      toast.error(t.onboardingStorageError, {
+        description: error.message,
+      });
+    }
+  };
+  const guidedSteps = [
+    {
+      title: t.onboardingClientTitle,
+      description: t.onboardingClientDescription,
+      action: t.onboardingCreateClient,
+      complete: setupSteps[0],
+      canStart: !clientsLoading,
+      onClick: onNewClient,
+      Icon: Building2,
+    },
+    {
+      title: t.onboardingProjectTitle,
+      description: t.onboardingProjectDescription,
+      action: t.onboardingCreateProject,
+      complete: setupSteps[1],
+      canStart: !setupLoading && setupSteps[0],
+      onClick: onNewProject,
+      Icon: FolderKanban,
+    },
+    {
+      title: t.onboardingTaskTitle,
+      description: t.onboardingTaskDescription,
+      action: t.onboardingCreateTask,
+      complete: setupSteps[2],
+      canStart: !setupLoading && setupSteps[1],
+      onClick: onNewTask,
+      Icon: ListTodo,
+    },
+  ];
 
   return (
     <div className="min-h-0 flex-1 space-y-3 overflow-auto pb-1">
       <section className="space-y-3 rounded-xl border bg-card p-3 sm:p-4">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-            {t.heading}
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+              {t.heading}
+            </h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t.description}
+            </p>
+          </div>
+          {!showOnboarding && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={reopenOnboarding}
+            >
+              <Sparkles aria-hidden="true" />
+              {t.showOnboarding}
+            </Button>
+          )}
         </div>
       </section>
 
       {showOnboarding && (
         <section
-          className="rounded-xl border border-primary/20 bg-primary/5 p-4"
+          className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card p-4"
           aria-labelledby="onboarding-title"
         >
           <div className="flex items-start justify-between gap-3">
@@ -244,6 +324,15 @@ const Dashboard = ({
               <p className="mt-1 text-sm text-muted-foreground">
                 {t.onboardingDescription}
               </p>
+              <p className="mt-2 text-xs font-medium text-muted-foreground">
+                {setupLoading
+                  ? t.onboardingLoading
+                  : setupUnavailable
+                    ? t.onboardingLoadError
+                    : setupComplete
+                      ? t.onboardingComplete
+                      : `${t.onboardingProgress}: ${completedSetupSteps}/${guidedSteps.length}`}
+              </p>
             </div>
             <Button
               type="button"
@@ -255,32 +344,87 @@ const Dashboard = ({
               <X />
             </Button>
           </div>
-          <ol className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
-            {t.onboardingSteps.map((step) => (
-              <li key={step} className="rounded-md bg-background/70 p-2">
-                {step}
-              </li>
-            ))}
+          <ol className="mt-4 grid gap-2 lg:grid-cols-3">
+            {guidedSteps.map((step, index) => {
+              const StepIcon = step.Icon;
+              return (
+                <li
+                  key={step.title}
+                  className={`rounded-lg border bg-background/80 p-3 ${
+                    step.complete ? 'border-primary/30' : ''
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    {step.complete ? (
+                      <CheckCircle2
+                        className="mt-0.5 size-4 shrink-0 text-primary"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border text-[0.625rem] font-semibold text-muted-foreground">
+                        {index + 1}
+                      </span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 text-sm font-medium">
+                        <StepIcon
+                          className="size-4 text-muted-foreground"
+                          aria-hidden="true"
+                        />
+                        {step.title}
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {step.description}
+                      </p>
+                      {step.complete ? (
+                        <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                          <CheckCircle2
+                            className="size-3.5"
+                            aria-hidden="true"
+                          />
+                          {t.onboardingStepComplete}
+                        </span>
+                      ) : (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={step.canStart ? 'outline' : 'ghost'}
+                          className="mt-3"
+                          disabled={
+                            !step.canStart || setupLoading || setupUnavailable
+                          }
+                          onClick={step.onClick}
+                        >
+                          {setupUnavailable
+                            ? t.onboardingLoadError
+                            : setupLoading
+                              ? t.onboardingLoading
+                              : step.canStart
+                                ? step.action
+                                : t.onboardingStepLocked}
+                          {step.canStart && <ArrowRight aria-hidden="true" />}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ol>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Button type="button" size="sm" onClick={onNewProject}>
-              {t.onboardingCreateProject}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={onNewTask}
-            >
-              {t.onboardingCreateTask}
-            </Button>
-          </div>
         </section>
       )}
 
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
           {error}
+        </div>
+      )}
+      {clientsError && (
+        <div
+          className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+          role="alert"
+        >
+          {clientsError}
         </div>
       )}
 

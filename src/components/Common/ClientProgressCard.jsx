@@ -1,8 +1,18 @@
 import { AlertTriangle, Building2, Mail, Pencil, Phone } from 'lucide-react';
 import { Badge } from '@/components/reui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
+
+const getInitials = (value) =>
+  value
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toLocaleUpperCase();
 
 const ClientProgressCard = ({ client, onEdit, showContact = true }) => {
   const t = useStrings().clientsPage;
@@ -13,14 +23,21 @@ const ClientProgressCard = ({ client, onEdit, showContact = true }) => {
   return (
     <div className="rounded-lg border p-3">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{client.name}</p>
-          {client.company && (
-            <p className="mt-1 flex items-center gap-1 truncate text-xs text-muted-foreground">
-              <Building2 className="size-3.5 shrink-0" />
-              {client.company}
-            </p>
-          )}
+        <div className="flex min-w-0 items-start gap-2">
+          <Avatar className="mt-0.5 bg-primary/10 text-primary">
+            <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+              {getInitials(client.name)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">{client.name}</p>
+            {client.company && (
+              <p className="mt-1 flex items-center gap-1 truncate text-xs text-muted-foreground">
+                <Building2 className="size-3.5 shrink-0" />
+                {client.company}
+              </p>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" size="sm">
