@@ -1,14 +1,26 @@
 import { MessageSquare, Send } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
 
-const TaskComments = ({ history, onAddComment }) => {
+const TaskComments = ({ history, onAddComment, profiles }) => {
   const t = useStrings().taskComments;
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const mentionQuery = note.match(/@([a-z0-9_.-]*)$/i)?.[1];
+  const mentionMatches =
+    mentionQuery === undefined
+      ? []
+      : profiles
+          .filter((profile) =>
+            profile.username
+              .toLowerCase()
+              .startsWith(mentionQuery.toLowerCase()),
+          )
+          .slice(0, 5);
   const comments = useMemo(
     () => history.filter((entry) => entry.action === 'commented'),
     [history],
@@ -65,12 +77,43 @@ const TaskComments = ({ history, onAddComment }) => {
         </div>
       )}
       <form className="space-y-3 border-t pt-4" onSubmit={handleSubmit}>
+        <Label htmlFor="task-comment">{t.commentLabel}</Label>
         <Textarea
+          id="task-comment"
           value={note}
           onChange={(event) => setNote(event.target.value)}
           placeholder={t.placeholder}
           rows={4}
         />
+        <p className="text-xs text-muted-foreground">{t.mentionHint}</p>
+        {mentionMatches.length > 0 && (
+          <ul
+            aria-label={t.mentionSuggestions}
+            className="max-h-36 overflow-y-auto rounded-lg border bg-card p-1"
+          >
+            {mentionMatches.map((profile) => (
+              <li key={profile.id}>
+                <button
+                  type="button"
+                  className="w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+                  onClick={() =>
+                    setNote((current) =>
+                      current.replace(
+                        /@[a-z0-9_.-]*$/i,
+                        `@${profile.username} `,
+                      ),
+                    )
+                  }
+                >
+                  <span className="font-medium">{profile.display_name}</span>
+                  <span className="ml-2 text-muted-foreground">
+                    @{profile.username}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="flex justify-end">
           <Button type="submit" disabled={saving || !note.trim()}>
             <Send />

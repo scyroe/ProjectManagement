@@ -17,7 +17,9 @@ const Sidebar = ({
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-30 flex-col border-r bg-card transition-[width] duration-200 ${
-        collapsed ? 'hidden lg:flex lg:w-[49px]' : 'flex w-64 lg:flex lg:w-64'
+        collapsed
+          ? 'hidden lg:flex lg:w-[49px]'
+          : 'flex w-[min(16rem,calc(100vw-3rem))] lg:flex lg:w-64'
       }`}
     >
       <Frame
@@ -63,6 +65,7 @@ const Sidebar = ({
                   key={route.id}
                   type="button"
                   variant={route.id === activeRoute ? 'default' : 'ghost'}
+                  aria-current={route.id === activeRoute ? 'page' : undefined}
                   className={`gap-3 transition-none ${
                     collapsedFinished
                       ? 'size-8 w-8 justify-self-center justify-center px-0'

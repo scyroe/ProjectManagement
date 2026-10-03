@@ -17,6 +17,7 @@ const MultiSelect = ({
   onChange,
   options,
   placeholder,
+  required = false,
   values,
 }) => {
   const selectedOptions = useMemo(
@@ -40,6 +41,7 @@ const MultiSelect = ({
             id={id}
             type="button"
             variant="outline"
+            aria-required={required || undefined}
             disabled={disabled}
             className="h-auto min-h-9 w-full justify-between font-normal"
           >

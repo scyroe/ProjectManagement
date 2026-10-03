@@ -9,6 +9,12 @@
     "expandCard": "Expand card",
     "restoreCard": "Restore card",
     "noProjectData": "No project data yet.",
+    "closeDialog": "Close dialog",
+    "fieldIndicators": {
+      "required": "Required",
+      "complete": "complete",
+      "incomplete": "incomplete"
+    },
     "activityLabels": {
       "started": "started",
       "stopped": "stopped",
@@ -58,10 +64,21 @@
       "descriptionSuffix": "view."
     },
     "loadingScreen": "Checking your session...",
+    "closePanels": "Close navigation panels",
+    "syncStatus": {
+      "connecting": "Connecting…",
+      "connected": "Live sync connected",
+      "offline": "Offline; changes may not sync",
+      "error": "Live sync unavailable",
+      "connectionError": "Live workspace sync disconnected",
+      "offlineMessage": "You are offline. Changes may not sync until you reconnect.",
+      "reconnecting": "Connection restored. Reconnecting live sync…"
+    },
     "searchDialog": {
       "title": "Search workspace",
       "description": "Find tasks, projects, and clients.",
       "placeholder": "Search workspace...",
+      "queryHelp": "Filter tasks with status:\"In progress\", priority:high, project:website, or tag:design.",
       "noResults": "No matching workspace items.",
       "recentSearches": "Recent searches",
       "groups": {
@@ -69,6 +86,19 @@
         "projects": "Projects",
         "clients": "Clients"
       }
+    },
+    "shortcutsDialog": {
+      "title": "Keyboard shortcuts",
+      "description": "Use these shortcuts to move through your workspace faster.",
+      "entries": [
+        { "action": "Open workspace search", "keys": "Ctrl / ⌘ + K" },
+        { "action": "Create a task", "keys": "N" },
+        { "action": "Show this shortcut list", "keys": "?" },
+        {
+          "action": "Close a dialog or restore a fullscreen card",
+          "keys": "Esc"
+        }
+      ]
     },
     "sidebar": {
       "expand": "Expand sidebar",
@@ -81,9 +111,24 @@
       "collapse": "Collapse account panel",
       "expandNotifications": "Expand account panel for notifications",
       "notifications": "Notifications",
+      "noNotifications": "You're all caught up.",
+      "notificationKinds": {
+        "mention": "You were mentioned in a task comment",
+        "assignment": "A task was assigned to you",
+        "reminder": "Task due soon",
+        "overdue": "Task is overdue"
+      },
+      "reminderTitle": "Task due soon",
+      "overdueReminderTitle": "Task is overdue",
+      "reminderError": "Could not create due-date reminders.",
+      "loadError": "Could not load notifications.",
+      "profileError": "Could not load your profile.",
+      "markReadError": "Could not update the notification.",
+      "keyboardShortcuts": "Keyboard shortcuts",
       "account": "Account",
       "userName": "Alex Smith",
       "userRole": "Administrator",
+      "memberFallback": "Workspace member",
       "newCount": "3 new",
       "settings": "Settings",
       "notificationItems": [
@@ -116,6 +161,17 @@
   "dashboard": {
     "heading": "Jump back into your work",
     "description": "Pick up where you left off or explore another workspace view.",
+    "onboardingTitle": "Start with a simple workflow",
+    "onboardingDescription": "Set up a project, add tasks, then use the dashboard to keep an eye on deadlines.",
+    "onboardingSteps": [
+      "Create a project and set a target date.",
+      "Add tasks with owners, estimates, and due dates.",
+      "Track time and review project health each week."
+    ],
+    "onboardingCreateProject": "Create project",
+    "onboardingCreateTask": "Create task",
+    "dismissOnboarding": "Dismiss getting started guide",
+    "onboardingStorageError": "Could not save the onboarding preference",
     "shortcutsTitle": "Workspace shortcuts",
     "shortcutsDescription": "Move quickly between the views you use most.",
     "shortcuts": [
@@ -278,7 +334,33 @@
     },
     "timeline": "Timeline",
     "moreMilestones": "more milestones",
-    "noMilestones": "No dated tasks"
+    "noMilestones": "No dated tasks",
+    "projectMilestones": "Project milestones",
+    "milestonesOverdue": "overdue",
+    "addMilestone": "Add milestone",
+    "milestoneName": "Milestone name",
+    "milestoneDueDate": "Due date",
+    "saveMilestone": "Save",
+    "noMilestoneDate": "No date",
+    "completeMilestone": "Complete milestone",
+    "reopenMilestone": "Reopen milestone",
+    "milestoneLoadError": "Could not load project milestones",
+    "milestoneSaveError": "Could not save project milestone",
+    "milestoneUpdateError": "Could not update project milestone"
+  },
+  "teamWorkload": {
+    "title": "Team workload",
+    "description": "Estimated effort on open tasks due in the next seven days.",
+    "capacityLabel": "Your weekly capacity (hours)",
+    "saveCapacity": "Save capacity",
+    "unassigned": "Unassigned",
+    "unknownMember": "Workspace member",
+    "tasksSuffix": "tasks",
+    "estimatedLoad": "Estimated load",
+    "capacitySuffix": "capacity",
+    "overCapacity": "Over capacity by",
+    "missingEstimate": "tasks have no estimate",
+    "empty": "No open tasks are due this week."
   },
   "reports": {
     "tabs": {
@@ -328,6 +410,8 @@
     "noTimeAllocation": "No time allocation data yet.",
     "estimatedSuffix": "estimated",
     "noEstimate": "No task estimate",
+    "overEstimate": "over estimate by",
+    "underEstimate": "under estimate by",
     "rangeLabel": "Report activity range",
     "rangeFrom": "Report start date",
     "rangeTo": "Report end date",
@@ -409,6 +493,20 @@
       "completed": "Completed tasks",
       "dueSoon": "Due this week",
       "overdue": "Overdue"
+    },
+    "dataTools": {
+      "title": "Workspace data",
+      "description": "Export tasks to CSV or import a validated CSV as new tasks. Import never updates or deletes existing tasks.",
+      "exportTasks": "Export tasks",
+      "importTasks": "Import tasks",
+      "importing": "Importing...",
+      "emptyFile": "The CSV file has no task rows.",
+      "invalidHeaders": "Use a CSV exported from this workspace with the original column order.",
+      "invalidRow": "Invalid task data on row {row}. Check the title, project code, dates, state, and numeric values.",
+      "noTaskState": "No open task state is configured.",
+      "importSuccess": "Imported {count} tasks.",
+      "importError": "Could not import tasks.",
+      "tasksImportedButLinksFailed": "Tasks were created, but project links could not be saved:"
     }
   },
   "activity": {
@@ -451,6 +549,8 @@
   },
   "taskComments": {
     "commentLabel": "Comment",
+    "mentionHint": "Type @ to mention a teammate.",
+    "mentionSuggestions": "Mention suggestions",
     "empty": "No comments yet",
     "emptyDescription": "Add the first update to this task.",
     "placeholder": "Write an update or question...",
@@ -466,14 +566,33 @@
     "selectProjects": "Select one or more projects",
     "noProjects": "No projects found",
     "priorityLabel": "Priority",
+    "assigneeLabel": "Assignee",
+    "unassigned": "Unassigned",
     "dueDateLabel": "Due date",
     "estimateLabel": "Estimate (minutes)",
+    "repeatLabel": "Repeat",
+    "repeatNever": "Does not repeat",
+    "repeatDay": "Daily",
+    "repeatWeek": "Weekly",
+    "repeatMonth": "Monthly",
+    "repeatEvery": "Repeat every",
+    "repeatUntil": "Repeat until",
     "tagsLabel": "Tags",
     "tagsPlaceholder": "design, research",
     "markNotCompleted": "Mark not completed",
     "markCompleted": "Mark completed",
     "saving": "Saving...",
     "save": "Save changes"
+  },
+  "taskDependencies": {
+    "title": "Task dependencies",
+    "dependsOn": "This task depends on",
+    "select": "Select prerequisite tasks",
+    "noneFound": "No tasks found",
+    "blocked": "Blocked by {count} incomplete task(s).",
+    "unblocked": "Complete selected prerequisites before marking this task done.",
+    "unknownTask": "Task",
+    "save": "Save dependencies"
   },
   "taskForm": {
     "taskBadge": "New task",
@@ -492,8 +611,23 @@
     "loadingProjects": "Loading projects...",
     "selectProject": "Select a project",
     "priorityLabel": "Priority",
+    "assigneeLabel": "Assignee",
+    "assignToMe": "Assign to me",
+    "unassigned": "Unassigned",
     "dueDateLabel": "Due date",
     "estimateLabel": "Estimate (minutes)",
+    "templateLabel": "Task template",
+    "selectTemplate": "Start from a template",
+    "templateName": "Save current task as",
+    "saveTemplate": "Save template",
+    "savingTemplate": "Saving...",
+    "repeatLabel": "Repeat",
+    "repeatNever": "Does not repeat",
+    "repeatDay": "Daily",
+    "repeatWeek": "Weekly",
+    "repeatMonth": "Monthly",
+    "repeatEvery": "Repeat every",
+    "repeatUntil": "Repeat until",
     "tagsLabel": "Tags",
     "tagsPlaceholder": "design, research",
     "cancel": "Cancel",
@@ -612,9 +746,12 @@
   "toasts": {
     "taskDetails": {
       "loadOptionsError": "Could not load project options",
+      "loadProfilesError": "Could not load workspace members",
       "noSuitableState": "No suitable task state is configured",
       "signInToComplete": "Sign in to complete a task",
       "completionSummaryRequired": "Add a completion summary before completing this task",
+      "dependencyCheckError": "Could not verify task prerequisites",
+      "blockedByDependencies": "Complete these tasks first: {tasks}",
       "addCompletionSummaryError": "Could not add completion summary",
       "stopTimerError": "Could not stop the task timer",
       "updateStatusError": "Could not update task status",
@@ -622,20 +759,46 @@
       "taskReopened": "Task reopened",
       "titleRequired": "Task title is required",
       "projectRequired": "Select at least one project for this task",
+      "recurrenceNeedsDate": "Set a due date before making this task repeat",
+      "recurrenceIntervalInvalid": "Repeat interval must be a positive whole number",
+      "recurrenceEndInvalid": "Repeat-until date cannot be before the due date",
       "updateTaskError": "Could not update task",
       "linkProjectsError": "Task updated, but some projects could not be linked",
       "taskUpdated": "Task details updated"
     },
     "taskInspector": {
       "loadHistoryError": "Could not load task history",
+      "loadProfilesError": "Could not load workspace members",
       "signInToComment": "Sign in to add a comment",
       "addCommentError": "Could not add comment"
     },
+    "taskDependencies": {
+      "loadError": "Could not load task dependencies",
+      "signInError": "Sign in to update task dependencies",
+      "saveError": "Could not save task dependencies",
+      "saved": "Task dependencies updated"
+    },
+    "teamWorkload": {
+      "loadError": "Could not load team workload",
+      "updateError": "Could not update weekly capacity",
+      "updated": "Weekly capacity updated"
+    },
+    "dataTools": {
+      "importError": "CSV import failed"
+    },
     "taskForm": {
       "loadOptionsError": "Could not load project options",
+      "loadProfilesError": "Could not load workspace members",
+      "loadTemplatesError": "Could not load task templates",
       "titleRequired": "Task title is required",
       "projectRequired": "Select at least one project for this task",
+      "recurrenceNeedsDate": "Set a due date before making this task repeat",
+      "recurrenceIntervalInvalid": "Repeat interval must be a positive whole number",
+      "recurrenceEndInvalid": "Repeat-until date cannot be before the due date",
       "signInToCreate": "Sign in to create a task",
+      "templateNameRequired": "Enter a name for the template",
+      "createTemplateError": "Could not save the task template",
+      "templateSaved": "Task template saved",
       "noSuitableState": "No suitable task state is configured",
       "createTaskError": "Could not create task",
       "linkProjectsError": "Task created, but some projects could not be linked",

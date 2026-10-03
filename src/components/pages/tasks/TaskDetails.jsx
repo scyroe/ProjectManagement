@@ -26,6 +26,7 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
     handleSubmit,
     isDirty,
     loadingOptions,
+    profiles,
     projects,
     saving,
     taskStates,
@@ -62,7 +63,7 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
           rows={4}
         />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 sm:items-end">
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="task-projects">{t.projectsLabel}</Label>
           <MultiSelect
@@ -75,19 +76,38 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
             options={projectOptions}
           />
         </div>
-        <div className="space-y-2">
+        <div className="flex min-w-0 flex-col gap-2">
           <Label htmlFor="task-priority">{t.priorityLabel}</Label>
           <Select
             value={form.priority}
             onValueChange={(value) => updateField('priority', value)}
           >
-            <SelectTrigger id="task-priority">
+            <SelectTrigger id="task-priority" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {priorities.map((priority) => (
                 <SelectItem key={priority} value={priority}>
                   {priority}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex min-w-0 flex-col gap-2">
+          <Label htmlFor="task-assignee">{t.assigneeLabel}</Label>
+          <Select
+            value={form.assignedTo}
+            onValueChange={(value) => updateField('assignedTo', value)}
+          >
+            <SelectTrigger id="task-assignee" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="unassigned">{t.unassigned}</SelectItem>
+              {profiles.map((profile) => (
+                <SelectItem key={profile.id} value={profile.id}>
+                  {profile.display_name} (@{profile.username})
                 </SelectItem>
               ))}
             </SelectContent>
@@ -110,6 +130,48 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
             updateField('estimateMinutes', event.target.value)
           }
         />
+        <div className="flex min-w-0 flex-col gap-2">
+          <Label htmlFor="task-repeat">{t.repeatLabel}</Label>
+          <Select
+            value={form.repeatUnit}
+            onValueChange={(value) => updateField('repeatUnit', value)}
+          >
+            <SelectTrigger id="task-repeat" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{t.repeatNever}</SelectItem>
+              <SelectItem value="day">{t.repeatDay}</SelectItem>
+              <SelectItem value="week">{t.repeatWeek}</SelectItem>
+              <SelectItem value="month">{t.repeatMonth}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {form.repeatUnit !== 'none' && (
+          <>
+            <Field
+              id="task-repeat-interval"
+              label={t.repeatEvery}
+              type="number"
+              min="1"
+              required
+              value={form.repeatInterval}
+              onChange={(event) =>
+                updateField('repeatInterval', event.target.value)
+              }
+            />
+            <Field
+              id="task-repeat-until"
+              label={t.repeatUntil}
+              type="date"
+              min={form.dueDate || undefined}
+              value={form.repeatUntil}
+              onChange={(event) =>
+                updateField('repeatUntil', event.target.value)
+              }
+            />
+          </>
+        )}
         <Field
           id="task-tags"
           label={t.tagsLabel}

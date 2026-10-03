@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { supportedLanguages, useLanguage } from '@/lib/i18n';
+import WorkspaceDataTools from './WorkspaceDataTools';
 
 const swatchByStyleId = {
   nova: 'bg-blue-500',
@@ -45,6 +46,8 @@ const SettingsDialog = ({
   onDefaultTaskFilterChange,
   weekStartsOn,
   onWeekStartsOnChange,
+  tasks = [],
+  userId,
 }) => {
   const { language, setLanguage, strings } = useLanguage();
   const t = strings.settingsDialog;
@@ -59,7 +62,7 @@ const SettingsDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90dvh] max-w-2xl overflow-y-auto">
         <div className="space-y-1 pr-8">
           <div className="flex items-center gap-2 text-primary">
             <Palette className="size-4" />
@@ -261,6 +264,7 @@ const SettingsDialog = ({
                 </div>
               </div>
             </section>
+            <WorkspaceDataTools tasks={tasks} userId={userId} />
           </FramePanel>
         </Frame>
       </DialogContent>

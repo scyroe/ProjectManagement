@@ -17,6 +17,7 @@ const Projects = ({
   onEditProject,
   searchQuery = '',
   workspace,
+  userId,
 }) => {
   const t = useStrings().projectsPage;
   const activeClientProgress = useMemo(
@@ -50,6 +51,7 @@ const Projects = ({
         onEditProject={onEditProject}
         projects={visibleProjects}
         tasks={workspace.tasks}
+        userId={userId}
       />
       {activeClientProgress.length > 0 && (
         <Frame stacked>

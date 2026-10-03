@@ -6,11 +6,14 @@ import {
   FolderKanban,
   ListTodo,
   Play,
+  Sparkles,
   Square,
   TrendingUp,
   TriangleAlert,
+  X,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import {
   CompactSectionHeader,
   MetricCard,
@@ -57,9 +60,19 @@ const relativeLabel = (value, common) => {
   return `${days} ${common.daysAgoSuffix}`;
 };
 
-const Dashboard = ({ workspace, navigate }) => {
+const Dashboard = ({
+  workspace,
+  navigate,
+  onNewProject,
+  onNewTask,
+  userId,
+}) => {
   const strings = useStrings();
   const t = strings.dashboard;
+  const onboardingKey = `projectly-onboarding-dismissed:${userId}`;
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => window.localStorage.getItem(onboardingKey) !== 'true',
+  );
   const actionLabel = strings.common.activityLabels;
   const [activityActionFilter, setActivityActionFilter] = useState('all');
   const [activityProjectFilter, setActivityProjectFilter] = useState('all');
@@ -193,6 +206,17 @@ const Dashboard = ({ workspace, navigate }) => {
     setFilter(filter);
     navigate('tasks');
   };
+  const dismissOnboarding = () => {
+    try {
+      window.localStorage.setItem(onboardingKey, 'true');
+      setShowOnboarding(false);
+    } catch (error) {
+      toast.error(t.onboardingStorageError, {
+        description: error.message,
+      });
+    }
+  };
+
   return (
     <div className="min-h-0 flex-1 space-y-3 overflow-auto pb-1">
       <section className="space-y-3 rounded-xl border bg-card p-3 sm:p-4">
@@ -203,6 +227,56 @@ const Dashboard = ({ workspace, navigate }) => {
           <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>
         </div>
       </section>
+
+      {showOnboarding && (
+        <section
+          className="rounded-xl border border-primary/20 bg-primary/5 p-4"
+          aria-labelledby="onboarding-title"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-primary">
+                <Sparkles className="size-4" aria-hidden="true" />
+                <h2 id="onboarding-title" className="text-sm font-semibold">
+                  {t.onboardingTitle}
+                </h2>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t.onboardingDescription}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t.dismissOnboarding}
+              onClick={dismissOnboarding}
+            >
+              <X />
+            </Button>
+          </div>
+          <ol className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+            {t.onboardingSteps.map((step) => (
+              <li key={step} className="rounded-md bg-background/70 p-2">
+                {step}
+              </li>
+            ))}
+          </ol>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button type="button" size="sm" onClick={onNewProject}>
+              {t.onboardingCreateProject}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={onNewTask}
+            >
+              {t.onboardingCreateTask}
+            </Button>
+          </div>
+        </section>
+      )}
 
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">

@@ -25,6 +25,7 @@ import { useTaskInspector } from '@/hooks/tasks/use-task-inspector';
 import { useStrings } from '@/lib/i18n';
 import TaskActivity from './TaskActivity';
 import TaskComments from './TaskComments';
+import TaskDependenciesPanel from './TaskDependenciesPanel';
 import TaskDetails from './TaskDetails';
 import TaskHistoryCalendar from './TaskHistoryCalendar';
 import TaskSubtasks from './TaskSubtasks';
@@ -39,7 +40,7 @@ const TaskInspector = ({
 }) => {
   const strings = useStrings();
   const t = strings.taskInspector;
-  const { addComment, history, setTab, tab } = useTaskInspector(task);
+  const { addComment, history, profiles, setTab, tab } = useTaskInspector(task);
 
   if (!task) {
     return (
@@ -119,11 +120,14 @@ const TaskInspector = ({
       <FramePanel className="min-h-0 flex-1 overflow-auto p-2.5 shadow-none">
         <AnimatedTabPanel activeId={tab} className="min-h-full">
           {tab === 'details' ? (
-            <TaskDetails
-              task={task}
-              onUpdated={onTaskUpdated}
-              onRequestCompletion={onRequestCompletion}
-            />
+            <div className="space-y-5">
+              <TaskDetails
+                task={task}
+                onUpdated={onTaskUpdated}
+                onRequestCompletion={onRequestCompletion}
+              />
+              <TaskDependenciesPanel task={task} tasks={tasks} />
+            </div>
           ) : tab === 'calendar' ? (
             <TaskHistoryCalendar history={history} />
           ) : tab === 'activity' ? (
@@ -138,7 +142,11 @@ const TaskInspector = ({
               onAddSubtask={onAddSubtask}
             />
           ) : (
-            <TaskComments history={history} onAddComment={addComment} />
+            <TaskComments
+              history={history}
+              onAddComment={addComment}
+              profiles={profiles}
+            />
           )}
         </AnimatedTabPanel>
       </FramePanel>

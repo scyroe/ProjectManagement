@@ -7,8 +7,8 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
+import FieldLabel from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useClientForm } from '@/hooks/clients/use-client-form';
 import { useStrings } from '@/lib/i18n';
@@ -47,7 +47,13 @@ const ClientFormDialog = ({ client, onOpenChange, onSaved, open }) => {
         </div>
         <form className="mt-4 space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="new-client-name">{t.nameLabel}</Label>
+            <FieldLabel
+              htmlFor="client-name"
+              isRequired
+              isComplete={Boolean(form.name.trim())}
+            >
+              {t.nameLabel}
+            </FieldLabel>
             <Input
               id="client-name"
               autoFocus
@@ -58,7 +64,7 @@ const ClientFormDialog = ({ client, onOpenChange, onSaved, open }) => {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="new-client-company">{t.companyLabel}</Label>
+              <FieldLabel htmlFor="client-company">{t.companyLabel}</FieldLabel>
               <Input
                 id="client-company"
                 value={form.company}
@@ -66,7 +72,7 @@ const ClientFormDialog = ({ client, onOpenChange, onSaved, open }) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-client-email">{t.emailLabel}</Label>
+              <FieldLabel htmlFor="client-email">{t.emailLabel}</FieldLabel>
               <Input
                 id="client-email"
                 type="email"
@@ -75,7 +81,7 @@ const ClientFormDialog = ({ client, onOpenChange, onSaved, open }) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-client-phone">{t.phoneLabel}</Label>
+              <FieldLabel htmlFor="client-phone">{t.phoneLabel}</FieldLabel>
               <Input
                 id="client-phone"
                 value={form.phone}
@@ -84,7 +90,7 @@ const ClientFormDialog = ({ client, onOpenChange, onSaved, open }) => {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="client-notes">{t.notesLabel}</Label>
+            <FieldLabel htmlFor="client-notes">{t.notesLabel}</FieldLabel>
             <Textarea
               id="client-notes"
               value={form.notes}

@@ -84,6 +84,7 @@ const SearchDialog = ({
             aria-label={t.title}
           />
         </InputGroup>
+        <p className="mt-2 text-xs text-muted-foreground">{t.queryHelp}</p>
         {searchRows.length > 0 ? (
           <VirtualList
             ariaLabel={t.title}

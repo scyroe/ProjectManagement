@@ -8,8 +8,8 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
+import FieldLabel from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import MultiSelect from '@/components/ui/multi-select';
 import {
   Select,
@@ -68,7 +68,13 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
         <form className="mt-4 space-y-5" onSubmit={handleSubmit}>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="new-project-name">{t.nameLabel}</Label>
+              <FieldLabel
+                htmlFor="new-project-name"
+                isRequired
+                isComplete={Boolean(form.name.trim())}
+              >
+                {t.nameLabel}
+              </FieldLabel>
               <Input
                 id="new-project-name"
                 autoFocus
@@ -78,7 +84,13 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-project-code">{t.codeLabel}</Label>
+              <FieldLabel
+                htmlFor="new-project-code"
+                isRequired
+                isComplete={Boolean(form.code.trim())}
+              >
+                {t.codeLabel}
+              </FieldLabel>
               <Input
                 id="new-project-code"
                 value={form.code}
@@ -89,10 +101,17 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="new-project-clients">{t.clientLabel}</Label>
+            <FieldLabel
+              htmlFor="new-project-clients"
+              isRequired
+              isComplete={form.clientIds.length > 0}
+            >
+              {t.clientLabel}
+            </FieldLabel>
             <MultiSelect
               id="new-project-clients"
               disabled={loadingOptions}
+              required
               placeholder={loadingOptions ? t.loadingClients : t.selectClient}
               emptyLabel={t.noClients}
               values={form.clientIds}
@@ -101,9 +120,9 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="new-project-description">
+            <FieldLabel htmlFor="new-project-description">
               {t.descriptionLabel}
-            </Label>
+            </FieldLabel>
             <Textarea
               id="new-project-description"
               value={form.description}
@@ -116,7 +135,9 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="new-project-status">{t.statusLabel}</Label>
+              <FieldLabel htmlFor="new-project-status">
+                {t.statusLabel}
+              </FieldLabel>
               <Select
                 value={form.status}
                 onValueChange={(value) => updateField('status', value)}
@@ -134,7 +155,9 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-project-budget">{t.budgetLabel}</Label>
+              <FieldLabel htmlFor="new-project-budget">
+                {t.budgetLabel}
+              </FieldLabel>
               <Input
                 id="new-project-budget"
                 type="number"
@@ -144,7 +167,9 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-project-start-date">{t.startDateLabel}</Label>
+              <FieldLabel htmlFor="new-project-start-date">
+                {t.startDateLabel}
+              </FieldLabel>
               <Input
                 id="new-project-start-date"
                 type="date"
@@ -155,7 +180,9 @@ const ProjectFormDialog = ({ onOpenChange, onSaved, open, project }) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-project-due-date">{t.dueDateLabel}</Label>
+              <FieldLabel htmlFor="new-project-due-date">
+                {t.dueDateLabel}
+              </FieldLabel>
               <Input
                 id="new-project-due-date"
                 type="date"

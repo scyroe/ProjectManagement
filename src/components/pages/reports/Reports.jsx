@@ -28,6 +28,7 @@ import { Input } from '@/components/ui/input';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { filterEntriesByRange, getRangeBounds } from '@/lib/activity';
 import { useLanguage, useStrings } from '@/lib/i18n';
+import TeamWorkloadPanel from './TeamWorkloadPanel';
 
 const dayInMs = 24 * 60 * 60 * 1000;
 
@@ -76,7 +77,7 @@ const getActivitySubject = (item, taskById, t) => {
   return `${entityLabel}: ${item.entity_title}`;
 };
 
-const Reports = ({ workspace, navigate }) => {
+const Reports = ({ workspace, navigate, userId }) => {
   const strings = useStrings();
   const t = strings.reports;
   const locale = useLanguage().language === 'ro' ? 'ro-RO' : 'en-US';
@@ -796,29 +797,34 @@ const Reports = ({ workspace, navigate }) => {
                 getItemKey={(item) => item.id}
                 itemClassName="pb-3"
                 items={timeAllocation}
-                renderItem={({ name, minutes, estimateMinutes }) => (
-                  <div>
-                    <div className="mb-1 flex items-center justify-between gap-3 text-xs">
-                      <span className="truncate font-medium">{name}</span>
-                      <span className="text-[0.78125rem] text-muted-foreground">
-                        {durationLabel(minutes)}
-                      </span>
+                renderItem={({ name, minutes, estimateMinutes }) => {
+                  const variance = minutes - estimateMinutes;
+                  return (
+                    <div>
+                      <div className="mb-1 flex items-center justify-between gap-3 text-xs">
+                        <span className="truncate font-medium">{name}</span>
+                        <span className="text-[0.78125rem] text-muted-foreground">
+                          {durationLabel(minutes)}
+                        </span>
+                      </div>
+                      <p className="mb-1 text-[0.6875rem] text-muted-foreground">
+                        {estimateMinutes
+                          ? `${durationLabel(estimateMinutes)} ${t.estimatedSuffix} · ${
+                              variance > 0 ? t.overEstimate : t.underEstimate
+                            } ${durationLabel(Math.abs(variance))}`
+                          : t.noEstimate}
+                      </p>
+                      <div className="h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-primary"
+                          style={{
+                            width: `${Math.min(100, (minutes / maxTimeMinutes) * 100)}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <p className="mb-1 text-[0.6875rem] text-muted-foreground">
-                      {estimateMinutes
-                        ? `${durationLabel(estimateMinutes)} ${t.estimatedSuffix}`
-                        : t.noEstimate}
-                    </p>
-                    <div className="h-2 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-primary"
-                        style={{
-                          width: `${Math.min(100, (minutes / maxTimeMinutes) * 100)}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
+                  );
+                }}
               />
             ) : (
               <p className="p-4 text-center text-xs text-muted-foreground">
@@ -914,6 +920,7 @@ const Reports = ({ workspace, navigate }) => {
 
   return (
     <div className="min-h-0 flex-1 space-y-3 overflow-auto pb-1">
+      <TeamWorkloadPanel tasks={tasks} userId={userId} />
       <section className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-2">
         <fieldset className="flex flex-wrap items-center gap-1 rounded-lg bg-muted p-1">
           <legend className="sr-only">{t.rangeLabel}</legend>

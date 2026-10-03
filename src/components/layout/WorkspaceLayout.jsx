@@ -1,5 +1,5 @@
 import { AnimatePresence, domMax, LazyMotion, m as motion } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AnimationPreferencesProvider } from '@/components/Common/animation-preferences';
 import Calendar from '@/components/pages/calendar/Calendar';
 import ClientFormDialog from '@/components/pages/clients/ClientFormDialog';
@@ -14,15 +14,27 @@ import TaskWorkspace from '@/components/pages/tasks/TaskWorkspace';
 import { useCalendar } from '@/hooks/calendar/use-calendar';
 import { useClients } from '@/hooks/clients/use-clients';
 import { useAppShell } from '@/hooks/common/use-app-shell';
+import { useNotifications } from '@/hooks/common/use-notifications';
+import { useRealtimeSync } from '@/hooks/common/use-realtime-sync';
 import { useWorkspacePreferences } from '@/hooks/common/use-workspace-preferences';
 import { useTaskWorkspace } from '@/hooks/tasks/use-task-workspace';
+import { useStrings } from '@/lib/i18n';
 import EmptyPage from './EmptyPage';
+import KeyboardShortcutsDialog from './KeyboardShortcutsDialog';
 import SearchDialog from './SearchDialog';
 import Sidebar from './Sidebar';
 import UserPanel from './UserPanel';
 import WorkspaceHeader from './WorkspaceHeader';
 
-const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
+const WorkspaceLayout = ({
+  activeRoute,
+  currentPage,
+  navigate,
+  userEmail,
+  userId,
+}) => {
+  const layoutStrings = useStrings().layout;
+  const syncStatus = useRealtimeSync();
   const {
     accountPanelCollapsed,
     recentSearches,
@@ -60,6 +72,7 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
     open: false,
     parentTask: null,
   });
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [clientForm, setClientForm] = useState({ open: false, client: null });
   const [projectForm, setProjectForm] = useState({
     open: false,
@@ -86,6 +99,10 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
   });
   const calendarState = useCalendar({
     enabled: activeRoute === 'calendar' || searchOpen,
+  });
+  const notificationState = useNotifications({
+    tasks: workspace.tasks,
+    userId,
   });
   const searchValue = searchQuery.trim().toLocaleLowerCase();
   const searchProjects = useMemo(
@@ -119,6 +136,50 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
   const openTaskForm = (parentTask = null) =>
     setTaskFormDialog({ open: true, parentTask });
 
+  useEffect(() => {
+    const dialogOpen =
+      searchOpen ||
+      shortcutsOpen ||
+      settingsOpen ||
+      taskFormDialog.open ||
+      clientForm.open ||
+      projectForm.open;
+    const handleKeyDown = (event) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+      ) {
+        return;
+      }
+      if (dialogOpen) return;
+
+      if (event.key === '?' && !event.ctrlKey && !event.metaKey) {
+        event.preventDefault();
+        setShortcutsOpen(true);
+      } else if (
+        event.key.toLowerCase() === 'n' &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey
+      ) {
+        event.preventDefault();
+        setTaskFormDialog({ open: true, parentTask: null });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    clientForm.open,
+    projectForm.open,
+    searchOpen,
+    settingsOpen,
+    shortcutsOpen,
+    taskFormDialog.open,
+  ]);
+
   const handleSearchEntitySelect = (type, id, label) => {
     rememberSearch(searchQuery);
     if (type === 'task') {
@@ -143,9 +204,32 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
     setSearchOpen(false);
   };
 
+  const handleOpenNotification = async (notification) => {
+    await notificationState.markRead(notification);
+    if (!notification.task_id) return;
+    workspace.setSelectedId(notification.task_id);
+    const task = workspace.tasks.find(
+      (item) => item.id === notification.task_id,
+    );
+    workspace.setFilter(task?.state?.is_completed ? 'completed' : 'current');
+    navigate('tasks');
+    setAccountPanelCollapsed(true);
+  };
+
   return (
     <AnimationPreferencesProvider enabled={animationsEnabled}>
       <div className="min-h-screen bg-background text-foreground">
+        {(!sidebarCollapsed || !accountPanelCollapsed) && (
+          <button
+            type="button"
+            className="fixed inset-0 z-20 bg-black/30 lg:hidden"
+            aria-label={layoutStrings.closePanels}
+            onClick={() => {
+              setSidebarCollapsed(true);
+              setAccountPanelCollapsed(true);
+            }}
+          />
+        )}
         <Sidebar
           activeRoute={activeRoute}
           collapsed={sidebarCollapsed}
@@ -203,7 +287,13 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
                   className="flex h-full min-h-0 flex-col"
                 >
                   {activeRoute === 'dashboard' ? (
-                    <Dashboard workspace={workspace} navigate={navigate} />
+                    <Dashboard
+                      workspace={workspace}
+                      navigate={navigate}
+                      onNewProject={() => openProjectForm()}
+                      onNewTask={() => openTaskForm()}
+                      userId={userId}
+                    />
                   ) : activeRoute === 'tasks' ? (
                     <TaskWorkspace
                       workspace={workspace}
@@ -213,6 +303,7 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
                   ) : activeRoute === 'projects' ? (
                     <Projects
                       workspace={workspace}
+                      userId={userId}
                       onEditProject={openProjectForm}
                       clientProgress={clientsState.clients}
                       searchQuery={projectSearchQuery}
@@ -234,7 +325,11 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
                       weekStartsOn={weekStartsOn}
                     />
                   ) : activeRoute === 'reports' ? (
-                    <Reports workspace={workspace} navigate={navigate} />
+                    <Reports
+                      workspace={workspace}
+                      navigate={navigate}
+                      userId={userId}
+                    />
                   ) : (
                     <EmptyPage route={currentPage} />
                   )}
@@ -245,13 +340,26 @@ const WorkspaceLayout = ({ activeRoute, currentPage, navigate, userId }) => {
         </div>
         <UserPanel
           collapsed={accountPanelCollapsed}
+          email={userEmail}
+          notifications={notificationState.notifications}
+          unreadCount={notificationState.unreadCount}
+          profile={notificationState.profile}
+          syncStatus={syncStatus}
+          onOpenNotification={handleOpenNotification}
           onToggle={() => setAccountPanelCollapsed((collapsed) => !collapsed)}
           onExpand={() => setAccountPanelCollapsed(false)}
           onSettings={() => setSettingsOpen(true)}
+          onShortcuts={() => setShortcutsOpen(true)}
+        />
+        <KeyboardShortcutsDialog
+          open={shortcutsOpen}
+          onOpenChange={setShortcutsOpen}
         />
         <SettingsDialog
           open={settingsOpen}
           onOpenChange={setSettingsOpen}
+          tasks={workspace.tasks}
+          userId={userId}
           animationMode={animationMode}
           onAnimationModeChange={setAnimationMode}
           colorMode={colorMode}

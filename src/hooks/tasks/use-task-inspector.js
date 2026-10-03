@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -11,6 +11,7 @@ export function useTaskInspector(task) {
   const t = useStrings().toasts.taskInspector;
   const queryClient = useQueryClient();
   const [tab, setTab] = useState('details');
+  const previousTaskId = useRef(task?.id);
 
   const historyQueryKey = ['task-history', task?.id];
 
@@ -28,7 +29,21 @@ export function useTaskInspector(task) {
     enabled: Boolean(task),
   });
 
+  const { data: profiles = [], error: profilesError } = useQuery({
+    queryKey: ['profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id,username,display_name,weekly_capacity_minutes')
+        .order('display_name');
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+
   useEffect(() => {
+    if (previousTaskId.current === task?.id) return;
+    previousTaskId.current = task?.id;
     setTab('details');
   }, [task?.id]);
 
@@ -37,6 +52,12 @@ export function useTaskInspector(task) {
       toast.error(t.loadHistoryError, { description: historyError.message });
     }
   }, [historyError, t]);
+
+  useEffect(() => {
+    if (profilesError) {
+      toast.error(t.loadProfilesError, { description: profilesError.message });
+    }
+  }, [profilesError, t]);
 
   const addComment = async (note) => {
     const trimmedNote = note.trim();
@@ -61,5 +82,5 @@ export function useTaskInspector(task) {
     return true;
   };
 
-  return { addComment, history, setTab, tab };
+  return { addComment, history, profiles, setTab, tab };
 }

@@ -9,6 +9,12 @@
     "expandCard": "Extinde cardul",
     "restoreCard": "Restaurează cardul",
     "noProjectData": "Nu există încă date despre proiecte.",
+    "closeDialog": "Închide dialogul",
+    "fieldIndicators": {
+      "required": "Obligatoriu",
+      "complete": "completat",
+      "incomplete": "necompletat"
+    },
     "activityLabels": {
       "started": "a pornit",
       "stopped": "a oprit",
@@ -58,10 +64,21 @@
       "descriptionSuffix": "vizualizare."
     },
     "loadingScreen": "Se verifică sesiunea...",
+    "closePanels": "Închide panourile de navigare",
+    "syncStatus": {
+      "connecting": "Se conectează…",
+      "connected": "Sincronizare live conectată",
+      "offline": "Offline; modificările pot să nu se sincronizeze",
+      "error": "Sincronizarea live nu este disponibilă",
+      "connectionError": "Sincronizarea live s-a deconectat",
+      "offlineMessage": "Ești offline. Modificările se pot sincroniza după reconectare.",
+      "reconnecting": "Conexiune restabilită. Se reconectează sincronizarea live…"
+    },
     "searchDialog": {
       "title": "Caută în workspace",
       "description": "Găsește sarcini, proiecte și clienți.",
       "placeholder": "Caută în workspace...",
+      "queryHelp": "Filtrează sarcinile cu status:\"In progress\", priority:high, project:website sau tag:design.",
       "noResults": "Nu s-au găsit elemente în workspace.",
       "recentSearches": "Căutări recente",
       "groups": {
@@ -69,6 +86,16 @@
         "projects": "Proiecte",
         "clients": "Clienți"
       }
+    },
+    "shortcutsDialog": {
+      "title": "Scurtături de tastatură",
+      "description": "Folosește aceste scurtături pentru a lucra mai rapid.",
+      "entries": [
+        { "action": "Deschide căutarea în workspace", "keys": "Ctrl / ⌘ + K" },
+        { "action": "Creează o sarcină", "keys": "N" },
+        { "action": "Afișează această listă", "keys": "?" },
+        { "action": "Închide un dialog sau restaurează cardul", "keys": "Esc" }
+      ]
     },
     "sidebar": {
       "expand": "Extinde bara laterală",
@@ -81,9 +108,24 @@
       "collapse": "Restrânge panoul de cont",
       "expandNotifications": "Extinde panoul de cont pentru notificări",
       "notifications": "Notificări",
+      "noNotifications": "Nu ai notificări noi.",
+      "notificationKinds": {
+        "mention": "Ai fost menționat într-un comentariu la sarcină",
+        "assignment": "Ți-a fost atribuită o sarcină",
+        "reminder": "Sarcină cu termen apropiat",
+        "overdue": "Sarcină restantă"
+      },
+      "reminderTitle": "Sarcină cu termen apropiat",
+      "overdueReminderTitle": "Sarcină restantă",
+      "reminderError": "Nu s-au putut crea mementourile pentru termene.",
+      "loadError": "Notificările nu au putut fi încărcate.",
+      "profileError": "Profilul nu a putut fi încărcat.",
+      "markReadError": "Notificarea nu a putut fi actualizată.",
+      "keyboardShortcuts": "Scurtături de tastatură",
       "account": "Cont",
       "userName": "Alex Smith",
       "userRole": "Administrator",
+      "memberFallback": "Membru workspace",
       "newCount": "3 noi",
       "settings": "Setări",
       "notificationItems": [
@@ -116,6 +158,17 @@
   "dashboard": {
     "heading": "Reia-ți activitatea",
     "description": "Continuă de unde ai rămas sau explorează altă secțiune a workspace-ului.",
+    "onboardingTitle": "Începe cu un flux simplu",
+    "onboardingDescription": "Configurează un proiect, adaugă sarcini, apoi urmărește termenele din panoul principal.",
+    "onboardingSteps": [
+      "Creează un proiect și stabilește un termen.",
+      "Adaugă sarcini cu responsabili, estimări și termene.",
+      "Înregistrează timpul și verifică săptămânal starea proiectelor."
+    ],
+    "onboardingCreateProject": "Creează proiect",
+    "onboardingCreateTask": "Creează sarcină",
+    "dismissOnboarding": "Închide ghidul de început",
+    "onboardingStorageError": "Preferința pentru ghid nu a putut fi salvată",
     "shortcutsTitle": "Scurtături workspace",
     "shortcutsDescription": "Treci rapid între secțiunile pe care le folosești cel mai des.",
     "shortcuts": [
@@ -278,7 +331,33 @@
     },
     "timeline": "Cronologie",
     "moreMilestones": "alte etape",
-    "noMilestones": "Nicio sarcină datată"
+    "noMilestones": "Nicio sarcină datată",
+    "projectMilestones": "Etape ale proiectului",
+    "milestonesOverdue": "restante",
+    "addMilestone": "Adaugă etapă",
+    "milestoneName": "Numele etapei",
+    "milestoneDueDate": "Termen limită",
+    "saveMilestone": "Salvează",
+    "noMilestoneDate": "Fără dată",
+    "completeMilestone": "Finalizează etapa",
+    "reopenMilestone": "Redeschide etapa",
+    "milestoneLoadError": "Nu s-au putut încărca etapele proiectului",
+    "milestoneSaveError": "Nu s-a putut salva etapa proiectului",
+    "milestoneUpdateError": "Nu s-a putut actualiza etapa proiectului"
+  },
+  "teamWorkload": {
+    "title": "Volumul de lucru al echipei",
+    "description": "Efort estimat pentru sarcinile deschise cu termen în următoarele șapte zile.",
+    "capacityLabel": "Capacitatea ta săptămânală (ore)",
+    "saveCapacity": "Salvează capacitatea",
+    "unassigned": "Neatribuite",
+    "unknownMember": "Membru workspace",
+    "tasksSuffix": "sarcini",
+    "estimatedLoad": "Volum estimat",
+    "capacitySuffix": "capacitate",
+    "overCapacity": "Peste capacitate cu",
+    "missingEstimate": "sarcini fără estimare",
+    "empty": "Nu există sarcini deschise cu termen în această săptămână."
   },
   "reports": {
     "tabs": {
@@ -328,6 +407,8 @@
     "noTimeAllocation": "Nu există încă date despre alocarea timpului.",
     "estimatedSuffix": "estimat",
     "noEstimate": "Fără estimare pentru sarcină",
+    "overEstimate": "peste estimare cu",
+    "underEstimate": "sub estimare cu",
     "rangeLabel": "Intervalul de activitate al raportului",
     "rangeFrom": "Data de început a raportului",
     "rangeTo": "Data de sfârșit a raportului",
@@ -421,6 +502,20 @@
       "completed": "Sarcini finalizate",
       "dueSoon": "Scadente săptămâna aceasta",
       "overdue": "Restante"
+    },
+    "dataTools": {
+      "title": "Date workspace",
+      "description": "Exportă sarcinile în CSV sau importă un CSV valid ca sarcini noi. Importul nu modifică și nu șterge sarcini existente.",
+      "exportTasks": "Exportă sarcinile",
+      "importTasks": "Importă sarcini",
+      "importing": "Se importă...",
+      "emptyFile": "Fișierul CSV nu conține sarcini.",
+      "invalidHeaders": "Folosește un CSV exportat din acest workspace, cu ordinea originală a coloanelor.",
+      "invalidRow": "Date invalide pentru sarcina de pe rândul {row}. Verifică titlul, codul proiectului, datele și valorile numerice.",
+      "noTaskState": "Nu este configurată nicio stare deschisă pentru sarcini.",
+      "importSuccess": "Au fost importate {count} sarcini.",
+      "importError": "Nu s-au putut importa sarcinile.",
+      "tasksImportedButLinksFailed": "Sarcinile au fost create, dar proiectele nu au putut fi asociate:"
     }
   },
   "activity": {
@@ -463,6 +558,8 @@
   },
   "taskComments": {
     "commentLabel": "Comentariu",
+    "mentionHint": "Tastează @ pentru a menționa un coleg.",
+    "mentionSuggestions": "Sugestii de menționare",
     "empty": "Niciun comentariu încă",
     "emptyDescription": "Adaugă prima actualizare la această sarcină.",
     "placeholder": "Scrie o actualizare sau o întrebare...",
@@ -478,14 +575,33 @@
     "selectProjects": "Selectează unul sau mai multe proiecte",
     "noProjects": "Niciun proiect găsit",
     "priorityLabel": "Prioritate",
+    "assigneeLabel": "Responsabil",
+    "unassigned": "Neatribuită",
     "dueDateLabel": "Termen limită",
     "estimateLabel": "Estimare (minute)",
+    "repeatLabel": "Repetare",
+    "repeatNever": "Nu se repetă",
+    "repeatDay": "Zilnic",
+    "repeatWeek": "Săptămânal",
+    "repeatMonth": "Lunar",
+    "repeatEvery": "Repetă la fiecare",
+    "repeatUntil": "Repetă până la",
     "tagsLabel": "Etichete",
     "tagsPlaceholder": "design, cercetare",
     "markNotCompleted": "Marchează ca nefinalizată",
     "markCompleted": "Marchează ca finalizată",
     "saving": "Se salvează...",
     "save": "Salvează modificările"
+  },
+  "taskDependencies": {
+    "title": "Dependențe ale sarcinii",
+    "dependsOn": "Această sarcină depinde de",
+    "select": "Selectează sarcinile necesare",
+    "noneFound": "Nu s-au găsit sarcini",
+    "blocked": "Blocat(ă) de {count} sarcini nefinalizate.",
+    "unblocked": "Finalizează sarcinile selectate înainte de a marca această sarcină ca terminată.",
+    "unknownTask": "Sarcină",
+    "save": "Salvează dependențele"
   },
   "taskForm": {
     "taskBadge": "Sarcină nouă",
@@ -504,8 +620,23 @@
     "loadingProjects": "Se încarcă proiectele...",
     "selectProject": "Selectează un proiect",
     "priorityLabel": "Prioritate",
+    "assigneeLabel": "Responsabil",
+    "assignToMe": "Atribuie-mi",
+    "unassigned": "Neatribuită",
     "dueDateLabel": "Termen limită",
     "estimateLabel": "Estimare (minute)",
+    "templateLabel": "Șablon de sarcină",
+    "selectTemplate": "Pornește de la un șablon",
+    "templateName": "Salvează sarcina ca",
+    "saveTemplate": "Salvează șablonul",
+    "savingTemplate": "Se salvează...",
+    "repeatLabel": "Repetare",
+    "repeatNever": "Nu se repetă",
+    "repeatDay": "Zilnic",
+    "repeatWeek": "Săptămânal",
+    "repeatMonth": "Lunar",
+    "repeatEvery": "Repetă la fiecare",
+    "repeatUntil": "Repetă până la",
     "tagsLabel": "Etichete",
     "tagsPlaceholder": "design, cercetare",
     "cancel": "Anulează",
@@ -624,9 +755,12 @@
   "toasts": {
     "taskDetails": {
       "loadOptionsError": "Nu s-au putut încărca opțiunile de proiect",
+      "loadProfilesError": "Nu s-au putut încărca membrii workspace-ului",
       "noSuitableState": "Nu este configurată nicio stare de sarcină potrivită",
       "signInToComplete": "Autentifică-te pentru a finaliza o sarcină",
       "completionSummaryRequired": "Adaugă un rezumat înainte de a finaliza această sarcină",
+      "dependencyCheckError": "Nu s-au putut verifica sarcinile necesare",
+      "blockedByDependencies": "Finalizează mai întâi aceste sarcini: {tasks}",
       "addCompletionSummaryError": "Nu s-a putut adăuga rezumatul finalizării",
       "stopTimerError": "Nu s-a putut opri cronometrul sarcinii",
       "updateStatusError": "Nu s-a putut actualiza starea sarcinii",
@@ -634,15 +768,26 @@
       "taskReopened": "Sarcină redeschisă",
       "titleRequired": "Titlul sarcinii este obligatoriu",
       "projectRequired": "Selectează cel puțin un proiect pentru această sarcină",
+      "recurrenceNeedsDate": "Setează un termen înainte de a repeta această sarcină",
+      "recurrenceIntervalInvalid": "Intervalul de repetare trebuie să fie un număr întreg pozitiv",
+      "recurrenceEndInvalid": "Data de sfârșit a repetării nu poate fi înainte de termen",
       "updateTaskError": "Nu s-a putut actualiza sarcina",
       "linkProjectsError": "Sarcina a fost actualizată, dar unele proiecte nu au putut fi asociate",
       "taskUpdated": "Detaliile sarcinii au fost actualizate"
     },
     "taskForm": {
       "loadOptionsError": "Nu s-au putut încărca opțiunile de proiect",
+      "loadProfilesError": "Nu s-au putut încărca membrii workspace-ului",
+      "loadTemplatesError": "Nu s-au putut încărca șabloanele de sarcină",
       "titleRequired": "Titlul sarcinii este obligatoriu",
       "projectRequired": "Selectează cel puțin un proiect pentru această sarcină",
+      "recurrenceNeedsDate": "Setează un termen înainte de a repeta această sarcină",
+      "recurrenceIntervalInvalid": "Intervalul de repetare trebuie să fie un număr întreg pozitiv",
+      "recurrenceEndInvalid": "Data de sfârșit a repetării nu poate fi înainte de termen",
       "signInToCreate": "Autentifică-te pentru a crea o sarcină",
+      "templateNameRequired": "Introdu un nume pentru șablon",
+      "createTemplateError": "Nu s-a putut salva șablonul de sarcină",
+      "templateSaved": "Șablon de sarcină salvat",
       "noSuitableState": "Nu este configurată nicio stare de sarcină potrivită",
       "createTaskError": "Nu s-a putut crea sarcina",
       "linkProjectsError": "Sarcina a fost creată, dar unele proiecte nu au putut fi asociate",
@@ -672,8 +817,23 @@
     },
     "taskInspector": {
       "loadHistoryError": "Nu s-a putut încărca istoricul sarcinii",
+      "loadProfilesError": "Nu s-au putut încărca membrii workspace-ului",
       "signInToComment": "Autentifică-te pentru a adăuga un comentariu",
       "addCommentError": "Nu s-a putut adăuga comentariul"
+    },
+    "taskDependencies": {
+      "loadError": "Nu s-au putut încărca dependențele sarcinii",
+      "signInError": "Autentifică-te pentru a actualiza dependențele",
+      "saveError": "Nu s-au putut salva dependențele sarcinii",
+      "saved": "Dependențele sarcinii au fost actualizate"
+    },
+    "teamWorkload": {
+      "loadError": "Nu s-a putut încărca volumul de lucru al echipei",
+      "updateError": "Nu s-a putut actualiza capacitatea săptămânală",
+      "updated": "Capacitatea săptămânală a fost actualizată"
+    },
+    "dataTools": {
+      "importError": "Importul CSV a eșuat"
     },
     "taskWorkspace": {
       "signInToLoad": "Autentifică-te pentru a-ți încărca sarcinile din Supabase.",

@@ -5,14 +5,12 @@ import LoadingScreen from '@/components/layout/LoadingScreen';
 import WorkspaceLayout from '@/components/layout/WorkspaceLayout';
 import { useAuthSession } from '@/hooks/auth/use-auth-session';
 import { useAppRoute } from '@/hooks/common/use-app-route';
-import { useRealtimeSync } from '@/hooks/common/use-realtime-sync';
 import { LanguageProvider } from '@/lib/i18n';
 import { queryClient } from '@/lib/query-client';
 
 export default function App() {
   const { authLoading, session } = useAuthSession();
   const { activeRoute, currentPage, navigate } = useAppRoute();
-  useRealtimeSync();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -26,6 +24,7 @@ export default function App() {
             activeRoute={activeRoute}
             currentPage={currentPage}
             navigate={navigate}
+            userEmail={session.user.email}
             userId={session.user.id}
           />
         )}

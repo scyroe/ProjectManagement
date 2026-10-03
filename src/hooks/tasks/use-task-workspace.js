@@ -14,7 +14,7 @@ const workspaceActivityQueryKey = ['workspace-activity'];
 const workspaceActivityPageSize = 100;
 
 const taskSelect =
-  'id,title,description,priority,due_date,estimate_minutes,tags,assigned_to,parent_task_id,state_id,project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)))';
+  'id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,parent_task_id,state_id,project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)))';
 const dayInMs = 24 * 60 * 60 * 1000;
 
 const isDueSoon = (task, today, dueSoonEnd) => {
@@ -26,6 +26,61 @@ const isDueSoon = (task, today, dueSoonEnd) => {
 const isOverdue = (task, today) => {
   if (!task.due_date || task.state?.is_completed) return false;
   return new Date(`${task.due_date}T00:00:00`) < today;
+};
+
+const matchesSearchQuery = (task, rawQuery) => {
+  const query = rawQuery.toLocaleLowerCase().trim();
+  if (!query) return false;
+
+  const filters = [];
+  const textQuery = query.replace(
+    /(?:^|\s)(status|priority|project|tag):(?:"([^"]+)"|(\S+))/gi,
+    (_match, field, quotedValue, plainValue) => {
+      filters.push([field.toLowerCase(), (quotedValue ?? plainValue).trim()]);
+      return ' ';
+    },
+  );
+  const linkedProjects = [
+    task.project,
+    ...(task.linked_projects ?? []).map((link) => link.project),
+  ].filter(Boolean);
+  const searchableText = [
+    task.title,
+    task.description,
+    task.priority,
+    task.state?.name,
+    task.due_date,
+    ...(task.tags ?? []),
+    ...linkedProjects.flatMap((project) => [project.name, project.code]),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLocaleLowerCase();
+
+  if (
+    textQuery
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .some((term) => !searchableText.includes(term))
+  ) {
+    return false;
+  }
+
+  return filters.every(([field, value]) => {
+    if (field === 'priority') return task.priority?.toLowerCase() === value;
+    if (field === 'status')
+      return task.state?.name?.toLocaleLowerCase().includes(value);
+    if (field === 'tag')
+      return (task.tags ?? []).some((tag) =>
+        tag.toLocaleLowerCase().includes(value),
+      );
+    return linkedProjects.some((project) =>
+      `${project.name} ${project.code ?? ''}`
+        .toLocaleLowerCase()
+        .includes(value),
+    );
+  });
 };
 
 export function useTaskWorkspace({
@@ -187,13 +242,8 @@ export function useTaskWorkspace({
   }, [filteredTasks, query]);
 
   const searchResults = useMemo(() => {
-    const value = (searchQuery ?? '').toLowerCase().trim();
-    if (!value) return [];
-    return tasks.filter((task) =>
-      `${task.title} ${task.description ?? ''} ${task.project?.name ?? ''}`
-        .toLowerCase()
-        .includes(value),
-    );
+    if (!(searchQuery ?? '').trim()) return [];
+    return tasks.filter((task) => matchesSearchQuery(task, searchQuery));
   }, [searchQuery, tasks]);
 
   const selected = useMemo(

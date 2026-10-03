@@ -5,7 +5,7 @@ import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
 const taskSelect =
-  'id,title,description,priority,due_date,estimate_minutes,tags,assigned_to,state_id,project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)))';
+  'id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,state_id,project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)))';
 
 const taskFormOptionsQueryKey = ['task-form-options'];
 
@@ -27,6 +27,7 @@ export function useTaskDetails({ task, onUpdated }) {
       const [
         { data: projectData, error: projectError },
         { data: stateData, error: stateError },
+        { data: profileData, error: profileError },
       ] = await Promise.all([
         supabase
           .from('projects')
@@ -36,12 +37,22 @@ export function useTaskDetails({ task, onUpdated }) {
           .from('task_states')
           .select('id,name,color,is_completed,sort_order')
           .order('sort_order'),
+        supabase
+          .from('profiles')
+          .select('id,username,display_name')
+          .order('display_name'),
       ]);
 
-      if (projectError || stateError) {
-        throw new Error(projectError?.message ?? stateError?.message);
+      if (projectError || stateError || profileError) {
+        throw new Error(
+          projectError?.message ?? stateError?.message ?? profileError?.message,
+        );
       }
-      return { projects: projectData ?? [], taskStates: stateData ?? [] };
+      return {
+        profiles: profileData ?? [],
+        projects: projectData ?? [],
+        taskStates: stateData ?? [],
+      };
     },
   });
 
@@ -52,6 +63,7 @@ export function useTaskDetails({ task, onUpdated }) {
   }, [optionsError, t]);
 
   const projects = options?.projects ?? [];
+  const profiles = options?.profiles ?? [];
   const taskStates = options?.taskStates ?? [];
 
   useEffect(() => {
@@ -81,6 +93,47 @@ export function useTaskDetails({ task, onUpdated }) {
 
     setUpdatingCompletion(true);
     if (!task.state?.is_completed) {
+      const { data: dependencies, error: dependencyError } = await supabase
+        .from('task_dependencies')
+        .select('depends_on_task_id')
+        .eq('task_id', task.id);
+      if (dependencyError) {
+        toast.error(t.dependencyCheckError, {
+          description: dependencyError.message,
+        });
+        setUpdatingCompletion(false);
+        return;
+      }
+      if (dependencies.length) {
+        const { data: prerequisites, error: prerequisiteError } = await supabase
+          .from('tasks')
+          .select('title,state:task_states(is_completed)')
+          .in(
+            'id',
+            dependencies.map((dependency) => dependency.depends_on_task_id),
+          );
+        if (prerequisiteError) {
+          toast.error(t.dependencyCheckError, {
+            description: prerequisiteError.message,
+          });
+          setUpdatingCompletion(false);
+          return;
+        }
+        const incomplete = prerequisites.filter(
+          (prerequisite) => !prerequisite.state?.is_completed,
+        );
+        if (incomplete.length) {
+          toast.error(
+            t.blockedByDependencies.replace(
+              '{tasks}',
+              incomplete.map((prerequisite) => prerequisite.title).join(', '),
+            ),
+          );
+          setUpdatingCompletion(false);
+          return;
+        }
+      }
+
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
       if (userError || !userData.user) {
@@ -154,6 +207,22 @@ export function useTaskDetails({ task, onUpdated }) {
       toast.error(t.projectRequired);
       return;
     }
+    if (form.repeatUnit !== 'none' && !form.dueDate) {
+      toast.error(t.recurrenceNeedsDate);
+      return;
+    }
+    if (
+      form.repeatUnit !== 'none' &&
+      (!Number.isInteger(Number(form.repeatInterval)) ||
+        Number(form.repeatInterval) < 1)
+    ) {
+      toast.error(t.recurrenceIntervalInvalid);
+      return;
+    }
+    if (form.repeatUntil && form.repeatUntil < form.dueDate) {
+      toast.error(t.recurrenceEndInvalid);
+      return;
+    }
 
     setSaving(true);
 
@@ -163,9 +232,15 @@ export function useTaskDetails({ task, onUpdated }) {
       description: form.description.trim() || null,
       priority: form.priority,
       due_date: form.dueDate || null,
+      assigned_to: form.assignedTo === 'unassigned' ? null : form.assignedTo,
       estimate_minutes: form.estimateMinutes
         ? Number(form.estimateMinutes)
         : null,
+      recurrence_interval:
+        form.repeatUnit === 'none' ? null : Number(form.repeatInterval),
+      recurrence_unit: form.repeatUnit === 'none' ? null : form.repeatUnit,
+      recurrence_until:
+        form.repeatUnit === 'none' ? null : form.repeatUntil || null,
       tags: form.tags
         .split(',')
         .map((tag) => tag.trim())
@@ -218,6 +293,7 @@ export function useTaskDetails({ task, onUpdated }) {
     isDirty,
     loadingOptions,
     projects,
+    profiles,
     saving,
     taskStates,
     updateField,
@@ -236,6 +312,10 @@ const getFormValues = (task) => ({
       : [],
   dueDate: task?.due_date ?? '',
   estimateMinutes: task?.estimate_minutes?.toString() ?? '',
+  repeatInterval: task?.recurrence_interval?.toString() ?? '1',
+  repeatUnit: task?.recurrence_unit ?? 'none',
+  repeatUntil: task?.recurrence_until ?? '',
+  assignedTo: task?.assigned_to ?? 'unassigned',
   tags: (task?.tags ?? []).join(', '),
 });
 

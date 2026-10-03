@@ -1,3 +1,4 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
   CalendarDays,
@@ -6,7 +7,8 @@ import {
   Pencil,
   Users,
 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/reui/badge';
 import {
   Frame,
@@ -16,16 +18,51 @@ import {
   FrameTitle,
 } from '@/components/reui/frame';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useLanguage, useStrings } from '@/lib/i18n';
+import { supabase } from '@/lib/supabase';
 
 const dayInMs = 24 * 60 * 60 * 1000;
 
 const toDate = (value) => (value ? new Date(`${value}T00:00:00`) : null);
 
-const ProjectOverview = ({ onEditProject, projects = [], tasks }) => {
+const ProjectOverview = ({ onEditProject, projects = [], tasks, userId }) => {
   const strings = useStrings();
   const t = strings.projectOverview;
+  const queryClient = useQueryClient();
+  const [milestoneProjectId, setMilestoneProjectId] = useState(null);
+  const [milestoneName, setMilestoneName] = useState('');
+  const [milestoneDueDate, setMilestoneDueDate] = useState('');
+  const milestonesQuery = useQuery({
+    queryKey: ['project-milestones'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('project_milestones')
+        .select('id,project_id,name,due_date,completed_at,created_by')
+        .order('due_date', { nullsFirst: false });
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+  const milestonesByProject = useMemo(() => {
+    const groups = new Map();
+    for (const milestone of milestonesQuery.data ?? []) {
+      const current = groups.get(milestone.project_id) ?? [];
+      current.push(milestone);
+      groups.set(milestone.project_id, current);
+    }
+    return groups;
+  }, [milestonesQuery.data]);
+
+  useEffect(() => {
+    if (milestonesQuery.error) {
+      toast.error(t.milestoneLoadError, {
+        description: milestonesQuery.error.message,
+      });
+    }
+  }, [milestonesQuery.error, t.milestoneLoadError]);
   const locale = useLanguage().language === 'ro' ? 'ro-RO' : 'en-US';
   const todayKey = new Date().setHours(0, 0, 0, 0);
   const {
@@ -106,6 +143,44 @@ const ProjectOverview = ({ onEditProject, projects = [], tasks }) => {
   );
   const formatDate = (date) => dateFormatter.format(date);
 
+  const handleCreateMilestone = async (event, projectId) => {
+    event.preventDefault();
+    const name = milestoneName.trim();
+    if (!name || !userId) return;
+
+    const { error } = await supabase.from('project_milestones').insert({
+      project_id: projectId,
+      name,
+      due_date: milestoneDueDate || null,
+      created_by: userId,
+    });
+    if (error) {
+      toast.error(t.milestoneSaveError, { description: error.message });
+      return;
+    }
+
+    setMilestoneName('');
+    setMilestoneDueDate('');
+    setMilestoneProjectId(null);
+    queryClient.invalidateQueries({ queryKey: ['project-milestones'] });
+  };
+
+  const handleMilestoneToggle = async (milestone) => {
+    if (milestone.created_by !== userId) return;
+    const { error } = await supabase
+      .from('project_milestones')
+      .update({
+        completed_at: milestone.completed_at ? null : new Date().toISOString(),
+      })
+      .eq('id', milestone.id)
+      .eq('created_by', userId);
+    if (error) {
+      toast.error(t.milestoneUpdateError, { description: error.message });
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ['project-milestones'] });
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-3">
@@ -153,11 +228,22 @@ const ProjectOverview = ({ onEditProject, projects = [], tasks }) => {
                   deadline &&
                   deadline >= today &&
                   deadline <= new Date(today.getTime() + 14 * dayInMs);
+                const projectMilestones =
+                  milestonesByProject.get(project.id) ?? [];
+                const overdueMilestoneCount = projectMilestones.filter(
+                  (milestone) =>
+                    !milestone.completed_at &&
+                    milestone.due_date &&
+                    toDate(milestone.due_date) < today,
+                ).length;
                 const atRisk =
                   overdue > 0 ||
+                  overdueMilestoneCount > 0 ||
                   (hasOpenTasks && (deadlinePassed || deadlineSoon));
                 const health =
-                  total > 0 && completed === total
+                  total > 0 &&
+                  completed === total &&
+                  projectMilestones.every((milestone) => milestone.completed_at)
                     ? 'completed'
                     : atRisk
                       ? 'atRisk'
@@ -310,6 +396,103 @@ const ProjectOverview = ({ onEditProject, projects = [], tasks }) => {
                         )}
                         {!milestones.length && <span>{t.noMilestones}</span>}
                       </div>
+                    </div>
+                    <div className="mt-3 space-y-2 border-t pt-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-xs font-semibold">
+                          {t.projectMilestones}
+                        </h3>
+                        {overdueMilestoneCount > 0 && (
+                          <span className="text-[0.6875rem] text-warning-foreground">
+                            {overdueMilestoneCount} {t.milestonesOverdue}
+                          </span>
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setMilestoneProjectId((current) =>
+                              current === project.id ? null : project.id,
+                            )
+                          }
+                        >
+                          {t.addMilestone}
+                        </Button>
+                      </div>
+                      {projectMilestones.map((milestone) => (
+                        <div
+                          key={milestone.id}
+                          className="flex items-center justify-between gap-3 text-xs"
+                        >
+                          <button
+                            type="button"
+                            className="flex min-w-0 items-center gap-2 text-left focus-visible:ring-3 focus-visible:ring-ring/50"
+                            aria-pressed={Boolean(milestone.completed_at)}
+                            aria-label={`${milestone.completed_at ? t.reopenMilestone : t.completeMilestone}: ${milestone.name}`}
+                            disabled={milestone.created_by !== userId}
+                            onClick={() => handleMilestoneToggle(milestone)}
+                          >
+                            <span
+                              className={`size-3 shrink-0 rounded-full border ${
+                                milestone.completed_at
+                                  ? 'border-success bg-success'
+                                  : 'border-muted-foreground'
+                              }`}
+                            />
+                            <span
+                              className={
+                                milestone.completed_at
+                                  ? 'truncate line-through text-muted-foreground'
+                                  : 'truncate'
+                              }
+                            >
+                              {milestone.name}
+                            </span>
+                          </button>
+                          <span className="shrink-0 text-muted-foreground">
+                            {milestone.due_date
+                              ? formatDate(toDate(milestone.due_date))
+                              : t.noMilestoneDate}
+                          </span>
+                        </div>
+                      ))}
+                      {milestoneProjectId === project.id && (
+                        <form
+                          className="grid gap-2 rounded-md bg-muted/50 p-2 sm:grid-cols-[1fr_auto_auto] sm:items-end"
+                          onSubmit={(event) =>
+                            handleCreateMilestone(event, project.id)
+                          }
+                        >
+                          <div className="space-y-1">
+                            <Label htmlFor={`milestone-name-${project.id}`}>
+                              {t.milestoneName}
+                            </Label>
+                            <Input
+                              id={`milestone-name-${project.id}`}
+                              value={milestoneName}
+                              onChange={(event) =>
+                                setMilestoneName(event.target.value)
+                              }
+                              required
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label htmlFor={`milestone-date-${project.id}`}>
+                              {t.milestoneDueDate}
+                            </Label>
+                            <Input
+                              id={`milestone-date-${project.id}`}
+                              type="date"
+                              value={milestoneDueDate}
+                              onChange={(event) =>
+                                setMilestoneDueDate(event.target.value)
+                              }
+                            />
+                          </div>
+                          <Button type="submit">{t.saveMilestone}</Button>
+                        </form>
+                      )}
                     </div>
                   </div>
                 );
