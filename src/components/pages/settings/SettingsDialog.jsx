@@ -27,10 +27,25 @@ import {
 import { supportedLanguages, useLanguage } from '@/lib/i18n';
 import WorkspaceDataTools from './WorkspaceDataTools';
 
-const swatchByStyleId = {
-  nova: 'bg-blue-500',
-  vega: 'bg-teal-500',
-  maia: 'bg-amber-500',
+const shapeByStyleId = {
+  nova: 'rounded-full',
+  vega: 'rounded-md',
+  maia: 'rounded-lg',
+  lyra: 'rounded-none',
+  mira: 'rounded-sm',
+  luma: 'rounded-2xl',
+  sera: 'rounded-none',
+  rhea: 'rounded',
+};
+
+const swatchByThemeId = {
+  blue: 'bg-blue-500',
+  red: 'bg-red-500',
+  rose: 'bg-rose-500',
+  orange: 'bg-orange-500',
+  green: 'bg-green-500',
+  yellow: 'bg-yellow-400',
+  violet: 'bg-violet-500',
 };
 
 const SettingsDialog = ({
@@ -42,6 +57,8 @@ const SettingsDialog = ({
   onAnimationModeChange,
   style,
   onStyleChange,
+  theme,
+  onThemeChange,
   defaultTaskFilter,
   onDefaultTaskFilterChange,
   weekStartsOn,
@@ -55,9 +72,17 @@ const SettingsDialog = ({
     () =>
       t.styles.map((option) => ({
         ...option,
-        swatch: swatchByStyleId[option.id],
+        shape: shapeByStyleId[option.id],
       })),
     [t.styles],
+  );
+  const themeOptions = useMemo(
+    () =>
+      t.themes.map((option) => ({
+        ...option,
+        swatch: swatchByThemeId[option.id],
+      })),
+    [t.themes],
   );
 
   return (
@@ -95,7 +120,7 @@ const SettingsDialog = ({
                       className={`relative rounded-lg border p-3 text-left transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 ${selected ? 'border-primary bg-primary/5' : 'hover:border-primary/40 hover:bg-muted/50'}`}
                     >
                       <span
-                        className={`mb-3 block size-5 rounded-full ${option.swatch}`}
+                        className={`mb-3 block size-5 bg-primary ${option.shape}`}
                       />
                       <span className="block text-sm font-medium">
                         {option.name}
@@ -105,6 +130,37 @@ const SettingsDialog = ({
                       </span>
                       {selected && (
                         <Check className="absolute top-3 right-3 size-4 text-primary" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section>
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold">{t.themeTitle}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {t.themeDescription}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {themeOptions.map((option) => {
+                  const selected = theme === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => onThemeChange(option.id)}
+                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 ${selected ? 'border-primary bg-primary/5' : 'hover:border-primary/40 hover:bg-muted/50'}`}
+                    >
+                      <span
+                        className={`size-4 rounded-full ${option.swatch}`}
+                      />
+                      {option.name}
+                      {selected && (
+                        <Check className="ml-auto size-4 text-primary" />
                       )}
                     </button>
                   );

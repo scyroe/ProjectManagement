@@ -7,6 +7,25 @@ const taskFilterOptions = [
   'due-soon',
   'overdue',
 ];
+const styleOptions = [
+  'nova',
+  'vega',
+  'maia',
+  'lyra',
+  'mira',
+  'luma',
+  'sera',
+  'rhea',
+];
+const themeOptions = [
+  'blue',
+  'red',
+  'rose',
+  'orange',
+  'green',
+  'yellow',
+  'violet',
+];
 
 const readPreference = (key, allowedValues, fallback) => {
   try {
@@ -32,8 +51,11 @@ export function useWorkspacePreferences() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
-  const [style, setStyle] = useState(
-    () => window.localStorage.getItem('projectly-style') ?? 'nova',
+  const [style, setStyle] = useState(() =>
+    readPreference('projectly-style', styleOptions, 'nova'),
+  );
+  const [theme, setTheme] = useState(() =>
+    readPreference('projectly-theme', themeOptions, 'blue'),
   );
   const [defaultTaskFilter, setDefaultTaskFilter] = useState(() =>
     readPreference(
@@ -89,9 +111,11 @@ export function useWorkspacePreferences() {
       ? 'on'
       : 'off';
     document.documentElement.dataset.style = style;
+    document.documentElement.dataset.theme = theme;
     window.localStorage.setItem('projectly-color-mode', colorMode);
     window.localStorage.setItem('projectly-animation-mode', animationMode);
     window.localStorage.setItem('projectly-style', style);
+    window.localStorage.setItem('projectly-theme', theme);
     window.localStorage.setItem(
       'projectly-default-task-filter',
       defaultTaskFilter,
@@ -104,6 +128,7 @@ export function useWorkspacePreferences() {
     defaultTaskFilter,
     style,
     systemColorMode,
+    theme,
     weekStartsOn,
   ]);
 
@@ -116,8 +141,10 @@ export function useWorkspacePreferences() {
     setColorMode,
     setDefaultTaskFilter,
     setStyle,
+    setTheme,
     setWeekStartsOn,
     style,
+    theme,
     weekStartsOn,
   };
 }

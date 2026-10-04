@@ -20,12 +20,16 @@ const emptyForm = () => ({
 export function useProjectForm({ onCreateTask, onSaved, open, project }) {
   const t = useStrings().toasts.projectForm;
   const [form, setForm] = useState(emptyForm);
+  const [initialForm, setInitialForm] = useState(emptyForm);
   const [clients, setClients] = useState([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (open) setForm(emptyForm());
+    if (!open) return;
+    const initial = emptyForm();
+    setForm(initial);
+    setInitialForm(initial);
   }, [open]);
 
   useEffect(() => {
@@ -51,7 +55,7 @@ export function useProjectForm({ onCreateTask, onSaved, open, project }) {
       }
       if (!projectResult.error && projectResult.data) {
         const savedProject = projectResult.data;
-        setForm({
+        const loadedForm = {
           name: savedProject.name ?? '',
           code: savedProject.code ?? '',
           clientIds: (savedProject.project_clients ?? []).map(
@@ -62,7 +66,9 @@ export function useProjectForm({ onCreateTask, onSaved, open, project }) {
           startDate: savedProject.start_date ?? '',
           dueDate: savedProject.due_date ?? '',
           budget: savedProject.budget?.toString() ?? '',
-        });
+        };
+        setForm(loadedForm);
+        setInitialForm(loadedForm);
       }
       setLoadingOptions(false);
     };
@@ -141,6 +147,18 @@ export function useProjectForm({ onCreateTask, onSaved, open, project }) {
         form.clientIds.includes(client.id),
       ),
     };
+    const savedForm = {
+      ...form,
+      name,
+      code,
+      description: values.description ?? '',
+      status: values.status,
+      startDate: values.start_date ?? '',
+      dueDate: values.due_date ?? '',
+      budget: values.budget?.toString() ?? '',
+    };
+    setForm(savedForm);
+    setInitialForm(savedForm);
     onSaved(savedProject);
     if (!project && onCreateTask) {
       toast.success(t.projectCreated, {
@@ -159,6 +177,7 @@ export function useProjectForm({ onCreateTask, onSaved, open, project }) {
     clients,
     form,
     handleSubmit,
+    isDirty: JSON.stringify(form) !== JSON.stringify(initialForm),
     loadingOptions,
     saving,
     updateField,

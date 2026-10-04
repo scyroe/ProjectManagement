@@ -44,7 +44,7 @@ const ProjectBoard = ({ workspace }) => {
   }, [tasks]);
 
   return (
-    <Frame className="min-h-0 flex-1" stacked>
+    <Frame className="h-full min-h-0" stacked>
       <FrameHeader className="flex-row items-start justify-between gap-3">
         <div>
           <FrameTitle>{strings.projectBoard.title}</FrameTitle>
@@ -54,8 +54,13 @@ const ProjectBoard = ({ workspace }) => {
         </div>
         <FolderKanban className="size-5 text-primary" />
       </FrameHeader>
-      <FramePanel className="min-h-0 flex-1 overflow-auto p-3 shadow-none">
-        <div className="grid min-w-[60rem] grid-cols-5 gap-3">
+      <FramePanel className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-3 pb-0 shadow-none">
+        <div
+          className="grid h-full min-h-0 min-w-0 gap-3"
+          style={{
+            gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))`,
+          }}
+        >
           {columns.map((state) => {
             const columnTasks = tasksByState.get(state.id) ?? [];
             return (
@@ -64,7 +69,7 @@ const ProjectBoard = ({ workspace }) => {
                 role="listbox"
                 aria-label={`${state.name} tasks`}
                 tabIndex={0}
-                className="min-h-[28rem] rounded-lg bg-muted/60 p-2"
+                className="flex h-full min-h-0 min-w-0 flex-col rounded-lg bg-muted/60 p-2"
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={(event) => {
                   event.preventDefault();
@@ -81,7 +86,7 @@ const ProjectBoard = ({ workspace }) => {
                   </Badge>
                 </div>
                 <VirtualList
-                  className="max-h-96"
+                  className="min-h-0 flex-1"
                   estimateSize={110}
                   items={columnTasks}
                   itemClassName="pb-2"

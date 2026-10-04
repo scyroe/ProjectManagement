@@ -245,8 +245,36 @@
     "title": "Proiecte",
     "description": "Urmărește progresul livrării pentru fiecare proiect activ.",
     "addProject": "Adaugă proiect",
-    "progressByClientTitle": "Progres pe client",
-    "editProject": "Editează proiectul"
+    "searchPlaceholder": "Caută proiecte...",
+    "loading": "Se încarcă proiectele...",
+    "empty": "Nu există proiecte.",
+    "emptyDescription": "Creează un proiect pentru a organiza sarcinile, termenele și progresul.",
+    "noMatchingProjects": "Niciun proiect nu corespunde filtrelor selectate.",
+    "searchProjects": "Caută proiecte",
+    "closeSearch": "Închide căutarea",
+    "statusFilter": "Stare",
+    "clientFilter": "Client",
+    "filters": {
+      "all": "Toate",
+      "allClients": "Toți clienții",
+      "planning": "Planificare",
+      "active": "Active",
+      "paused": "Suspendate",
+      "completed": "Finalizate",
+      "archived": "Arhivate"
+    },
+    "tasksSuffix": "sarcini",
+    "overdueSuffix": "restante"
+  },
+  "projectWorkspace": {
+    "tabListLabel": "Secțiuni proiect",
+    "tabs": {
+      "details": "Detalii",
+      "tasks": "Sarcini",
+      "activity": "Activitate",
+      "board": "Panou"
+    },
+    "tasksTitle": "Sarcinile proiectului"
   },
   "calendarPage": {
     "title": "Calendar",
@@ -312,54 +340,65 @@
     "description": "Gestionează conturile clienților cărora le aparțin proiectele.",
     "addClient": "Adaugă client",
     "searchPlaceholder": "Caută clienți...",
+    "searchClients": "Caută clienți",
+    "closeSearch": "Închide căutarea",
+    "projectFilter": "Proiecte",
+    "taskFilter": "Atenție la sarcini",
+    "filters": {
+      "allClients": "Toți clienții",
+      "withProjects": "Cu proiecte",
+      "withoutProjects": "Fără proiecte",
+      "allTasks": "Orice activitate a sarcinilor",
+      "overdueTasks": "Au sarcini restante",
+      "dueSoonTasks": "Sarcini scadente în curând"
+    },
     "loading": "Se încarcă clienții...",
     "empty": "Niciun client găsit.",
     "emptyDescription": "Adaugă primul client pentru a organiza proiectele și datele de contact.",
-    "noMatchingClients": "Niciun client nu corespunde căutării. Încearcă alt nume sau altă companie.",
+    "noMatchingClients": "Niciun client nu corespunde căutării sau filtrelor.",
     "createFirstClient": "Creează primul client",
     "projectsSuffix": "proiecte",
     "progressLabel": "Progres",
     "editClient": "Editează clientul",
+    "noCompany": "Fără companie sau e-mail",
     "overdueTasks": "restante",
     "dueSoonTasks": "scadente în curând",
     "noImmediateRisk": "Fără riscuri imediate de livrare"
   },
+  "clientWorkspace": {
+    "tabListLabel": "Secțiuni client",
+    "tabs": {
+      "details": "Detalii",
+      "projects": "Proiecte",
+      "activity": "Activitate",
+      "statistics": "Statistici"
+    },
+    "detailsTitle": "Detalii client",
+    "detailsDescription": "Informații de contact și cont pentru acest client.",
+    "company": "Companie",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "projectCount": "Proiecte",
+    "notSet": "Nesetat",
+    "notes": "Note",
+    "noNotes": "Nu au fost adăugate note.",
+    "projectsTitle": "Proiectele clientului",
+    "noProjects": "Acest client nu are încă proiecte.",
+    "editProject": "Editează proiectul",
+    "tasks": "sarcini",
+    "progress": "progres",
+    "statisticsTitle": "Statistici client",
+    "statisticsDescription": "Starea livrării pentru proiectele acestui client.",
+    "activeProjects": "Proiecte active",
+    "completedTasks": "Sarcini finalizate",
+    "overdueTasks": "Sarcini restante",
+    "deliveryTitle": "Livrare generală",
+    "completion": "Finalizarea sarcinilor",
+    "dueSoonTasks": "scadente în curând"
+  },
   "projectBoard": {
     "title": "Panou de proiecte",
     "description": "Mută sarcinile prin fiecare etapă a proiectului"
-  },
-  "projectOverview": {
-    "completedWork": "Muncă finalizată",
-    "overdueWork": "Muncă restantă",
-    "contributors": "Contribuitori",
-    "title": "Prezentare generală proiecte",
-    "description": "Progres, risc de livrare și efort estimat",
-    "empty": "Nu există încă date despre proiecte.",
-    "emptyDescription": "Creează un proiect pentru a organiza sarcinile, termenele și progresul.",
-    "createProject": "Creează un proiect",
-    "overdueSuffix": "restante",
-    "estimatedSuffix": "estimate",
-    "editProject": "Editează proiectul",
-    "health": {
-      "onTrack": "În grafic",
-      "atRisk": "În risc",
-      "completed": "Finalizat"
-    },
-    "timeline": "Cronologie",
-    "moreMilestones": "alte etape",
-    "noMilestones": "Nicio sarcină datată",
-    "projectMilestones": "Etape ale proiectului",
-    "milestonesOverdue": "restante",
-    "addMilestone": "Adaugă etapă",
-    "milestoneName": "Numele etapei",
-    "milestoneDueDate": "Termen limită",
-    "saveMilestone": "Salvează",
-    "noMilestoneDate": "Fără dată",
-    "completeMilestone": "Finalizează etapa",
-    "reopenMilestone": "Redeschide etapa",
-    "milestoneLoadError": "Nu s-au putut încărca etapele proiectului",
-    "milestoneSaveError": "Nu s-a putut salva etapa proiectului",
-    "milestoneUpdateError": "Nu s-a putut actualiza etapa proiectului"
   },
   "teamWorkload": {
     "title": "Volumul de lucru al echipei",
@@ -479,18 +518,54 @@
       {
         "id": "nova",
         "name": "Nova",
-        "description": "Albastru rece și precis"
+        "description": "Echilibrat și rotunjit"
       },
       {
         "id": "vega",
         "name": "Vega",
-        "description": "Turcoaz calm și compact"
+        "description": "Compact, cu colțuri mai strânse"
       },
       {
         "id": "maia",
         "name": "Maia",
-        "description": "Chihlimbar cald și deschis"
+        "description": "Aerisit, cu colțuri mai rotunjite"
+      },
+      {
+        "id": "lyra",
+        "name": "Lyra",
+        "description": "Simplu și geometric"
+      },
+      {
+        "id": "mira",
+        "name": "Mira",
+        "description": "Echilibrat, cu colțuri rotunjite"
+      },
+      {
+        "id": "luma",
+        "name": "Luma",
+        "description": "Aerisit și rotunjit"
+      },
+      {
+        "id": "sera",
+        "name": "Sera",
+        "description": "Curat și drept"
+      },
+      {
+        "id": "rhea",
+        "name": "Rhea",
+        "description": "Clar, cu rotunjire discretă"
       }
+    ],
+    "themeTitle": "Temă",
+    "themeDescription": "Alege culoarea de accent pentru workspace.",
+    "themes": [
+      { "id": "blue", "name": "Albastru" },
+      { "id": "red", "name": "Roșu" },
+      { "id": "rose", "name": "Roz" },
+      { "id": "orange", "name": "Portocaliu" },
+      { "id": "green", "name": "Verde" },
+      { "id": "yellow", "name": "Galben" },
+      { "id": "violet", "name": "Violet" }
     ],
     "colorModeTitle": "Mod de culoare",
     "colorModeDescription": "Alege cum ar trebui să arate workspace-ul.",
@@ -741,12 +816,17 @@
     "visible": "vizibile",
     "workingNow": "Lucrezi acum",
     "searchPlaceholder": "Caută sarcini...",
+    "searchTasks": "Caută sarcini",
+    "closeSearch": "Închide căutarea",
+    "statusFilter": "Stare",
+    "projectFilter": "Proiect",
     "tabListLabel": "Filtre sarcini",
     "filters": {
-      "current": "Sarcini curente",
-      "active": "Sarcină activă",
-      "completed": "Sarcini finalizate",
-      "due-soon": "Scadente săptămâna asta",
+      "all": "Toate sarcinile",
+      "allProjects": "Toate proiectele",
+      "active": "Active",
+      "completed": "Finalizate",
+      "dueWeekend": "Scadente în weekend",
       "overdue": "Restante"
     },
     "loading": "Se încarcă sarcinile...",

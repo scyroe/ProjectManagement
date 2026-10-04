@@ -28,6 +28,18 @@ const isOverdue = (task, today) => {
   return new Date(`${task.due_date}T00:00:00`) < today;
 };
 
+const isDueThisWeekend = (task, today) => {
+  if (!task.due_date || task.state?.is_completed) return false;
+  const weekendStart = new Date(today);
+  const daysUntilSaturday =
+    today.getDay() === 0 ? -1 : (6 - today.getDay() + 7) % 7;
+  weekendStart.setDate(weekendStart.getDate() + daysUntilSaturday);
+  const nextMonday = new Date(weekendStart);
+  nextMonday.setDate(nextMonday.getDate() + 2);
+  const dueDate = new Date(`${task.due_date}T00:00:00`);
+  return dueDate >= weekendStart && dueDate < nextMonday;
+};
+
 const matchesSearchQuery = (task, rawQuery) => {
   const query = rawQuery.toLocaleLowerCase().trim();
   if (!query) return false;
@@ -214,10 +226,15 @@ export function useTaskWorkspace({
 
   const todayKey = new Date().setHours(0, 0, 0, 0);
   const filteredTasks = useMemo(() => {
+    if (filter === 'all') return tasks;
     if (filter === 'completed')
       return tasks.filter((task) => task.state?.is_completed);
     if (filter === 'active')
       return tasks.filter((task) => task.id === runningTaskId);
+    if (filter === 'due-weekend') {
+      const today = new Date(todayKey);
+      return tasks.filter((task) => isDueThisWeekend(task, today));
+    }
     if (filter === 'due-soon') {
       const today = new Date(todayKey);
       const dueSoonEnd = new Date(today.getTime() + 7 * dayInMs);

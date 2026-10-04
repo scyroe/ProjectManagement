@@ -7,7 +7,7 @@ const clientsQueryKey = ['clients'];
 const dayInMs = 24 * 60 * 60 * 1000;
 
 const clientSelect =
-  'id,name,email,company,phone,notes,created_at,project_clients(project:projects(id,name,code,status,start_date,due_date,task_projects(task:tasks(id,due_date,state:task_states(is_completed)))))';
+  'id,name,email,company,phone,notes,created_at,project_clients(project:projects(id,name,code,description,budget,status,start_date,due_date,task_projects(task:tasks(id,due_date,state:task_states(is_completed)))))';
 
 const getTaskProgress = (task, today, dueSoonEnd) => {
   const completed = Boolean(task.state?.is_completed);
@@ -48,6 +48,8 @@ const buildClientProgress = (client, today, dueSoonEnd) => {
       id: project.id,
       name: project.name,
       code: project.code,
+      description: project.description,
+      budget: project.budget,
       status: project.status,
       start_date: project.start_date,
       due_date: project.due_date,
@@ -158,6 +160,8 @@ export function useClients({ enabled = true }) {
       id: createdProject.id,
       name: createdProject.name,
       code: createdProject.code,
+      description: createdProject.description,
+      budget: createdProject.budget,
       status: createdProject.status,
       start_date: createdProject.start_date,
       due_date: createdProject.due_date,
@@ -188,6 +192,8 @@ export function useClients({ enabled = true }) {
       id: updatedProject.id,
       name: updatedProject.name,
       code: updatedProject.code,
+      description: updatedProject.description,
+      budget: updatedProject.budget,
       status: updatedProject.status,
       start_date: updatedProject.start_date,
       due_date: updatedProject.due_date,

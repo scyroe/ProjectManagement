@@ -1,19 +1,9 @@
-import {
-  Activity,
-  CheckCircle2,
-  ListTodo,
-  Play,
-  Plus,
-  Search,
-  Square,
-} from 'lucide-react';
+import { ListTodo, Play, Plus, Square } from 'lucide-react';
 import { m as motion } from 'motion/react';
 import { useEffect } from 'react';
-import {
-  AnimatedTabIndicator,
-  AnimatedTabPanel,
-} from '@/components/Common/animated-tabs';
+import { AnimatedTabPanel } from '@/components/Common/animated-tabs';
 import { useAnimationsEnabled } from '@/components/Common/animation-preferences';
+import ListFilterToolbar from '@/components/Common/ListFilterToolbar';
 import { dateLabel, priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
 import {
@@ -24,11 +14,6 @@ import {
   FrameTitle,
 } from '@/components/reui/frame';
 import { Button } from '@/components/ui/button';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
 
@@ -47,6 +32,13 @@ const TaskList = ({
   onNewTask,
   recentlyCreatedTaskId,
   onTaskAnimationComplete,
+  title,
+  description,
+  showSummaryHeader = true,
+  projectOptions = [],
+  projectFilter = 'all',
+  onProjectFilterChange,
+  showProjectFilter = true,
 }) => {
   const animationsEnabled = useAnimationsEnabled();
   const strings = useStrings();
@@ -61,27 +53,29 @@ const TaskList = ({
   return (
     <Frame className="h-full min-h-0" stacked dense>
       <FrameHeader className="gap-2 border-b p-3 sm:gap-3 sm:p-4">
-        <div className="flex items-center justify-between gap-3 rounded-xl bg-primary/5 p-3 sm:p-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-              <ListTodo className="size-4" />
+        {showSummaryHeader && (
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-primary/5 p-3 sm:p-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+                <ListTodo className="size-4" />
+              </div>
+              <div className="min-w-0">
+                <FrameTitle>{title ?? t.title}</FrameTitle>
+                <FrameDescription className="truncate">
+                  {description ?? t.description}
+                </FrameDescription>
+              </div>
             </div>
-            <div className="min-w-0">
-              <FrameTitle>{t.title}</FrameTitle>
-              <FrameDescription className="truncate">
-                {t.description}
-              </FrameDescription>
+            <div className="shrink-0 text-right">
+              <div className="text-lg font-semibold leading-none">
+                {tasks.length}
+              </div>
+              <div className="mt-1 text-[0.78125rem] font-medium uppercase tracking-wide text-muted-foreground">
+                {t.visible}
+              </div>
             </div>
           </div>
-          <div className="shrink-0 text-right">
-            <div className="text-lg font-semibold leading-none">
-              {tasks.length}
-            </div>
-            <div className="mt-1 text-[0.78125rem] font-medium uppercase tracking-wide text-muted-foreground">
-              {t.visible}
-            </div>
-          </div>
-        </div>
+        )}
         {runningTaskId && (
           <div className="flex items-center gap-2 rounded-lg border border-success/25 bg-success/5 px-3 py-2 text-xs text-success-foreground">
             <span className="size-2 animate-pulse rounded-full bg-success" />
@@ -91,62 +85,47 @@ const TaskList = ({
             </span>
           </div>
         )}
-        <div className="flex items-center gap-2">
-          <InputGroup className="bg-background">
-            <InputGroupAddon align="inline-start">
-              <Search />
-            </InputGroupAddon>
-            <InputGroupInput
-              placeholder={t.searchPlaceholder}
-              value={query}
-              onChange={(event) => onQueryChange(event.target.value)}
-            />
-          </InputGroup>
-          <Button
-            type="button"
-            size="icon"
-            className="shrink-0"
-            aria-label={t.newTask}
-            title={t.newTask}
-            onClick={onNewTask}
-          >
-            <Plus />
-          </Button>
-        </div>
-        <div
-          className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1"
-          role="tablist"
-          aria-label={t.tabListLabel}
-        >
-          {[
-            ['current', t.filters.current, ListTodo],
-            ['active', t.filters.active, Activity],
-            ['completed', t.filters.completed, CheckCircle2],
-            ['due-soon', t.filters['due-soon'], ListTodo],
-            ['overdue', t.filters.overdue, Activity],
-          ].map(([value, label, Icon]) => (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={filter === value}
-              onClick={() => onFilterChange(value)}
-              className={`relative flex min-h-10 items-center justify-start gap-1.5 rounded-md px-1 py-1.5 text-xs font-medium leading-tight transition-colors sm:min-h-0 sm:px-2 ${
-                filter === value
-                  ? 'text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
-            >
-              {filter === value && (
-                <AnimatedTabIndicator layoutId="task-list-filter-tabs" />
-              )}
-              <span className="relative z-10 flex items-center gap-1.5">
-                <Icon className="size-3.5 shrink-0" />
-                <span>{label}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+        <ListFilterToolbar
+          addLabel={t.newTask}
+          closeSearchLabel={t.closeSearch}
+          onAdd={onNewTask}
+          query={query}
+          queryPlaceholder={t.searchPlaceholder}
+          searchLabel={t.searchTasks}
+          onQueryChange={onQueryChange}
+          primaryLabel={t.statusFilter}
+          primaryValue={
+            filter === 'current'
+              ? 'active'
+              : filter === 'due-soon'
+                ? 'due-weekend'
+                : filter
+          }
+          primaryOptions={[
+            { value: 'all', label: t.filters.all },
+            { value: 'active', label: t.filters.active },
+            { value: 'completed', label: t.filters.completed },
+            { value: 'overdue', label: t.filters.overdue },
+            { value: 'due-weekend', label: t.filters.dueWeekend },
+          ]}
+          onPrimaryChange={(value) =>
+            onFilterChange(value === 'active' ? 'current' : value)
+          }
+          secondaryOptions={
+            showProjectFilter
+              ? [
+                  { value: 'all', label: t.filters.allProjects },
+                  ...projectOptions.map((project) => ({
+                    value: project.id,
+                    label: project.name,
+                  })),
+                ]
+              : undefined
+          }
+          secondaryLabel={t.projectFilter}
+          secondaryValue={projectFilter}
+          onSecondaryChange={onProjectFilterChange}
+        />
       </FrameHeader>
       <FramePanel className="min-h-0 flex-1 overflow-hidden p-0 shadow-none">
         <AnimatedTabPanel activeId={filter} className="h-full">
@@ -162,7 +141,7 @@ const TaskList = ({
           )}
           {!loading && !error && tasks.length > 0 && (
             <VirtualList
-              ariaLabel={t.title}
+              ariaLabel={title ?? t.title}
               className="h-full p-2 sm:p-3"
               estimateSize={56}
               itemClassName="pb-1"

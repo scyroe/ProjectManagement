@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ResizableResponsive } from '@/components/reui/resizable';
 import TaskActionNoteDialog from './TaskActionNoteDialog';
 import TaskInspector from './TaskInspector';
@@ -6,6 +6,7 @@ import TaskList from './TaskList';
 
 const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
   const [actionRequest, setActionRequest] = useState(null);
+  const [projectFilter, setProjectFilter] = useState('all');
   const {
     error,
     filter,
@@ -23,6 +24,32 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
     toggleTimer,
     visibleTasks,
   } = workspace;
+  const projectOptions = useMemo(() => {
+    const projects = new Map();
+    for (const task of workspace.tasks) {
+      for (const project of [
+        task.project,
+        ...(task.linked_projects ?? []).map((link) => link.project),
+      ]) {
+        if (project) projects.set(project.id, project);
+      }
+    }
+    return Array.from(projects.values()).sort((first, second) =>
+      first.name.localeCompare(second.name),
+    );
+  }, [workspace.tasks]);
+  const projectFilteredTasks = useMemo(
+    () =>
+      projectFilter === 'all'
+        ? visibleTasks
+        : visibleTasks.filter((task) =>
+            [
+              task.project,
+              ...(task.linked_projects ?? []).map((link) => link.project),
+            ].some((project) => project?.id === projectFilter),
+          ),
+    [projectFilter, visibleTasks],
+  );
 
   const handleTimerToggle = (task) => {
     if (runningTaskId !== task.id) {
@@ -45,7 +72,7 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
         <ResizableResponsive
           first={
             <TaskList
-              tasks={visibleTasks}
+              tasks={projectFilteredTasks}
               loading={loading}
               error={error}
               selectedId={selected?.id}
@@ -54,6 +81,9 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
               onQueryChange={setQuery}
               filter={filter}
               onFilterChange={setFilter}
+              projectOptions={projectOptions}
+              projectFilter={projectFilter}
+              onProjectFilterChange={setProjectFilter}
               runningTaskId={runningTaskId}
               onToggleTimer={handleTimerToggle}
               onNewTask={onNewTask}

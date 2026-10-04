@@ -12,25 +12,27 @@ const emptyForm = () => ({
   phone: '',
   notes: '',
 });
+const formFields = Object.keys(emptyForm());
 
 export function useClientForm({ client, onCreateProject, onSaved, open }) {
   const t = useStrings().toasts.clientForm;
   const [form, setForm] = useState(emptyForm);
+  const [initialForm, setInitialForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setForm(
-        client
-          ? {
-              name: client.name ?? '',
-              email: client.email ?? '',
-              company: client.company ?? '',
-              phone: client.phone ?? '',
-              notes: client.notes ?? '',
-            }
-          : emptyForm(),
-      );
+      const nextForm = client
+        ? {
+            name: client.name ?? '',
+            email: client.email ?? '',
+            company: client.company ?? '',
+            phone: client.phone ?? '',
+            notes: client.notes ?? '',
+          }
+        : emptyForm();
+      setForm(nextForm);
+      setInitialForm(nextForm);
     }
   }, [client, open]);
 
@@ -81,5 +83,9 @@ export function useClientForm({ client, onCreateProject, onSaved, open }) {
     setSaving(false);
   };
 
-  return { form, handleSubmit, saving, updateField };
+  const isDirty = formFields.some(
+    (field) => form[field] !== initialForm[field],
+  );
+
+  return { form, handleSubmit, isDirty, saving, updateField };
 }

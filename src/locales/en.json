@@ -248,8 +248,36 @@
     "title": "Projects",
     "description": "Track delivery progress across every active engagement.",
     "addProject": "Add project",
-    "progressByClientTitle": "Progress by client",
-    "editProject": "Edit project"
+    "searchPlaceholder": "Search projects...",
+    "loading": "Loading projects...",
+    "empty": "No projects found.",
+    "emptyDescription": "Create a project to organize tasks, deadlines, and progress.",
+    "noMatchingProjects": "No projects match your filters.",
+    "searchProjects": "Search projects",
+    "closeSearch": "Close search",
+    "statusFilter": "Status",
+    "clientFilter": "Client",
+    "filters": {
+      "all": "All",
+      "allClients": "All clients",
+      "planning": "Planning",
+      "active": "Active",
+      "paused": "Paused",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "tasksSuffix": "tasks",
+    "overdueSuffix": "overdue"
+  },
+  "projectWorkspace": {
+    "tabListLabel": "Project sections",
+    "tabs": {
+      "details": "Details",
+      "tasks": "Tasks",
+      "activity": "Activity",
+      "board": "Board"
+    },
+    "tasksTitle": "Project tasks"
   },
   "calendarPage": {
     "title": "Calendar",
@@ -315,54 +343,65 @@
     "description": "Manage the client accounts your projects belong to.",
     "addClient": "Add client",
     "searchPlaceholder": "Search clients...",
+    "searchClients": "Search clients",
+    "closeSearch": "Close search",
+    "projectFilter": "Projects",
+    "taskFilter": "Task attention",
+    "filters": {
+      "allClients": "All clients",
+      "withProjects": "With projects",
+      "withoutProjects": "Without projects",
+      "allTasks": "Any task activity",
+      "overdueTasks": "Has overdue tasks",
+      "dueSoonTasks": "Tasks due soon"
+    },
     "loading": "Loading clients...",
     "empty": "No clients found.",
     "emptyDescription": "Add your first client to keep projects and contact details together.",
-    "noMatchingClients": "No clients match your search. Try a different name or company.",
+    "noMatchingClients": "No clients match your search or filters.",
     "createFirstClient": "Create your first client",
     "projectsSuffix": "projects",
     "progressLabel": "Progress",
     "editClient": "Edit client",
+    "noCompany": "No company or email",
     "overdueTasks": "overdue",
     "dueSoonTasks": "due soon",
     "noImmediateRisk": "No immediate delivery risks"
   },
+  "clientWorkspace": {
+    "tabListLabel": "Client sections",
+    "tabs": {
+      "details": "Details",
+      "projects": "Projects",
+      "activity": "Activity",
+      "statistics": "Statistics"
+    },
+    "detailsTitle": "Client details",
+    "detailsDescription": "Contact and account information for this client.",
+    "company": "Company",
+    "email": "Email",
+    "phone": "Phone",
+    "projectCount": "Projects",
+    "notSet": "Not set",
+    "notes": "Notes",
+    "noNotes": "No notes have been added.",
+    "projectsTitle": "Client projects",
+    "noProjects": "This client has no projects yet.",
+    "editProject": "Edit project",
+    "tasks": "tasks",
+    "progress": "progress",
+    "statisticsTitle": "Client statistics",
+    "statisticsDescription": "Delivery health across this client's projects.",
+    "activeProjects": "Active projects",
+    "completedTasks": "Completed tasks",
+    "overdueTasks": "Overdue tasks",
+    "deliveryTitle": "Overall delivery",
+    "completion": "Task completion",
+    "dueSoonTasks": "due soon"
+  },
   "projectBoard": {
     "title": "Project board",
     "description": "Move work through each project stage"
-  },
-  "projectOverview": {
-    "completedWork": "Completed work",
-    "overdueWork": "Overdue work",
-    "contributors": "Contributors",
-    "title": "Project overview",
-    "description": "Progress, delivery risk, and estimated effort",
-    "empty": "No project data yet.",
-    "emptyDescription": "Create a project to organize tasks, deadlines, and progress.",
-    "createProject": "Create a project",
-    "overdueSuffix": "overdue",
-    "estimatedSuffix": "estimated",
-    "editProject": "Edit project",
-    "health": {
-      "onTrack": "On track",
-      "atRisk": "At risk",
-      "completed": "Complete"
-    },
-    "timeline": "Timeline",
-    "moreMilestones": "more milestones",
-    "noMilestones": "No dated tasks",
-    "projectMilestones": "Project milestones",
-    "milestonesOverdue": "overdue",
-    "addMilestone": "Add milestone",
-    "milestoneName": "Milestone name",
-    "milestoneDueDate": "Due date",
-    "saveMilestone": "Save",
-    "noMilestoneDate": "No date",
-    "completeMilestone": "Complete milestone",
-    "reopenMilestone": "Reopen milestone",
-    "milestoneLoadError": "Could not load project milestones",
-    "milestoneSaveError": "Could not save project milestone",
-    "milestoneUpdateError": "Could not update project milestone"
   },
   "teamWorkload": {
     "title": "Team workload",
@@ -479,9 +518,41 @@
     "styleTitle": "Style",
     "styleDescription": "ReUI-inspired token presets",
     "styles": [
-      { "id": "nova", "name": "Nova", "description": "Cool blue and precise" },
-      { "id": "vega", "name": "Vega", "description": "Calm teal and compact" },
-      { "id": "maia", "name": "Maia", "description": "Warm amber and open" }
+      { "id": "nova", "name": "Nova", "description": "Balanced and rounded" },
+      {
+        "id": "vega",
+        "name": "Vega",
+        "description": "Compact with tighter corners"
+      },
+      {
+        "id": "maia",
+        "name": "Maia",
+        "description": "Open with softer corners"
+      },
+      { "id": "lyra", "name": "Lyra", "description": "Sharp and minimal" },
+      {
+        "id": "mira",
+        "name": "Mira",
+        "description": "Balanced with soft corners"
+      },
+      { "id": "luma", "name": "Luma", "description": "Airy and rounded" },
+      { "id": "sera", "name": "Sera", "description": "Clean and square" },
+      {
+        "id": "rhea",
+        "name": "Rhea",
+        "description": "Crisp with subtle rounding"
+      }
+    ],
+    "themeTitle": "Theme",
+    "themeDescription": "Choose the accent color for your workspace.",
+    "themes": [
+      { "id": "blue", "name": "Blue" },
+      { "id": "red", "name": "Red" },
+      { "id": "rose", "name": "Rose" },
+      { "id": "orange", "name": "Orange" },
+      { "id": "green", "name": "Green" },
+      { "id": "yellow", "name": "Yellow" },
+      { "id": "violet", "name": "Violet" }
     ],
     "colorModeTitle": "Color mode",
     "colorModeDescription": "Choose how the workspace should appear.",
@@ -732,12 +803,17 @@
     "visible": "visible",
     "workingNow": "Working now",
     "searchPlaceholder": "Search tasks...",
+    "searchTasks": "Search tasks",
+    "closeSearch": "Close search",
+    "statusFilter": "Status",
+    "projectFilter": "Project",
     "tabListLabel": "Task filters",
     "filters": {
-      "current": "Current tasks",
-      "active": "Active task",
-      "completed": "Completed tasks",
-      "due-soon": "Due this week",
+      "all": "All tasks",
+      "allProjects": "All projects",
+      "active": "Active",
+      "completed": "Completed",
+      "dueWeekend": "Due this weekend",
       "overdue": "Overdue"
     },
     "loading": "Loading tasks...",
