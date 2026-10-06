@@ -2,14 +2,8 @@ import { cn } from 'cn';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useDataGrid } from '@/components/reui/data-grid/data-grid';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import VirtualSelect from '@/components/ui/virtual-select';
 
 /**
  * The adaptive window: first page, the run around the current one, last page,
@@ -147,36 +141,22 @@ function DataGridPagination(props) {
             <div className="text-muted-foreground text-sm">
               {mergedProps.rowsPerPageLabel}
             </div>
-            <Select
+            <VirtualSelect
+              ariaLabel={mergedProps.rowsPerPageLabel}
+              searchLabel={mergedProps.rowsPerPageLabel}
               value={`${pageSize}`}
-              onValueChange={(value) => {
+              onChange={(value) => {
                 const newPageSize = Number(value);
                 table.setPageSize(newPageSize);
               }}
-            >
-              {/* w-fit with a min, never a fixed width: a fixed w-16 clipped
-                  the value "100" by 1px at nova's paddings, while fit-content
-                  grows the trigger for 3-digit sizes and the min keeps the
-                  1-2 digit ones from collapsing narrower than 64px. */}
-              <SelectTrigger
-                aria-label={mergedProps.rowsPerPageLabel}
-                className="w-fit min-w-16"
-                size="sm"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent
-                align="start"
-                alignItemWithTrigger={false}
-                className="min-w-(--anchor-width)"
-              >
-                {mergedProps.sizes?.map((size) => (
-                  <SelectItem key={size} value={`${size}`}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder={`${pageSize}`}
+              size="sm"
+              triggerClassName="w-fit min-w-16"
+              options={(mergedProps.sizes ?? []).map((size) => ({
+                value: `${size}`,
+                label: `${size}`,
+              }))}
+            />
           </>
         )}
       </div>

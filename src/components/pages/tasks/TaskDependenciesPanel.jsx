@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import MultiSelect from '@/components/ui/multi-select';
+import VirtualSelect from '@/components/ui/virtual-select';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
@@ -121,8 +121,11 @@ const TaskDependenciesPanel = ({ task, tasks }) => {
         <Label htmlFor="task-dependencies">
           {t.taskDependencies.dependsOn}
         </Label>
-        <MultiSelect
+        <VirtualSelect
           id="task-dependencies"
+          ariaLabel={t.taskDependencies.dependsOn}
+          searchLabel={t.taskDependencies.dependsOn}
+          multiple
           values={selectedIds}
           onChange={setSelectedIds}
           options={options}

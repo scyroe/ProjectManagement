@@ -17,13 +17,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import VirtualSelect from '@/components/ui/virtual-select';
 import { supportedLanguages, useLanguage } from '@/lib/i18n';
 import WorkspaceDataTools from './WorkspaceDataTools';
 
@@ -274,27 +268,20 @@ const SettingsDialog = ({
                   >
                     {t.defaultTaskFilterTitle}
                   </label>
-                  <Select
+                  <VirtualSelect
+                    ariaLabel={t.defaultTaskFilterTitle}
+                    searchLabel={t.defaultTaskFilterTitle}
                     value={defaultTaskFilter}
-                    onValueChange={onDefaultTaskFilterChange}
-                  >
-                    <SelectTrigger id="default-task-filter">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[
-                        ['current', t.taskFilters.current],
-                        ['active', t.taskFilters.active],
-                        ['completed', t.taskFilters.completed],
-                        ['due-soon', t.taskFilters.dueSoon],
-                        ['overdue', t.taskFilters.overdue],
-                      ].map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onChange={onDefaultTaskFilterChange}
+                    options={[
+                      ['current', t.taskFilters.current],
+                      ['active', t.taskFilters.active],
+                      ['completed', t.taskFilters.completed],
+                      ['due-soon', t.taskFilters.dueSoon],
+                      ['overdue', t.taskFilters.overdue],
+                    ].map(([value, label]) => ({ value, label }))}
+                    id="default-task-filter"
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label
@@ -303,20 +290,17 @@ const SettingsDialog = ({
                   >
                     {t.weekStartTitle}
                   </label>
-                  <Select
+                  <VirtualSelect
+                    id="week-start-day"
+                    ariaLabel={t.weekStartTitle}
+                    searchLabel={t.weekStartTitle}
                     value={String(weekStartsOn)}
-                    onValueChange={(value) =>
-                      onWeekStartsOnChange(Number(value))
-                    }
-                  >
-                    <SelectTrigger id="week-start-day">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">{t.sunday}</SelectItem>
-                      <SelectItem value="1">{t.monday}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    onChange={(value) => onWeekStartsOnChange(Number(value))}
+                    options={[
+                      { value: '0', label: t.sunday },
+                      { value: '1', label: t.monday },
+                    ]}
+                  />
                 </div>
               </div>
             </section>

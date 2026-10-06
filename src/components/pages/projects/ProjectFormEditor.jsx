@@ -3,15 +3,8 @@ import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import FieldLabel from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
-import MultiSelect from '@/components/ui/multi-select';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import VirtualSelect from '@/components/ui/virtual-select';
 import { useProjectForm } from '@/hooks/projects/use-project-form';
 import { useStrings } from '@/lib/i18n';
 
@@ -108,8 +101,11 @@ function ProjectFormEditor({
         >
           {t.clientLabel}
         </FieldLabel>
-        <MultiSelect
+        <VirtualSelect
           id={fieldIds.clients}
+          ariaLabel={t.clientLabel}
+          searchLabel={t.clientLabel}
+          multiple
           disabled={loadingOptions}
           required
           placeholder={loadingOptions ? t.loadingClients : t.selectClient}
@@ -138,21 +134,18 @@ function ProjectFormEditor({
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div className="space-y-2">
             <FieldLabel htmlFor={fieldIds.status}>{t.statusLabel}</FieldLabel>
-            <Select
+            <VirtualSelect
+              id={fieldIds.status}
+              ariaLabel={t.statusLabel}
+              searchLabel={t.statusLabel}
               value={form.status}
-              onValueChange={(value) => updateField('status', value)}
-            >
-              <SelectTrigger id={fieldIds.status} className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {statuses.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={(value) => updateField('status', value)}
+              options={statuses.map((status) => ({
+                value: status,
+                label: status,
+              }))}
+              triggerClassName="w-full"
+            />
           </div>
           <div className="space-y-2">
             <FieldLabel htmlFor={fieldIds.budget}>{t.budgetLabel}</FieldLabel>

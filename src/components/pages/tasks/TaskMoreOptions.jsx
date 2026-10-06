@@ -1,12 +1,6 @@
 import FieldLabel from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import VirtualSelect from '@/components/ui/virtual-select';
 
 function TaskMoreOptions({ form, onFieldChange, t }) {
   return (
@@ -29,20 +23,20 @@ function TaskMoreOptions({ form, onFieldChange, t }) {
         </div>
         <div className="flex min-w-0 flex-col gap-2">
           <FieldLabel htmlFor="new-task-repeat">{t.repeatLabel}</FieldLabel>
-          <Select
+          <VirtualSelect
+            id="new-task-repeat"
+            ariaLabel={t.repeatLabel}
+            searchLabel={t.repeatLabel}
             value={form.repeatUnit}
-            onValueChange={(value) => onFieldChange('repeatUnit', value)}
-          >
-            <SelectTrigger id="new-task-repeat" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">{t.repeatNever}</SelectItem>
-              <SelectItem value="day">{t.repeatDay}</SelectItem>
-              <SelectItem value="week">{t.repeatWeek}</SelectItem>
-              <SelectItem value="month">{t.repeatMonth}</SelectItem>
-            </SelectContent>
-          </Select>
+            onChange={(value) => onFieldChange('repeatUnit', value)}
+            options={[
+              { value: 'none', label: t.repeatNever },
+              { value: 'day', label: t.repeatDay },
+              { value: 'week', label: t.repeatWeek },
+              { value: 'month', label: t.repeatMonth },
+            ]}
+            triggerClassName="w-full"
+          />
         </div>
         {form.repeatUnit !== 'none' && (
           <>

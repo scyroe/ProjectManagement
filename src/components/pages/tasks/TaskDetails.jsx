@@ -5,15 +5,8 @@ import { Badge } from '@/components/reui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import MultiSelect from '@/components/ui/multi-select';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import VirtualSelect from '@/components/ui/virtual-select';
 import { useTaskDetails } from '@/hooks/tasks/use-task-details';
 import { useStrings } from '@/lib/i18n';
 
@@ -75,8 +68,11 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
       <div className="grid gap-3 sm:grid-cols-2 sm:items-end">
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="task-projects">{t.projectsLabel}</Label>
-          <MultiSelect
+          <VirtualSelect
             id="task-projects"
+            ariaLabel={t.projectsLabel}
+            searchLabel={t.projectsLabel}
+            multiple
             disabled={loadingOptions}
             placeholder={loadingOptions ? t.loadingProjects : t.selectProjects}
             emptyLabel={t.noProjects}
@@ -87,40 +83,41 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
         </div>
         <div className="flex min-w-0 flex-col gap-2">
           <Label htmlFor="task-priority">{t.priorityLabel}</Label>
-          <Select
+          <VirtualSelect
+            id="task-priority"
+            ariaLabel={t.priorityLabel}
+            searchLabel={t.priorityLabel}
             value={form.priority}
-            onValueChange={(value) => updateField('priority', value)}
-          >
-            <SelectTrigger id="task-priority" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {priorities.map((priority) => (
-                <SelectItem key={priority} value={priority}>
-                  {priority}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            onChange={(value) => updateField('priority', value)}
+            placeholder={form.priority}
+            options={priorities.map((priority) => ({
+              value: priority,
+              label: priority,
+            }))}
+            triggerClassName="w-full"
+          />
         </div>
         <div className="flex min-w-0 flex-col gap-2">
           <Label htmlFor="task-assignee">{t.assigneeLabel}</Label>
-          <Select
+          <VirtualSelect
+            id="task-assignee"
+            ariaLabel={t.assigneeLabel}
+            searchLabel={t.assigneeLabel}
             value={form.assignedTo}
-            onValueChange={(value) => updateField('assignedTo', value)}
-          >
-            <SelectTrigger id="task-assignee" className="w-full">
-              <SelectValue>{assigneeLabel}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="unassigned">{t.unassigned}</SelectItem>
-              {profiles.map((profile) => (
-                <SelectItem key={profile.id} value={profile.id}>
-                  {profileLabel(profile, strings.teamWorkload.unknownMember)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            onChange={(value) => updateField('assignedTo', value)}
+            placeholder={assigneeLabel}
+            options={[
+              { value: 'unassigned', label: t.unassigned },
+              ...profiles.map((profile) => ({
+                value: profile.id,
+                label: profileLabel(
+                  profile,
+                  strings.teamWorkload.unknownMember,
+                ),
+              })),
+            ]}
+            triggerClassName="w-full"
+          />
         </div>
         <Field
           id="task-due-date"
@@ -141,20 +138,20 @@ const TaskDetails = ({ task, onUpdated, onRequestCompletion }) => {
         />
         <div className="flex min-w-0 flex-col gap-2">
           <Label htmlFor="task-repeat">{t.repeatLabel}</Label>
-          <Select
+          <VirtualSelect
+            id="task-repeat"
+            ariaLabel={t.repeatLabel}
+            searchLabel={t.repeatLabel}
             value={form.repeatUnit}
-            onValueChange={(value) => updateField('repeatUnit', value)}
-          >
-            <SelectTrigger id="task-repeat" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">{t.repeatNever}</SelectItem>
-              <SelectItem value="day">{t.repeatDay}</SelectItem>
-              <SelectItem value="week">{t.repeatWeek}</SelectItem>
-              <SelectItem value="month">{t.repeatMonth}</SelectItem>
-            </SelectContent>
-          </Select>
+            onChange={(value) => updateField('repeatUnit', value)}
+            options={[
+              { value: 'none', label: t.repeatNever },
+              { value: 'day', label: t.repeatDay },
+              { value: 'week', label: t.repeatWeek },
+              { value: 'month', label: t.repeatMonth },
+            ]}
+            triggerClassName="w-full"
+          />
         </div>
         {form.repeatUnit !== 'none' && (
           <>

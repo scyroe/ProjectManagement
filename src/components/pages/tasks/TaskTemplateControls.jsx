@@ -2,13 +2,7 @@ import { Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FieldLabel from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import VirtualSelect from '@/components/ui/virtual-select';
 
 function TaskTemplateControls({
   applyTemplate,
@@ -23,22 +17,20 @@ function TaskTemplateControls({
     <div className="grid gap-3 rounded-lg border p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
       <div className="flex min-w-0 flex-col gap-2">
         <FieldLabel htmlFor="task-template">{t.templateLabel}</FieldLabel>
-        <Select
+        <VirtualSelect
+          id="task-template"
+          ariaLabel={t.templateLabel}
+          searchLabel={t.templateLabel}
           value=""
-          onValueChange={applyTemplate}
+          onChange={applyTemplate}
           disabled={!templates.length}
-        >
-          <SelectTrigger id="task-template" className="w-full">
-            <SelectValue placeholder={t.selectTemplate} />
-          </SelectTrigger>
-          <SelectContent>
-            {templates.map((template) => (
-              <SelectItem key={template.id} value={template.id}>
-                {template.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder={t.selectTemplate}
+          options={templates.map((template) => ({
+            value: template.id,
+            label: template.name,
+          }))}
+          triggerClassName="w-full"
+        />
       </div>
       <div className="space-y-2">
         <FieldLabel htmlFor="task-template-name">{t.templateName}</FieldLabel>

@@ -6,13 +6,6 @@ import {
   FramePanel,
   FrameTitle,
 } from '@/components/reui/frame';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import VirtualSelect from '@/components/ui/virtual-select';
 
 function DashboardRecentActivity({
@@ -41,27 +34,20 @@ function DashboardRecentActivity({
             </FrameDescription>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
-            <Select
+            <VirtualSelect
+              ariaLabel={t.allActions}
+              searchLabel={t.allActions}
               value={activityActionFilter}
-              onValueChange={setActivityActionFilter}
-            >
-              <SelectTrigger aria-label={t.allActions}>
-                <SelectValue>
-                  {activityActionFilter === 'all'
-                    ? t.allActions
-                    : (actionLabel[activityActionFilter] ??
-                      activityActionFilter)}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t.allActions}</SelectItem>
-                {activityActions.map((action) => (
-                  <SelectItem key={action} value={action}>
-                    {actionLabel[action] ?? action}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={setActivityActionFilter}
+              placeholder={t.allActions}
+              options={[
+                { value: 'all', label: t.allActions },
+                ...activityActions.map((action) => ({
+                  value: action,
+                  label: actionLabel[action] ?? action,
+                })),
+              ]}
+            />
             <VirtualSelect
               ariaLabel={t.allProjects}
               searchLabel={t.allProjects}

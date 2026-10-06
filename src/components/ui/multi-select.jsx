@@ -1,104 +1,16 @@
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { useMemo } from 'react';
-import { Badge } from '@/components/reui/badge';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { getFieldIcon } from '@/components/ui/field-icon';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { VirtualList } from '@/components/ui/virtual-list';
+import VirtualSelect from '@/components/ui/virtual-select';
 
-const MultiSelect = ({
-  disabled,
-  emptyLabel,
-  id,
-  onChange,
-  options,
-  placeholder,
-  required = false,
-  values,
-}) => {
-  const Icon = getFieldIcon({ id });
-  const selectedOptions = useMemo(
-    () => options.filter((option) => values.includes(option.value)),
-    [options, values],
-  );
-
-  const toggleValue = (value) => {
-    onChange(
-      values.includes(value)
-        ? values.filter((current) => current !== value)
-        : [...values, value],
-    );
-  };
+function MultiSelect({ ariaLabel, searchLabel, ...props }) {
+  const label = ariaLabel ?? props.placeholder;
 
   return (
-    <Popover>
-      <PopoverTrigger
-        render={
-          <Button
-            id={id}
-            type="button"
-            variant="outline"
-            aria-required={required || undefined}
-            disabled={disabled}
-            className="group/multi-select h-auto min-h-9 w-full justify-between font-normal"
-          >
-            <span className="-ml-2.5 flex w-9 shrink-0 items-center justify-center self-stretch rounded-l-lg border-r bg-muted/70 text-muted-foreground group-focus-visible/multi-select:border-ring">
-              <Icon aria-hidden="true" className="size-4" />
-            </span>
-            <span className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
-              {selectedOptions.length ? (
-                selectedOptions.map((option) => (
-                  <Badge key={option.value} variant="secondary" size="sm">
-                    {option.label}
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-muted-foreground">{placeholder}</span>
-              )}
-            </span>
-            <span className="-mr-2.5 flex w-8 shrink-0 items-center justify-center self-stretch rounded-r-lg border-l bg-muted/70 text-muted-foreground group-focus-visible/multi-select:border-ring">
-              <ChevronsUpDown className="size-4" aria-hidden="true" />
-            </span>
-          </Button>
-        }
-      />
-      <PopoverContent align="start" className="w-(--anchor-width) p-1">
-        {options.length ? (
-          <VirtualList
-            className="max-h-64"
-            estimateSize={36}
-            getItemKey={(option) => option.value}
-            items={options}
-            renderItem={(option) => {
-              const checked = values.includes(option.value);
-              return (
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted"
-                  onClick={() => toggleValue(option.value)}
-                >
-                  <Checkbox checked={checked} />
-                  <span className="min-w-0 flex-1 truncate">
-                    {option.label}
-                  </span>
-                  {checked && <Check className="size-3.5 shrink-0" />}
-                </button>
-              );
-            }}
-          />
-        ) : (
-          <p className="px-2 py-1.5 text-sm text-muted-foreground">
-            {emptyLabel}
-          </p>
-        )}
-      </PopoverContent>
-    </Popover>
+    <VirtualSelect
+      {...props}
+      ariaLabel={label}
+      searchLabel={searchLabel ?? label}
+      multiple
+    />
   );
-};
+}
 
 export default MultiSelect;

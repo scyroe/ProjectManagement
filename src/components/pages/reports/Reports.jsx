@@ -32,14 +32,8 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { VirtualList } from '@/components/ui/virtual-list';
+import VirtualSelect from '@/components/ui/virtual-select';
 import { filterEntriesByRange, getRangeBounds } from '@/lib/activity';
 import { useLanguage, useStrings } from '@/lib/i18n';
 import TeamWorkloadPanel from './TeamWorkloadPanel';
@@ -952,68 +946,51 @@ const Reports = ({ workspace, navigate, userId }) => {
             }`}
             inert={activitySearchOpen}
           >
-            <Select value={activityAction} onValueChange={setActivityAction}>
-              <SelectTrigger
-                aria-label={t.actionFilter}
-                className="w-40 text-xs"
-              >
-                <SelectValue>
-                  {activityAction === 'all'
-                    ? t.allActions
-                    : (actionLabel[activityAction] ?? activityAction)}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t.allActions}</SelectItem>
-                {Object.entries(actionLabel).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={activityEntity} onValueChange={setActivityEntity}>
-              <SelectTrigger
-                aria-label={t.entityFilter}
-                className="w-36 text-xs"
-              >
-                <SelectValue>
-                  {activityEntity === 'all'
-                    ? t.allEntities
-                    : t.entityTypes[activityEntity]}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t.allEntities}</SelectItem>
-                {Object.entries(t.entityTypes).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={activityProject} onValueChange={setActivityProject}>
-              <SelectTrigger
-                aria-label={t.projectFilter}
-                className="w-44 min-w-0 text-xs"
-              >
-                <SelectValue>
-                  {activityProject === 'all'
-                    ? t.allProjects
-                    : (projectOptions.find(
-                        (project) => project.id === activityProject,
-                      )?.name ?? t.allProjects)}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t.allProjects}</SelectItem>
-                {projectOptions.map((project) => (
-                  <SelectItem key={project.id} value={project.id}>
-                    {project.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <VirtualSelect
+              ariaLabel={t.actionFilter}
+              searchLabel={t.actionFilter}
+              value={activityAction}
+              onChange={setActivityAction}
+              placeholder={t.allActions}
+              triggerClassName="w-40 text-xs"
+              options={[
+                { value: 'all', label: t.allActions },
+                ...Object.entries(actionLabel).map(([value, label]) => ({
+                  value,
+                  label,
+                })),
+              ]}
+            />
+            <VirtualSelect
+              ariaLabel={t.entityFilter}
+              searchLabel={t.entityFilter}
+              value={activityEntity}
+              onChange={setActivityEntity}
+              placeholder={t.allEntities}
+              triggerClassName="w-36 text-xs"
+              options={[
+                { value: 'all', label: t.allEntities },
+                ...Object.entries(t.entityTypes).map(([value, label]) => ({
+                  value,
+                  label,
+                })),
+              ]}
+            />
+            <VirtualSelect
+              ariaLabel={t.projectFilter}
+              searchLabel={t.projectFilter}
+              value={activityProject}
+              onChange={setActivityProject}
+              placeholder={t.allProjects}
+              triggerClassName="w-44 min-w-0 text-xs"
+              options={[
+                { value: 'all', label: t.allProjects },
+                ...projectOptions.map((project) => ({
+                  value: project.id,
+                  label: project.name,
+                })),
+              ]}
+            />
             {preset === 'custom' && (
               <div className="flex items-center gap-1.5">
                 <Input

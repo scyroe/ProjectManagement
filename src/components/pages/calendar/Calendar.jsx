@@ -32,13 +32,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { VirtualList } from '@/components/ui/virtual-list';
 import VirtualSelect from '@/components/ui/virtual-select';
 import { useLanguage, useStrings } from '@/lib/i18n';
@@ -540,24 +533,19 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
           >
             {t.filters.status}
           </Label>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger id="calendar-status-filter" className="w-full">
-              <SelectValue>
-                {statusFilter === 'open'
-                  ? t.filters.openTasks
-                  : statusFilter === 'completed'
-                    ? t.filters.completedTasks
-                    : t.filters.allStatuses}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t.filters.allStatuses}</SelectItem>
-              <SelectItem value="open">{t.filters.openTasks}</SelectItem>
-              <SelectItem value="completed">
-                {t.filters.completedTasks}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <VirtualSelect
+            id="calendar-status-filter"
+            ariaLabel={t.filters.status}
+            searchLabel={t.filters.status}
+            value={statusFilter}
+            onChange={setStatusFilter}
+            placeholder={t.filters.allStatuses}
+            options={[
+              { value: 'all', label: t.filters.allStatuses },
+              { value: 'open', label: t.filters.openTasks },
+              { value: 'completed', label: t.filters.completedTasks },
+            ]}
+          />
         </div>
       </div>
 

@@ -6,13 +6,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import VirtualSelect from '@/components/ui/virtual-select';
 
 function ListFilterToolbar({
   addLabel,
@@ -69,22 +63,16 @@ function ListFilterToolbar({
             >
               {primaryLabel}
             </label>
-            <Select value={primaryValue} onValueChange={onPrimaryChange}>
-              <SelectTrigger
-                aria-label={primaryLabel}
-                className="min-w-0 w-full"
-                id={primaryId}
-              >
-                <SelectValue>{primaryLabelValue}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {primaryOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <VirtualSelect
+              id={primaryId}
+              ariaLabel={primaryLabel}
+              searchLabel={primaryLabel}
+              value={primaryValue}
+              onChange={onPrimaryChange}
+              placeholder={primaryLabelValue}
+              options={primaryOptions}
+              triggerClassName="min-w-0 w-full"
+            />
           </div>
           {secondaryOptions?.length > 0 && (
             <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -94,22 +82,16 @@ function ListFilterToolbar({
               >
                 {secondaryLabel}
               </label>
-              <Select value={secondaryValue} onValueChange={onSecondaryChange}>
-                <SelectTrigger
-                  aria-label={secondaryLabel}
-                  className="min-w-0 w-full"
-                  id={secondaryId}
-                >
-                  <SelectValue>{secondaryLabelValue}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {secondaryOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <VirtualSelect
+                id={secondaryId}
+                ariaLabel={secondaryLabel}
+                searchLabel={secondaryLabel}
+                value={secondaryValue}
+                onChange={onSecondaryChange}
+                placeholder={secondaryLabelValue}
+                options={secondaryOptions}
+                triggerClassName="min-w-0 w-full"
+              />
             </div>
           )}
         </div>
