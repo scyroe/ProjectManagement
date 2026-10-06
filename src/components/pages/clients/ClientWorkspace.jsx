@@ -1,11 +1,14 @@
 import {
   Activity,
+  AlertTriangle,
   Building2,
   ChartNoAxesCombined,
+  CheckCircle2,
   FolderKanban,
   Pencil,
 } from 'lucide-react';
 import { useState } from 'react';
+import { MetricStrip } from '@/components/Common/analytics-ui';
 import {
   AnimatedTabIndicator,
   AnimatedTabPanel,
@@ -241,12 +244,15 @@ function ClientStatistics({ client, t }) {
           {t.statisticsDescription}
         </p>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Statistic label={t.projectCount} value={client.projectCount} />
-        <Statistic label={t.activeProjects} value={activeProjects} />
-        <Statistic label={t.completedTasks} value={client.completed} />
-        <Statistic label={t.overdueTasks} value={client.overdue} />
-      </div>
+      <MetricStrip
+        ariaLabel={t.statisticsTitle}
+        metrics={[
+          [t.projectCount, client.projectCount, Building2, 'text-primary'],
+          [t.activeProjects, activeProjects, FolderKanban, 'text-info'],
+          [t.completedTasks, client.completed, CheckCircle2, 'text-success'],
+          [t.overdueTasks, client.overdue, AlertTriangle, 'text-warning'],
+        ]}
+      />
       <Frame stacked>
         <FrameHeader>
           <FrameTitle className="text-sm">{t.deliveryTitle}</FrameTitle>
@@ -275,17 +281,6 @@ function ClientStatistics({ client, t }) {
         </FramePanel>
       </Frame>
     </div>
-  );
-}
-
-function Statistic({ label, value }) {
-  return (
-    <Frame dense>
-      <FramePanel className="p-4 shadow-none">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="mt-1 text-2xl font-semibold">{value}</p>
-      </FramePanel>
-    </Frame>
   );
 }
 

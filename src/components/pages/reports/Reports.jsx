@@ -11,7 +11,7 @@ import {
 import { useMemo, useState } from 'react';
 import {
   CompactSectionHeader,
-  MetricCard,
+  MetricStrip,
   ProgressRow,
 } from '@/components/Common/analytics-ui';
 import {
@@ -367,20 +367,11 @@ const Reports = ({ workspace, navigate, userId }) => {
 
   const ExecutiveView = () => (
     <div className="space-y-3">
-      <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-        {metricCards(summary, t).map(([label, value, Icon, color]) => (
-          <MetricCard
-            key={label}
-            label={label}
-            value={value}
-            Icon={Icon}
-            color={color}
-            loading={reportLoading}
-            compact
-            onClick={() => openTasksWithFilter(label)}
-          />
-        ))}
-      </section>
+      <MetricStrip
+        metrics={metricCards(summary, t)}
+        loading={reportLoading}
+        onSelect={openTasksWithFilter}
+      />
 
       <section className="grid gap-3 xl:grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))]">
         <Frame stacked>
@@ -563,20 +554,11 @@ const Reports = ({ workspace, navigate, userId }) => {
 
   const OperationalView = () => (
     <div className="space-y-3">
-      <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-        {metricCards(summary, t).map(([label, value, Icon, color]) => (
-          <MetricCard
-            key={label}
-            label={label}
-            value={value}
-            Icon={Icon}
-            color={color}
-            loading={loading}
-            compact
-            onClick={() => openTasksWithFilter(label)}
-          />
-        ))}
-      </section>
+      <MetricStrip
+        metrics={metricCards(summary, t)}
+        loading={loading}
+        onSelect={openTasksWithFilter}
+      />
 
       <section className="grid gap-3 xl:grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))]">
         <Frame stacked>
@@ -776,8 +758,8 @@ const Reports = ({ workspace, navigate, userId }) => {
 
   const ProductivityView = () => (
     <div className="space-y-3">
-      <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-        {[
+      <MetricStrip
+        metrics={[
           [t.metrics.trackedTime, trackedMinutes, Clock3, 'text-primary'],
           [t.metrics.daysActive, activeDays, TrendingUp, 'text-success'],
           [t.metrics.currentFocus, currentTasks.length, ListTodo, 'text-info'],
@@ -787,22 +769,16 @@ const Reports = ({ workspace, navigate, userId }) => {
             CheckCircle2,
             'text-warning',
           ],
-        ].map(([label, value, Icon, color]) => (
-          <MetricCard
-            key={label}
-            label={label}
-            value={
-              label === t.metrics.trackedTime
-                ? `${Math.floor(value / 60)}h ${value % 60}m`
-                : value
-            }
-            Icon={Icon}
-            color={color}
-            compact
-            onClick={() => openTasksWithFilter(label)}
-          />
-        ))}
-      </section>
+        ].map(([label, value, Icon, color]) => [
+          label,
+          label === t.metrics.trackedTime
+            ? `${Math.floor(value / 60)}h ${value % 60}m`
+            : value,
+          Icon,
+          color,
+        ])}
+        onSelect={openTasksWithFilter}
+      />
 
       <section className="grid gap-3 xl:grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))]">
         <Frame stacked>

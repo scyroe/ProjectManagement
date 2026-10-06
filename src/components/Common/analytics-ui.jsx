@@ -8,6 +8,12 @@ import {
 } from '@/components/reui/frame';
 import { useAnimationsEnabled } from './animation-preferences';
 
+const metricStripColumns = {
+  3: 'sm:grid-cols-3',
+  4: 'sm:grid-cols-4',
+  5: 'sm:grid-cols-3 xl:grid-cols-5',
+};
+
 export function MetricCard({
   label,
   value,
@@ -65,6 +71,57 @@ export function MetricCard({
         </FramePanel>
       </Frame>
     </motion.div>
+  );
+}
+
+export function MetricStrip({
+  metrics,
+  loading = false,
+  onSelect,
+  columns = 4,
+  ariaLabel,
+}) {
+  const columnsClassName = metricStripColumns[columns] ?? metricStripColumns[4];
+  const itemClassName =
+    'flex min-h-10 w-full min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-left sm:gap-2 sm:px-2.5';
+
+  return (
+    <section
+      aria-label={ariaLabel}
+      className={`grid w-full grid-cols-2 gap-1.5 rounded-lg border bg-muted/30 p-1.5 ${columnsClassName}`}
+    >
+      {metrics.map(([label, value, Icon, color]) => {
+        const content = (
+          <>
+            <Icon
+              className={`size-3.5 shrink-0 sm:size-4 ${color}`}
+              aria-hidden="true"
+            />
+            <span className="min-w-0 flex-1 truncate text-[11px] font-medium leading-tight text-muted-foreground sm:text-xs">
+              {label}
+            </span>
+            <span className="shrink-0 text-base font-semibold tabular-nums tracking-tight">
+              {loading ? '-' : value}
+            </span>
+          </>
+        );
+
+        return onSelect ? (
+          <button
+            key={label}
+            type="button"
+            className={`${itemClassName} transition-colors hover:bg-muted/70 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+            onClick={() => onSelect(label)}
+          >
+            {content}
+          </button>
+        ) : (
+          <div key={label} className={itemClassName}>
+            {content}
+          </div>
+        );
+      })}
+    </section>
   );
 }
 

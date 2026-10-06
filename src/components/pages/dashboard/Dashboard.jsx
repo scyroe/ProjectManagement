@@ -6,7 +6,7 @@ import {
   TrendingUp,
   TriangleAlert,
 } from 'lucide-react';
-import { MetricCard } from '@/components/Common/analytics-ui';
+import { MetricStrip } from '@/components/Common/analytics-ui';
 import DashboardAttentionPanel from '@/components/pages/dashboard/DashboardAttentionPanel';
 import DashboardOnboarding from '@/components/pages/dashboard/DashboardOnboarding';
 import DashboardProjectProgress from '@/components/pages/dashboard/DashboardProjectProgress';
@@ -102,8 +102,10 @@ const Dashboard = ({
         </div>
       )}
 
-      <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
-        {[
+      <MetricStrip
+        columns={5}
+        loading={loading}
+        metrics={[
           [t.metrics.current, currentTasks.length, ListTodo, 'text-primary'],
           [
             t.metrics.completed,
@@ -114,28 +116,19 @@ const Dashboard = ({
           [t.metrics.active, runningTaskId ? 1 : 0, Play, 'text-success'],
           [t.metrics.dueSoon, dueSoonTasks.length, CalendarDays, 'text-info'],
           [t.metrics.overdue, overdueCount, TriangleAlert, 'text-warning'],
-        ].map(([label, value, Icon, color]) => (
-          <MetricCard
-            key={label}
-            label={label}
-            value={loading ? '-' : value}
-            Icon={Icon}
-            color={color}
-            loading={loading}
-            onClick={() =>
-              openTasksWithFilter(
-                {
-                  [t.metrics.current]: 'current',
-                  [t.metrics.completed]: 'completed',
-                  [t.metrics.active]: 'active',
-                  [t.metrics.dueSoon]: 'due-soon',
-                  [t.metrics.overdue]: 'overdue',
-                }[label],
-              )
-            }
-          />
-        ))}
-      </section>
+        ]}
+        onSelect={(label) =>
+          openTasksWithFilter(
+            {
+              [t.metrics.current]: 'current',
+              [t.metrics.completed]: 'completed',
+              [t.metrics.active]: 'active',
+              [t.metrics.dueSoon]: 'due-soon',
+              [t.metrics.overdue]: 'overdue',
+            }[label],
+          )
+        }
+      />
 
       <section
         className="flex flex-wrap items-center justify-between gap-3 rounded-lg border px-3 py-2.5"

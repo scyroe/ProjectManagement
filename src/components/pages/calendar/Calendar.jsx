@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { MetricStrip } from '@/components/Common/analytics-ui';
 import {
   AnimatedTabIndicator,
   AnimatedTabPanel,
@@ -600,22 +601,25 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
         </div>
       )}
 
-      <section aria-label={t.weekSummary.title}>
-        <dl className="grid grid-cols-3 divide-x border-y py-2">
-          {[
-            [t.weekSummary.due, weekSummary.due],
-            [t.weekSummary.overdue, weekSummary.overdue],
-            [t.weekSummary.milestones, weekSummary.milestones],
-          ].map(([label, value]) => (
-            <div key={label} className="px-3 first:pl-0 last:pr-0">
-              <dt className="text-xs text-muted-foreground">{label}</dt>
-              <dd className="mt-0.5 text-lg font-semibold tabular-nums">
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+      <MetricStrip
+        ariaLabel={t.weekSummary.title}
+        columns={3}
+        metrics={[
+          [t.weekSummary.due, weekSummary.due, CalendarDays, 'text-info'],
+          [
+            t.weekSummary.overdue,
+            weekSummary.overdue,
+            AlertTriangle,
+            'text-warning',
+          ],
+          [
+            t.weekSummary.milestones,
+            weekSummary.milestones,
+            Flag,
+            'text-primary',
+          ],
+        ]}
+      />
 
       {!loading && !hasEventsInRange && activeFilters.length > 0 && (
         <div
