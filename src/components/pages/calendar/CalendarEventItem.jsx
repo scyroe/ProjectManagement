@@ -108,11 +108,11 @@ export function CalendarEventItem({
       )}
       {!compact && (
         <>
-          <span className="hidden shrink-0 text-[0.6875rem] text-muted-foreground sm:inline">
+          <span className="hidden shrink-0 text-2xs text-muted-foreground sm:inline">
             {isOverdue ? labels.overdue : (event.statusLabel ?? kindLabel)}
           </span>
           {event.priorityLabel && (
-            <span className="hidden shrink-0 text-[0.6875rem] text-muted-foreground sm:inline">
+            <span className="hidden shrink-0 text-2xs text-muted-foreground sm:inline">
               {event.priorityLabel}
             </span>
           )}

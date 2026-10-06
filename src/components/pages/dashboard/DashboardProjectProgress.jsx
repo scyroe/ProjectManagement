@@ -17,7 +17,7 @@ function DashboardProjectProgress({ projects, strings, t }) {
             <FrameTitle className="text-sm">
               {t.projectProgressTitle}
             </FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.projectProgressDescription}
             </FrameDescription>
           </div>
@@ -39,7 +39,7 @@ function DashboardProjectProgress({ projects, strings, t }) {
                       <span className="truncate font-medium">
                         {project.name}
                       </span>
-                      <span className="shrink-0 text-[0.78125rem] text-muted-foreground">
+                      <span className="shrink-0 text-xs text-muted-foreground">
                         {percentage}%
                       </span>
                     </div>
@@ -49,7 +49,7 @@ function DashboardProjectProgress({ projects, strings, t }) {
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
-                    <p className="mt-1 text-[0.78125rem] text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {completed} of {total} tasks complete
                     </p>
                   </div>

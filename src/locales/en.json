@@ -58,6 +58,7 @@
     "projects": "Projects",
     "clients": "Clients",
     "calendar": "Calendar",
+    "work-log": "Work log",
     "reports": "Reports"
   },
   "layout": {
@@ -338,6 +339,34 @@
     "chooseDate": "Choose a due date for",
     "noClient": "No client"
   },
+  "workLogPage": {
+    "periods": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "custom": "Select interval"
+    },
+    "periodLabel": "Time interval",
+    "fromDate": "From",
+    "toDate": "To",
+    "totalTracked": "Total tracked",
+    "teamMembers": "Team members",
+    "timeAxis": "Time",
+    "dateAxis": "Date",
+    "loading": "Loading work log...",
+    "loadError": "Could not load the work log.",
+    "emptyProfiles": "No team members found.",
+    "task": "Task",
+    "project": "Project",
+    "worked": "Time worked",
+    "selectedDuration": "In this interval",
+    "interval": "Interval",
+    "comment": "Comment",
+    "noComment": "No comment added.",
+    "inProgress": "In progress",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
+  },
   "clientsPage": {
     "title": "Clients",
     "description": "Manage the client accounts your projects belong to.",
@@ -483,6 +512,7 @@
     "projectFilter": "Filter activity by project",
     "allProjects": "All projects",
     "activitySearch": "Search activity",
+    "closeSearch": "Close search",
     "activityLoadError": "Workspace activity could not be loaded.",
     "activityLoadedSuffix": "activity events loaded",
     "loadMoreActivity": "Load more activity",

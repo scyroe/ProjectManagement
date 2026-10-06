@@ -58,6 +58,7 @@
     "projects": "Proiecte",
     "clients": "Clienți",
     "calendar": "Calendar",
+    "work-log": "Jurnal de lucru",
     "reports": "Rapoarte"
   },
   "layout": {
@@ -335,6 +336,34 @@
     "chooseDate": "Alege un termen pentru",
     "noClient": "Fără client"
   },
+  "workLogPage": {
+    "periods": {
+      "today": "Astăzi",
+      "week": "Săptămâna aceasta",
+      "month": "Luna aceasta",
+      "custom": "Selectează intervalul"
+    },
+    "periodLabel": "Interval de timp",
+    "fromDate": "De la",
+    "toDate": "Până la",
+    "totalTracked": "Timp total înregistrat",
+    "teamMembers": "Membri ai echipei",
+    "timeAxis": "Oră",
+    "dateAxis": "Dată",
+    "loading": "Se încarcă jurnalul de lucru...",
+    "loadError": "Jurnalul de lucru nu a putut fi încărcat.",
+    "emptyProfiles": "Nu au fost găsiți membri ai echipei.",
+    "task": "Sarcină",
+    "project": "Proiect",
+    "worked": "Timp lucrat",
+    "selectedDuration": "În acest interval",
+    "interval": "Interval",
+    "comment": "Comentariu",
+    "noComment": "Nu a fost adăugat niciun comentariu.",
+    "inProgress": "În desfășurare",
+    "zoomIn": "Mărește",
+    "zoomOut": "Micșorează"
+  },
   "clientsPage": {
     "title": "Clienți",
     "description": "Gestionează conturile clienților cărora le aparțin proiectele.",
@@ -480,6 +509,7 @@
     "projectFilter": "Filtrează activitatea după proiect",
     "allProjects": "Toate proiectele",
     "activitySearch": "Caută în activitate",
+    "closeSearch": "Închide căutarea",
     "activityLoadError": "Activitatea din workspace nu a putut fi încărcată.",
     "activityLoadedSuffix": "evenimente de activitate încărcate",
     "loadMoreActivity": "Încarcă mai multă activitate",

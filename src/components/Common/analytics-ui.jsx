@@ -15,6 +15,7 @@ export function MetricCard({
   color,
   loading = false,
   onClick,
+  compact = false,
 }) {
   const animationsEnabled = useAnimationsEnabled();
   const canAnimate = onClick && animationsEnabled;
@@ -27,7 +28,7 @@ export function MetricCard({
       whileTap={canAnimate ? { scale: 0.985 } : undefined}
     >
       <Frame
-        className={`h-full min-h-20 ${onClick ? 'cursor-pointer transition-colors hover:border-primary/50 hover:bg-primary/5' : ''}`}
+        className={`h-full ${compact ? 'min-h-16' : 'min-h-20'} ${onClick ? 'cursor-pointer transition-colors hover:border-primary/50 hover:bg-primary/5' : ''}`}
         dense
         onClick={onClick}
         onKeyDown={
@@ -43,16 +44,24 @@ export function MetricCard({
         role={onClick ? 'button' : undefined}
         tabIndex={onClick ? 0 : undefined}
       >
-        <FramePanel className="flex flex-1 items-start justify-between p-3 shadow-none">
+        <FramePanel
+          className={`flex flex-1 items-start justify-between ${
+            compact ? 'p-2' : 'p-3'
+          } shadow-none`}
+        >
           <div>
-            <p className="text-[0.78125rem] font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {label}
             </p>
-            <p className="mt-1 text-2xl font-semibold tracking-tight">
+            <p
+              className={`font-semibold tracking-tight ${
+                compact ? 'mt-0.5 text-xl' : 'mt-1 text-2xl'
+              }`}
+            >
               {loading ? '-' : value}
             </p>
           </div>
-          <Icon className={`size-4 ${color}`} />
+          <Icon className={`${compact ? 'size-3.5' : 'size-4'} ${color}`} />
         </FramePanel>
       </Frame>
     </motion.div>
@@ -64,7 +73,7 @@ export function CompactSectionHeader({
   description,
   action,
   titleClassName = 'text-sm',
-  descriptionClassName = 'text-[0.78125rem]',
+  descriptionClassName = 'text-xs',
   headerClassName = '',
   actionClassName = '',
 }) {
@@ -91,7 +100,7 @@ export function ProgressRow({
   progress,
   barClassName = 'bg-primary',
   labelClassName = 'text-xs',
-  valueClassName = 'text-[0.78125rem] text-muted-foreground',
+  valueClassName = 'text-xs text-muted-foreground',
 }) {
   return (
     <div>

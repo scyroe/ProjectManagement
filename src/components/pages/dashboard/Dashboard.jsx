@@ -145,7 +145,7 @@ const Dashboard = ({
           <TrendingUp className="size-4 text-primary" aria-hidden="true" />
           <div>
             <p className="text-xs font-medium">{t.activityTrendTitle}</p>
-            <p className="text-[0.78125rem] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {t.activityTrendDescription}
             </p>
           </div>

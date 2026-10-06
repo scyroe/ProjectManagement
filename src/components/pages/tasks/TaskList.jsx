@@ -70,7 +70,7 @@ const TaskList = ({
               <div className="text-lg font-semibold leading-none">
                 {tasks.length}
               </div>
-              <div className="mt-1 text-[0.78125rem] font-medium uppercase tracking-wide text-muted-foreground">
+              <div className="mt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t.visible}
               </div>
             </div>
@@ -171,7 +171,7 @@ const TaskList = ({
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {runningTaskId === task.id && (
-                          <span className="hidden items-center gap-1 text-[0.78125rem] font-semibold uppercase tracking-wide text-success-foreground sm:flex">
+                          <span className="hidden items-center gap-1 text-xs font-semibold uppercase tracking-wide text-success-foreground sm:flex">
                             <span className="size-1.5 animate-pulse rounded-full bg-success" />
                             {t.workingBadge}
                           </span>

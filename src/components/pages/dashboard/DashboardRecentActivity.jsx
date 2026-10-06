@@ -36,7 +36,7 @@ function DashboardRecentActivity({
         <FrameHeader className="gap-3">
           <div>
             <FrameTitle className="text-sm">{t.recentActivityTitle}</FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.recentActivityDescription}
             </FrameDescription>
           </div>
@@ -93,7 +93,7 @@ function DashboardRecentActivity({
                   </span>{' '}
                   {task?.title ?? strings.common.aTask}
                 </p>
-                <span className="shrink-0 text-[0.78125rem] text-muted-foreground">
+                <span className="shrink-0 text-xs text-muted-foreground">
                   {relativeLabel(item.created_at, strings.common)}
                 </span>
               </div>

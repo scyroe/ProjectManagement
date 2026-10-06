@@ -191,7 +191,7 @@ function ClientList({
                 >
                   <span className="flex min-w-0 items-center gap-2.5">
                     <Avatar className="size-8 shrink-0 bg-primary/10 text-primary">
-                      <AvatarFallback className="bg-primary/10 text-[10px] font-semibold text-primary">
+                      <AvatarFallback className="bg-primary/10 text-3xs font-semibold text-primary">
                         {getInitials(client.name)}
                       </AvatarFallback>
                     </Avatar>

@@ -151,6 +151,14 @@ create table if not exists public.notifications (
   unique (recipient_id, dedupe_key)
 );
 
+do $$
+begin
+  alter table public.notifications drop constraint if exists notifications_kind_check;
+  alter table public.notifications
+    add constraint notifications_kind_check
+    check (kind in ('mention', 'assignment', 'reminder', 'overdue'));
+end $$;
+
 -- Adds the user_email column for installs where task_history already existed.
 alter table public.task_history add column if not exists user_email text;
 alter table public.profiles add column if not exists weekly_capacity_minutes integer not null default 2400;

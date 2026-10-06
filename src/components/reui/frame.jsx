@@ -22,7 +22,7 @@ const frameVariants = cva(
     '[--frame-gap:--spacing(0.75)] [--frame-px:--spacing(0.75)] [--frame-py:--spacing(0.75)] [--frame-panel-header-gap:0rem] [--frame-panel-footer-gap:--spacing(1)]',
     '[--frame-panel-px-adjust:0px] [--frame-panel-py-adjust:0px] [--frame-panel-header-px-adjust:0px] [--frame-panel-header-py-adjust:0px] [--frame-panel-footer-px-adjust:0px] [--frame-panel-footer-py-adjust:0px]',
     '[--frame-panel-px:calc(var(--frame-panel-px-base)+var(--frame-panel-px-adjust))] [--frame-panel-py:calc(var(--frame-panel-py-base)+var(--frame-panel-py-adjust))] [--frame-panel-header-px:calc(var(--frame-panel-header-px-base)+var(--frame-panel-header-px-adjust))] [--frame-panel-header-py:calc(var(--frame-panel-header-py-base)+var(--frame-panel-header-py-adjust))] [--frame-panel-footer-px:calc(var(--frame-panel-footer-px-base)+var(--frame-panel-footer-px-adjust))] [--frame-panel-footer-py:calc(var(--frame-panel-footer-py-base)+var(--frame-panel-footer-py-adjust))]',
-    // Luma alone re-times the frame: wider gap and padding, roomier bars.
+    // Frame spacing scales globally through the selected style's --spacing.
     '',
     '[--frame-panel-bg:var(--color-card)] [--frame-panel-border-color:var(--color-border)] [--frame-border-color:var(--color-border)]',
     // Concentric: the panel nests inside the frame's corner rather than copying
@@ -43,7 +43,8 @@ const frameVariants = cva(
       // Bars read as chrome, not a second content block: py runs 0.5/1.5/2/2.5
       // against a body py of 2/3.5/4/5, while px stays level with the body so
       // header, content and footer left-align. xs floors at 0.5 (2px), below
-      // which it stops reading as padding. No style-*.css overrides these.
+      // which it stops reading as padding. The selected style scales each rung
+      // consistently through the shared --spacing token.
       spacing: {
         xs: '[--frame-panel-px-base:--spacing(2)] [--frame-panel-py-base:--spacing(2)] [--frame-panel-header-px-base:--spacing(2)] [--frame-panel-header-py-base:--spacing(0.5)] [--frame-panel-footer-px-base:--spacing(2)] [--frame-panel-footer-py-base:--spacing(0.5)]',
         sm: '[--frame-panel-px-base:--spacing(3)] [--frame-panel-py-base:--spacing(3.5)] [--frame-panel-header-px-base:--spacing(3)] [--frame-panel-header-py-base:--spacing(1.5)] [--frame-panel-footer-px-base:--spacing(3)] [--frame-panel-footer-py-base:--spacing(1.5)]',
@@ -120,7 +121,7 @@ function Frame({
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="absolute top-2.5 right-2.5 z-10 rounded-full border bg-background/90 shadow-sm backdrop-blur hover:bg-background"
+          className="absolute top-0 right-0 z-10 rounded-none rounded-tr-[inherit] rounded-bl-md bg-primary text-white opacity-0 backdrop-blur transition-opacity hover:bg-primary/90 hover:text-white hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100"
           aria-label={maximized ? t.restoreCard : t.expandCard}
           title={maximized ? t.restoreCard : t.expandCard}
           aria-pressed={maximized}

@@ -5,6 +5,7 @@ import Dashboard from '@/components/pages/dashboard/Dashboard';
 import Projects from '@/components/pages/projects/Projects';
 import Reports from '@/components/pages/reports/Reports';
 import TaskWorkspace from '@/components/pages/tasks/TaskWorkspace';
+import WorkLog from '@/components/pages/work-log/WorkLog';
 import EmptyPage from './EmptyPage';
 
 function WorkspaceRouteContent({
@@ -96,6 +97,8 @@ function WorkspaceRouteContent({
               navigate={navigate}
               userId={userId}
             />
+          ) : activeRoute === 'work-log' ? (
+            <WorkLog weekStartsOn={weekStartsOn} />
           ) : (
             <EmptyPage route={currentPage} />
           )}

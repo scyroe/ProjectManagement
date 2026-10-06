@@ -42,7 +42,7 @@ const TaskHistoryCalendar = ({ history }) => {
           <section>
             <div className="mb-3 flex items-center gap-3">
               <div className="flex size-11 shrink-0 flex-col items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <span className="text-[0.78125rem] font-semibold uppercase">
+                <span className="text-xs font-semibold uppercase">
                   {date.toLocaleDateString('en', { weekday: 'short' })}
                 </span>
                 <span className="text-lg font-semibold leading-none">

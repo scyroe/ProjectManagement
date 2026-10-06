@@ -71,7 +71,7 @@ function DashboardAttentionPanel({
                     <p className="truncate text-xs font-semibold">
                       {task.title}
                     </p>
-                    <p className="mt-1 truncate text-[0.78125rem] text-muted-foreground">
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
                       {task.project?.name ?? strings.common.noProject} ·{' '}
                       {dateLabel(task.due_date)}
                     </p>

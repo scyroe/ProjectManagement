@@ -107,7 +107,7 @@ const ClientProgressCard = ({ client, onEdit, showContact = true }) => {
             itemClassName="pb-1"
             items={client.projects}
             renderItem={(project) => (
-              <div className="flex items-center justify-between gap-2 truncate text-[0.78125rem] text-muted-foreground">
+              <div className="flex items-center justify-between gap-2 truncate text-xs text-muted-foreground">
                 <span className="truncate">{project.name}</span>
                 <span className="shrink-0">
                   {project.completed}/{project.total}

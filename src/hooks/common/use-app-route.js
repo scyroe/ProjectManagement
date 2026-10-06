@@ -2,6 +2,7 @@ import {
   BarChart3,
   CalendarDays,
   ClipboardList,
+  Clock3,
   FolderKanban,
   LayoutDashboard,
   Users,
@@ -14,6 +15,7 @@ export const routes = [
   { id: 'projects', icon: FolderKanban },
   { id: 'clients', icon: Users },
   { id: 'calendar', icon: CalendarDays },
+  { id: 'work-log', icon: Clock3 },
   { id: 'reports', icon: BarChart3 },
 ];
 

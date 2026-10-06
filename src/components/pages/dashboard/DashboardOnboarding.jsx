@@ -90,7 +90,7 @@ function DashboardOnboarding({
                         aria-hidden="true"
                       />
                     ) : (
-                      <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border text-[0.625rem] font-semibold text-muted-foreground">
+                      <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border text-3xs font-semibold text-muted-foreground">
                         {index + 1}
                       </span>
                     )}

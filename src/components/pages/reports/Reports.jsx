@@ -4,7 +4,9 @@ import {
   Clock3,
   Download,
   ListTodo,
+  Search,
   TrendingUp,
+  X,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
@@ -25,6 +27,18 @@ import {
 } from '@/components/reui/frame';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@/components/ui/input-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { filterEntriesByRange, getRangeBounds } from '@/lib/activity';
 import { useLanguage, useStrings } from '@/lib/i18n';
@@ -103,6 +117,7 @@ const Reports = ({ workspace, navigate, userId }) => {
   const [activityEntity, setActivityEntity] = useState('all');
   const [activityProject, setActivityProject] = useState('all');
   const [activitySearch, setActivitySearch] = useState('');
+  const [activitySearchOpen, setActivitySearchOpen] = useState(false);
   const bounds = useMemo(
     () => getRangeBounds(preset, customRange),
     [customRange, preset],
@@ -341,6 +356,15 @@ const Reports = ({ workspace, navigate, userId }) => {
     window.setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
   };
 
+  const handleActivitySearchToggle = () => {
+    if (activitySearchOpen) {
+      setActivitySearchOpen(false);
+      setActivitySearch('');
+      return;
+    }
+    setActivitySearchOpen(true);
+  };
+
   const ExecutiveView = () => (
     <div className="space-y-3">
       <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
@@ -352,6 +376,7 @@ const Reports = ({ workspace, navigate, userId }) => {
             Icon={Icon}
             color={color}
             loading={reportLoading}
+            compact
             onClick={() => openTasksWithFilter(label)}
           />
         ))}
@@ -363,7 +388,7 @@ const Reports = ({ workspace, navigate, userId }) => {
             title={t.operationalHealthTitle}
             description={t.operationalHealthDescription}
             action={
-              <div className="rounded-full border bg-muted/60 px-2 py-1 text-[0.78125rem] font-medium text-muted-foreground">
+              <div className="rounded-full border bg-muted/60 px-2 py-1 text-xs font-medium text-muted-foreground">
                 {completionRate}% {t.completeSuffix}
               </div>
             }
@@ -372,7 +397,7 @@ const Reports = ({ workspace, navigate, userId }) => {
             <div className="rounded-xl border bg-muted/30 p-3">
               <div className="flex items-end justify-between gap-3">
                 <div>
-                  <p className="text-[0.78125rem] uppercase tracking-[0.16em] text-muted-foreground">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     {t.completionRate}
                   </p>
                   <p className="mt-1 text-3xl font-semibold tracking-tight">
@@ -408,7 +433,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                     value={`${completed}/${total}`}
                     progress={percentage}
                     barClassName="bg-success"
-                    valueClassName="text-[0.78125rem] text-muted-foreground"
+                    valueClassName="text-xs text-muted-foreground"
                   />
                 );
               })}
@@ -426,9 +451,7 @@ const Reports = ({ workspace, navigate, userId }) => {
               <div key={status}>
                 <div className="mb-1 flex items-center justify-between gap-3 text-xs">
                   <span className="truncate font-medium">{status}</span>
-                  <span className="text-[0.78125rem] text-muted-foreground">
-                    {count}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{count}</span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-muted">
                   <div
@@ -469,7 +492,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                         <p className="truncate text-xs font-medium">
                           {task.title}
                         </p>
-                        <p className="mt-1 text-[0.78125rem] text-muted-foreground">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {task.project?.name ?? t.noProject} ·{' '}
                           {task.due_date
                             ? new Date(
@@ -479,7 +502,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                         </p>
                       </div>
                       <span
-                        className={`inline-flex rounded-full px-2 py-1 text-[0.78125rem] font-semibold uppercase tracking-wide ${
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold uppercase tracking-wide ${
                           isLate
                             ? 'bg-warning/15 text-warning-foreground'
                             : 'bg-primary/10 text-primary'
@@ -520,7 +543,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                       </span>{' '}
                       {getActivitySubject(item, taskById, t)}
                     </p>
-                    <p className="mt-1 text-[0.78125rem] text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {relativeLabel(item.created_at, strings.common)}
                     </p>
                   </div>
@@ -549,6 +572,7 @@ const Reports = ({ workspace, navigate, userId }) => {
             Icon={Icon}
             color={color}
             loading={loading}
+            compact
             onClick={() => openTasksWithFilter(label)}
           />
         ))}
@@ -558,7 +582,7 @@ const Reports = ({ workspace, navigate, userId }) => {
         <Frame stacked>
           <FrameHeader>
             <FrameTitle className="text-sm">{t.workCompletedTitle}</FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.workCompletedDescription}
             </FrameDescription>
           </FrameHeader>
@@ -576,7 +600,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
-              <div className="mt-2 flex items-center justify-between text-[0.78125rem] text-muted-foreground">
+              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                 <span>
                   {completedTasks.length} {t.doneSuffix}
                 </span>
@@ -603,7 +627,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                         <span className="truncate font-medium">
                           {project.name}
                         </span>
-                        <span className="shrink-0 text-[0.78125rem] text-muted-foreground">
+                        <span className="shrink-0 text-xs text-muted-foreground">
                           {percentage}%
                         </span>
                       </div>
@@ -613,7 +637,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
-                      <p className="mt-1 text-[0.78125rem] text-muted-foreground">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {completed} of {total} tasks complete
                       </p>
                     </div>
@@ -631,7 +655,7 @@ const Reports = ({ workspace, navigate, userId }) => {
         <Frame stacked>
           <FrameHeader>
             <FrameTitle className="text-sm">{t.workByStatusTitle}</FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.workByStatusDescription}
             </FrameDescription>
           </FrameHeader>
@@ -640,9 +664,7 @@ const Reports = ({ workspace, navigate, userId }) => {
               <div key={status}>
                 <div className="mb-1 flex items-center justify-between gap-3 text-xs">
                   <span className="truncate font-medium">{status}</span>
-                  <span className="text-[0.78125rem] text-muted-foreground">
-                    {count}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{count}</span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-muted">
                   <div
@@ -667,7 +689,7 @@ const Reports = ({ workspace, navigate, userId }) => {
             <FrameTitle className="text-sm">
               {t.priorityWatchlistTitle}
             </FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.priorityWatchlistDescription}
             </FrameDescription>
           </FrameHeader>
@@ -681,7 +703,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-medium">{task.title}</p>
-                    <p className="mt-1 text-[0.78125rem] text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {task.project?.name ?? t.noProject} ·{' '}
                       {task.due_date
                         ? new Date(
@@ -692,7 +714,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                   </div>
                   <div className="shrink-0 text-right">
                     <span
-                      className={`inline-flex rounded-full px-2 py-1 text-[0.78125rem] font-semibold uppercase tracking-wide ${
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold uppercase tracking-wide ${
                         isLate
                           ? 'bg-warning/15 text-warning-foreground'
                           : 'bg-primary/10 text-primary'
@@ -715,7 +737,7 @@ const Reports = ({ workspace, navigate, userId }) => {
         <Frame stacked>
           <FrameHeader>
             <FrameTitle className="text-sm">{t.recentActivityTitle}</FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.recentActivityDescriptionOperational}
             </FrameDescription>
           </FrameHeader>
@@ -734,7 +756,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                       </span>{' '}
                       {getActivitySubject(item, taskById, t)}
                     </p>
-                    <p className="mt-1 text-[0.78125rem] text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {relativeLabel(item.created_at, strings.common)}
                     </p>
                   </div>
@@ -776,6 +798,7 @@ const Reports = ({ workspace, navigate, userId }) => {
             }
             Icon={Icon}
             color={color}
+            compact
             onClick={() => openTasksWithFilter(label)}
           />
         ))}
@@ -785,7 +808,7 @@ const Reports = ({ workspace, navigate, userId }) => {
         <Frame stacked>
           <FrameHeader>
             <FrameTitle className="text-sm">{t.timeAllocationTitle}</FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.timeAllocationDescription}
             </FrameDescription>
           </FrameHeader>
@@ -803,11 +826,11 @@ const Reports = ({ workspace, navigate, userId }) => {
                     <div>
                       <div className="mb-1 flex items-center justify-between gap-3 text-xs">
                         <span className="truncate font-medium">{name}</span>
-                        <span className="text-[0.78125rem] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           {durationLabel(minutes)}
                         </span>
                       </div>
-                      <p className="mb-1 text-[0.6875rem] text-muted-foreground">
+                      <p className="mb-1 text-2xs text-muted-foreground">
                         {estimateMinutes
                           ? `${durationLabel(estimateMinutes)} ${t.estimatedSuffix} · ${
                               variance > 0 ? t.overEstimate : t.underEstimate
@@ -839,13 +862,13 @@ const Reports = ({ workspace, navigate, userId }) => {
             <FrameTitle className="text-sm">
               {t.priorityMomentumTitle}
             </FrameTitle>
-            <FrameDescription className="text-[0.78125rem]">
+            <FrameDescription className="text-xs">
               {t.priorityMomentumDescription}
             </FrameDescription>
           </FrameHeader>
           <FramePanel className="space-y-3 p-3 shadow-none">
             <div className="rounded-xl border bg-muted/30 p-3">
-              <p className="text-[0.78125rem] uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
                 {t.completionVelocity}
               </p>
               <p className="mt-1 text-3xl font-semibold">{completionRate}%</p>
@@ -876,7 +899,7 @@ const Reports = ({ workspace, navigate, userId }) => {
       <Frame stacked>
         <FrameHeader>
           <FrameTitle className="text-sm">{t.recentWorkTitle}</FrameTitle>
-          <FrameDescription className="text-[0.78125rem]">
+          <FrameDescription className="text-xs">
             {t.recentWorkDescription}
           </FrameDescription>
         </FrameHeader>
@@ -895,7 +918,7 @@ const Reports = ({ workspace, navigate, userId }) => {
                     </span>{' '}
                     {getActivitySubject(item, taskById, t)}
                   </p>
-                  <p className="mt-1 text-[0.78125rem] text-muted-foreground">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {relativeLabel(item.created_at, strings.common)}
                   </p>
                 </div>
@@ -945,90 +968,140 @@ const Reports = ({ workspace, navigate, userId }) => {
             </button>
           ))}
         </fieldset>
-        <div className="flex flex-wrap items-center gap-2">
-          <select
-            aria-label={t.actionFilter}
-            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
-            value={activityAction}
-            onChange={(event) => setActivityAction(event.target.value)}
+        <div className="relative flex min-w-0 flex-wrap items-center justify-end gap-2">
+          <div
+            aria-hidden={activitySearchOpen}
+            className={`flex min-w-0 flex-wrap items-center justify-end gap-2 ${
+              activitySearchOpen ? 'invisible' : ''
+            }`}
+            inert={activitySearchOpen}
           >
-            <option value="all">{t.allActions}</option>
-            {Object.entries(actionLabel).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label={t.entityFilter}
-            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
-            value={activityEntity}
-            onChange={(event) => setActivityEntity(event.target.value)}
-          >
-            <option value="all">{t.allEntities}</option>
-            {Object.entries(t.entityTypes).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label={t.projectFilter}
-            className="h-8 max-w-44 rounded-md border border-input bg-background px-2 text-xs"
-            value={activityProject}
-            onChange={(event) => setActivityProject(event.target.value)}
-          >
-            <option value="all">{t.allProjects}</option>
-            {projectOptions.map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
-          <Input
-            type="search"
-            className="h-8 w-40"
-            aria-label={t.activitySearch}
-            placeholder={t.activitySearch}
-            value={activitySearch}
-            onChange={(event) => setActivitySearch(event.target.value)}
-          />
-          {preset === 'custom' && (
-            <div className="flex items-center gap-1.5">
-              <Input
-                type="date"
-                className="w-auto"
-                aria-label={t.rangeFrom}
-                max={customRange.to || undefined}
-                value={customRange.from}
-                onChange={(event) =>
-                  setCustomRange({ ...customRange, from: event.target.value })
-                }
+            <Select value={activityAction} onValueChange={setActivityAction}>
+              <SelectTrigger
+                aria-label={t.actionFilter}
+                className="w-40 text-xs"
+              >
+                <SelectValue>
+                  {activityAction === 'all'
+                    ? t.allActions
+                    : (actionLabel[activityAction] ?? activityAction)}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t.allActions}</SelectItem>
+                {Object.entries(actionLabel).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={activityEntity} onValueChange={setActivityEntity}>
+              <SelectTrigger
+                aria-label={t.entityFilter}
+                className="w-36 text-xs"
+              >
+                <SelectValue>
+                  {activityEntity === 'all'
+                    ? t.allEntities
+                    : t.entityTypes[activityEntity]}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t.allEntities}</SelectItem>
+                {Object.entries(t.entityTypes).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={activityProject} onValueChange={setActivityProject}>
+              <SelectTrigger
+                aria-label={t.projectFilter}
+                className="w-44 min-w-0 text-xs"
+              >
+                <SelectValue>
+                  {activityProject === 'all'
+                    ? t.allProjects
+                    : (projectOptions.find(
+                        (project) => project.id === activityProject,
+                      )?.name ?? t.allProjects)}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t.allProjects}</SelectItem>
+                {projectOptions.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {preset === 'custom' && (
+              <div className="flex items-center gap-1.5">
+                <Input
+                  type="date"
+                  className="w-auto"
+                  aria-label={t.rangeFrom}
+                  max={customRange.to || undefined}
+                  value={customRange.from}
+                  onChange={(event) =>
+                    setCustomRange({ ...customRange, from: event.target.value })
+                  }
+                />
+                <span className="text-xs text-muted-foreground">
+                  {strings.activity.rangeTo}
+                </span>
+                <Input
+                  type="date"
+                  className="w-auto"
+                  aria-label={t.rangeTo}
+                  min={customRange.from || undefined}
+                  value={customRange.to}
+                  onChange={(event) =>
+                    setCustomRange({ ...customRange, to: event.target.value })
+                  }
+                />
+              </div>
+            )}
+          </div>
+          {activitySearchOpen && (
+            <InputGroup className="absolute inset-y-0 left-0 right-[5rem] z-10 w-auto bg-background">
+              <InputGroupAddon align="inline-start">
+                <Search />
+              </InputGroupAddon>
+              <InputGroupInput
+                autoFocus
+                type="search"
+                aria-label={t.activitySearch}
+                placeholder={t.activitySearch}
+                value={activitySearch}
+                onChange={(event) => setActivitySearch(event.target.value)}
               />
-              <span className="text-xs text-muted-foreground">
-                {strings.activity.rangeTo}
-              </span>
-              <Input
-                type="date"
-                className="w-auto"
-                aria-label={t.rangeTo}
-                min={customRange.from || undefined}
-                value={customRange.to}
-                onChange={(event) =>
-                  setCustomRange({ ...customRange, to: event.target.value })
-                }
-              />
-            </div>
+            </InputGroup>
           )}
           <Button
             type="button"
+            size="icon"
             variant="outline"
-            size="sm"
+            aria-label={activitySearchOpen ? t.closeSearch : t.activitySearch}
+            aria-expanded={activitySearchOpen}
+            title={activitySearchOpen ? t.closeSearch : t.activitySearch}
+            onClick={handleActivitySearchToggle}
+          >
+            {activitySearchOpen ? <X /> : <Search />}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label={t.exportCsv}
+            title={t.exportCsv}
             disabled={!filteredActivity.length}
             onClick={handleExportCsv}
           >
             <Download />
-            {t.exportCsv}
           </Button>
         </div>
       </section>

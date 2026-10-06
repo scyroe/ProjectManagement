@@ -125,7 +125,7 @@ const SettingsDialog = ({
                       <span className="block text-sm font-medium">
                         {option.name}
                       </span>
-                      <span className="mt-1 block text-[0.78125rem] leading-4 text-muted-foreground">
+                      <span className="mt-1 block text-xs leading-4 text-muted-foreground">
                         {option.description}
                       </span>
                       {selected && (

@@ -718,7 +718,7 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
                                   {day.getDate()}
                                 </span>
                                 {dayEvents.length > 0 && (
-                                  <span className="pr-1 text-[0.6875rem] tabular-nums text-muted-foreground">
+                                  <span className="pr-1 text-2xs tabular-nums text-muted-foreground">
                                     {dayEvents.length}
                                   </span>
                                 )}
@@ -730,7 +730,7 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
                                 {dayEvents.length > visibleCount && (
                                   <button
                                     type="button"
-                                    className="px-1.5 text-[0.6875rem] text-primary hover:underline"
+                                    className="px-1.5 text-2xs text-primary hover:underline"
                                     aria-label={`${t.showEventsFor} ${formatDate(day, locale, { month: 'short', day: 'numeric' })}`}
                                     onClick={() => handleShowDayEvents(day)}
                                   >
