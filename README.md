@@ -42,14 +42,19 @@ Supabase publishable/anon key; never use a service-role key in this browser app.
 
 Apply [supabase/project_management.sql](./supabase/project_management.sql) in
 the Supabase SQL editor before using the app. It creates or extends the schema,
-policies, and triggers needed for profiles, assignment and mention
-notifications, recurring tasks, task dependencies, project milestones, task
-templates, and workload capacity. Back up an existing database before applying
-the script.
+policies, and triggers needed for workspaces and role-based membership,
+profiles, notifications, recurring tasks, dependencies, milestones, templates,
+automations, and workload capacity. Back up an existing database before
+applying the script. Existing records are kept together in a shared default
+workspace; users can create additional workspaces and invite existing accounts
+by username. Workspace roles are owner, admin, editor, and viewer.
 
-All authenticated users in this Supabase project share one workspace. The
-schema script configures the database for that shared-workspace model; it is
-not a per-organization tenant setup.
+New accounts are added to the existing shared default workspace to preserve
+the current collaboration behavior. Additional workspaces are isolated by
+membership and the active workspace selection. Email digest preferences are
+stored, but sending email requires a separately configured mail service.
+Calendar export downloads an `.ics` snapshot for import into calendar clients;
+it does not provide a live subscription or two-way synchronization.
 
 ## Data portability
 

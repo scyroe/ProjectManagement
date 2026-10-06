@@ -71,6 +71,7 @@ function WorkspaceLayout({
     syncStatus,
     taskFormDialog,
     taskMetrics,
+    workspaces,
     workspace,
   } = layout;
 
@@ -128,6 +129,7 @@ function WorkspaceLayout({
             }
             sidebarCollapsed={sidebarCollapsed}
             taskMetrics={taskMetrics}
+            workspaces={workspaces}
           />
           <main className="flex h-[calc(100dvh-4rem)] min-h-0 flex-col p-3 sm:p-5">
             <WorkspaceRouteContent
@@ -148,6 +150,10 @@ function WorkspaceLayout({
               animationsEnabled={animationsEnabled}
               userId={userId}
               weekStartsOn={weekStartsOn}
+              workspaceReady={
+                workspaces.isReady && Boolean(workspaces.activeWorkspaceId)
+              }
+              workspaceId={workspaces.activeWorkspaceId}
               workspace={workspace}
             />
           </main>
@@ -205,6 +211,7 @@ function WorkspaceLayout({
             onWeekStartsOnChange: setWeekStartsOn,
           }}
           userId={userId}
+          workspaces={workspaces}
           workspace={workspace}
         />
       </div>

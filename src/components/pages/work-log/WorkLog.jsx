@@ -1,11 +1,22 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { enUS, ro } from 'date-fns/locale';
+import { Download, Pencil } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { AnimatedTabIndicator } from '@/components/Common/animated-tabs';
 import { Gantt } from '@/components/reui/gantt/gantt';
 import { GanttView } from '@/components/reui/gantt/gantt-view';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { VirtualList } from '@/components/ui/virtual-list';
 import { useLanguage, useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
@@ -77,12 +88,29 @@ function formatDuration(minutes) {
   return `${hours}h ${remainingMinutes}m`;
 }
 
-function WorkLog({ weekStartsOn }) {
+function toDateTimeLocal(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+    .toISOString()
+    .slice(0, 16);
+}
+
+function WorkLog({ weekStartsOn, workspaceId, userId }) {
   const strings = useStrings();
   const t = strings.workLogPage;
+  const queryClient = useQueryClient();
   const { language } = useLanguage();
   const locale = language === 'ro' ? 'ro-RO' : 'en-US';
   const [preset, setPreset] = useState('today');
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [editForm, setEditForm] = useState({
+    startedAt: '',
+    stoppedAt: '',
+    note: '',
+  });
+  const [savingEntry, setSavingEntry] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [customRange, setCustomRange] = useState(() => {
     const today = toDateInputValue(new Date());
@@ -104,7 +132,7 @@ function WorkLog({ weekStartsOn }) {
     error: profilesError,
     isLoading: profilesLoading,
   } = useQuery({
-    queryKey: ['profiles'],
+    queryKey: ['work-log-profiles', workspaceId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
@@ -122,6 +150,7 @@ function WorkLog({ weekStartsOn }) {
   } = useQuery({
     queryKey: [
       'work-log',
+      workspaceId,
       range?.start.toISOString(),
       range?.end.toISOString(),
     ],
@@ -286,6 +315,89 @@ function WorkLog({ weekStartsOn }) {
         new Date(range.end.getTime() - 1),
       )}`
     : '';
+
+  const handleEditEntry = (entry) => {
+    setEditingEntry(entry);
+    setEditForm({
+      startedAt: toDateTimeLocal(entry.started_at),
+      stoppedAt: toDateTimeLocal(entry.stopped_at),
+      note: entry.note ?? '',
+    });
+  };
+
+  const handleSaveEntry = async (event) => {
+    event.preventDefault();
+    if (!editingEntry || !editForm.startedAt || !editForm.stoppedAt) return;
+    const startedAt = new Date(editForm.startedAt);
+    const stoppedAt = new Date(editForm.stoppedAt);
+    if (
+      Number.isNaN(startedAt.getTime()) ||
+      Number.isNaN(stoppedAt.getTime()) ||
+      stoppedAt <= startedAt
+    ) {
+      toast.error(t.invalidInterval);
+      return;
+    }
+    setSavingEntry(true);
+    const { error } = await supabase
+      .from('task_history')
+      .update({
+        started_at: startedAt.toISOString(),
+        stopped_at: stoppedAt.toISOString(),
+        note: editForm.note.trim() || null,
+      })
+      .eq('id', editingEntry.id)
+      .eq('user_id', userId)
+      .eq('action', 'stopped');
+    setSavingEntry(false);
+    if (error) {
+      toast.error(t.editError, { description: error.message });
+      return;
+    }
+    toast.success(t.entryUpdated);
+    setEditingEntry(null);
+    await queryClient.invalidateQueries({
+      queryKey: ['work-log', workspaceId],
+    });
+  };
+
+  const handleExportCsv = () => {
+    const cell = (value) => {
+      let text = String(value ?? '');
+      if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+      return `"${text.replaceAll('"', '""')}"`;
+    };
+    const rows = [
+      [
+        'task',
+        'project',
+        'member',
+        'started_at',
+        'stopped_at',
+        'minutes',
+        'note',
+      ],
+      ...entries.map((entry) => [
+        entry.task?.title,
+        entry.task?.project?.name,
+        entry.user_email,
+        entry.started_at,
+        entry.stopped_at,
+        entry.duration_minutes,
+        entry.note,
+      ]),
+    ];
+    const csv = rows.map((row) => row.map(cell).join(',')).join('\r\n');
+    const url = URL.createObjectURL(
+      new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }),
+    );
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `work-log-${preset}.csv`;
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto pb-2">
       <div className="flex min-h-10 shrink-0 flex-wrap items-center justify-between gap-3">
@@ -357,6 +469,16 @@ function WorkLog({ weekStartsOn }) {
             </div>
           </div>
         )}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={!entries.length}
+          onClick={handleExportCsv}
+        >
+          <Download aria-hidden="true" />
+          {t.exportCsv}
+        </Button>
       </div>
 
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-sm">
@@ -512,6 +634,125 @@ function WorkLog({ weekStartsOn }) {
           </Gantt>
         </div>
       )}
+
+      <section className="shrink-0 space-y-2">
+        <h2 className="text-sm font-semibold">{t.recentSessions}</h2>
+        {entries.length ? (
+          <VirtualList
+            ariaLabel={t.recentSessions}
+            className="max-h-64"
+            estimateSize={68}
+            getItemKey={(entry) => entry.id}
+            itemClassName="pb-2"
+            items={entries}
+            renderItem={(entry) => (
+              <div className="flex items-center justify-between gap-3 rounded-lg border p-2.5">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    {entry.task?.title ?? strings.common.aTask}
+                  </p>
+                  <p className="mt-1 truncate text-xs text-muted-foreground">
+                    {entry.user_email} ·{' '}
+                    {entry.started_at
+                      ? dateFormatter.format(new Date(entry.started_at))
+                      : ''}
+                    {entry.duration_minutes !== null &&
+                      ` · ${formatDuration(entry.duration_minutes)}`}
+                  </p>
+                </div>
+                {entry.user_id === userId && entry.action === 'stopped' && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditEntry(entry)}
+                  >
+                    <Pencil aria-hidden="true" />
+                    {t.editEntry}
+                  </Button>
+                )}
+              </div>
+            )}
+          />
+        ) : (
+          <p className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+            {t.noSessions}
+          </p>
+        )}
+      </section>
+
+      <Dialog
+        open={Boolean(editingEntry)}
+        onOpenChange={(open) => !open && setEditingEntry(null)}
+      >
+        <DialogContent className="max-w-md">
+          <div className="space-y-1 pr-8">
+            <DialogTitle className="text-xl font-semibold">
+              {t.editTitle}
+            </DialogTitle>
+            <DialogDescription>{editingEntry?.task?.title}</DialogDescription>
+          </div>
+          <form className="mt-4 space-y-4" onSubmit={handleSaveEntry}>
+            <div className="space-y-1">
+              <Label htmlFor="work-entry-start">{t.startTime}</Label>
+              <Input
+                id="work-entry-start"
+                type="datetime-local"
+                required
+                value={editForm.startedAt}
+                onChange={(event) =>
+                  setEditForm((current) => ({
+                    ...current,
+                    startedAt: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="work-entry-end">{t.endTime}</Label>
+              <Input
+                id="work-entry-end"
+                type="datetime-local"
+                required
+                min={editForm.startedAt || undefined}
+                value={editForm.stoppedAt}
+                onChange={(event) =>
+                  setEditForm((current) => ({
+                    ...current,
+                    stoppedAt: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="work-entry-note">{t.notes}</Label>
+              <Textarea
+                id="work-entry-note"
+                value={editForm.note}
+                onChange={(event) =>
+                  setEditForm((current) => ({
+                    ...current,
+                    note: event.target.value,
+                  }))
+                }
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditingEntry(null)}
+              >
+                {t.cancel}
+              </Button>
+              <Button type="submit" disabled={savingEntry}>
+                {savingEntry ? t.saving : t.saveEntry}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

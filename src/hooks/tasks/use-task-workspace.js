@@ -8,13 +8,19 @@ import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
-const tasksQueryKey = ['tasks'];
-const taskSessionQueryKey = ['task-session'];
+const tasksQueryKey = (workspaceId) => ['tasks', workspaceId];
+const taskSessionQueryKey = (userId, workspaceId) => [
+  'task-session',
+  userId,
+  workspaceId,
+];
 const workspaceActivityQueryKey = ['workspace-activity'];
 const workspaceActivityPageSize = 100;
+const taskSearchPageSize = 50;
+const taskPageSize = 250;
 
 const taskSelect =
-  'id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,parent_task_id,state_id,project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)))';
+  'id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,parent_task_id,state_id,project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,sort_order,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)))';
 const dayInMs = 24 * 60 * 60 * 1000;
 
 const isDueSoon = (task, today, dueSoonEnd) => {
@@ -39,6 +45,14 @@ const isDueThisWeekend = (task, today) => {
   const dueDate = new Date(`${task.due_date}T00:00:00`);
   return dueDate >= weekendStart && dueDate < nextMonday;
 };
+
+const getServerSearchText = (value = '') =>
+  value
+    .replace(/(?:^|\s)(status|priority|project|tag):(?:"([^"]+)"|(\S+))/gi, ' ')
+    .replace(/[^\p{L}\p{N}\s-]/gu, ' ')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .slice(0, 120);
 
 const matchesSearchQuery = (task, rawQuery) => {
   const query = rawQuery.toLocaleLowerCase().trim();
@@ -99,12 +113,16 @@ export function useTaskWorkspace({
   enabled = true,
   defaultTaskFilter = 'current',
   includeWorkspaceActivity = false,
+  loadAllTasks = true,
   onMetricsChange,
   searchQuery,
   userId,
+  workspaceId,
 }) {
   const t = useStrings().toasts.taskWorkspace;
   const queryClient = useQueryClient();
+  const tasksKey = tasksQueryKey(workspaceId);
+  const sessionKey = taskSessionQueryKey(userId, workspaceId);
   const [selectedId, setSelectedId] = useState(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState(defaultTaskFilter);
@@ -115,23 +133,65 @@ export function useTaskWorkspace({
       currentTaskId === taskId ? null : currentTaskId,
     );
   }, []);
+  const serverSearchText = getServerSearchText(searchQuery ?? '');
 
   const {
-    data: tasks = [],
+    data: taskSearchPages,
+    fetchNextPage: fetchNextSearchPage,
+    hasNextPage: hasMoreSearchResults,
+    isFetchingNextPage: searchLoadingMore,
+    isLoading: searchLoading,
+    error: searchQueryError,
+  } = useInfiniteQuery({
+    queryKey: ['task-search', workspaceId, serverSearchText],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const query = supabase
+        .from('tasks')
+        .select(taskSelect)
+        .textSearch('search_document', serverSearchText, {
+          type: 'websearch',
+          config: 'simple',
+        })
+        .order('due_date', { ascending: true, nullsFirst: false })
+        .order('id')
+        .range(pageParam, pageParam + taskSearchPageSize - 1);
+      const { data, error } = await query;
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.length < taskSearchPageSize
+        ? undefined
+        : pages.length * taskSearchPageSize,
+    enabled: Boolean(workspaceId && serverSearchText),
+  });
+
+  const {
+    data: taskPages,
+    fetchNextPage: fetchNextTasksPage,
+    hasNextPage: hasMoreTasks,
+    isFetchingNextPage: tasksLoadingMore,
     isLoading: tasksLoading,
     error: tasksQueryError,
-  } = useQuery({
-    queryKey: tasksQueryKey,
-    queryFn: async () => {
+  } = useInfiniteQuery({
+    queryKey: tasksKey,
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
       const { data, error: taskError } = await supabase
         .from('tasks')
         .select(taskSelect)
-        .order('due_date', { ascending: true, nullsFirst: false });
+        .order('due_date', { ascending: true, nullsFirst: false })
+        .order('id')
+        .range(pageParam, pageParam + taskPageSize - 1);
       if (taskError) throw new Error(taskError.message);
       return data ?? [];
     },
-    enabled,
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.length < taskPageSize ? undefined : pages.length * taskPageSize,
+    enabled: enabled && Boolean(workspaceId),
   });
+  const tasks = useMemo(() => taskPages?.pages.flat() ?? [], [taskPages]);
 
   const {
     data: workspaceActivityPages,
@@ -141,7 +201,7 @@ export function useTaskWorkspace({
     isLoading: workspaceActivityLoading,
     error: workspaceActivityQueryError,
   } = useInfiniteQuery({
-    queryKey: [...workspaceActivityQueryKey, userId],
+    queryKey: [...workspaceActivityQueryKey, userId, workspaceId],
     initialPageParam: null,
     queryFn: async ({ pageParam }) => {
       let query = supabase
@@ -175,12 +235,18 @@ export function useTaskWorkspace({
     [workspaceActivityPages],
   );
 
+  useEffect(() => {
+    if (loadAllTasks && hasMoreTasks && !tasksLoadingMore) {
+      fetchNextTasksPage();
+    }
+  }, [fetchNextTasksPage, hasMoreTasks, loadAllTasks, tasksLoadingMore]);
+
   const {
     data: session,
     isLoading: sessionLoading,
     error: sessionQueryError,
   } = useQuery({
-    queryKey: taskSessionQueryKey,
+    queryKey: sessionKey,
     queryFn: async () => {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
@@ -217,7 +283,8 @@ export function useTaskWorkspace({
   const activity = session?.activity ?? [];
   const runningHistoryId = session?.runningHistoryId ?? null;
   const runningTaskId = session?.runningTaskId ?? null;
-  const loading = tasksLoading || sessionLoading;
+  const loading =
+    tasksLoading || sessionLoading || (loadAllTasks && tasksLoadingMore);
   const error = tasksQueryError?.message || sessionQueryError?.message || '';
 
   useEffect(() => {
@@ -258,10 +325,16 @@ export function useTaskWorkspace({
       : filteredTasks;
   }, [filteredTasks, query]);
 
-  const searchResults = useMemo(() => {
+  const localSearchResults = useMemo(() => {
     if (!(searchQuery ?? '').trim()) return [];
     return tasks.filter((task) => matchesSearchQuery(task, searchQuery));
   }, [searchQuery, tasks]);
+  const searchResults = useMemo(() => {
+    if (!serverSearchText) return localSearchResults;
+    return (taskSearchPages?.pages.flat() ?? []).filter((task) =>
+      matchesSearchQuery(task, searchQuery),
+    );
+  }, [localSearchResults, searchQuery, serverSearchText, taskSearchPages]);
 
   const selected = useMemo(
     () => tasks.find((task) => task.id === selectedId) ?? tasks[0],
@@ -281,11 +354,20 @@ export function useTaskWorkspace({
   }, [completedCount, onMetricsChange, runningTaskId, tasks.length]);
 
   const handleTaskUpdated = (updatedTask) => {
-    queryClient.setQueryData(tasksQueryKey, (current = []) =>
-      current.map((task) => (task.id === updatedTask.id ? updatedTask : task)),
+    queryClient.setQueryData(tasksKey, (current) =>
+      current
+        ? {
+            ...current,
+            pages: current.pages.map((page) =>
+              page.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task,
+              ),
+            ),
+          }
+        : current,
     );
     if (updatedTask.state?.is_completed && runningTaskId === updatedTask.id) {
-      queryClient.setQueryData(taskSessionQueryKey, (current) => ({
+      queryClient.setQueryData(sessionKey, (current) => ({
         ...current,
         runningTaskId: null,
         runningHistoryId: null,
@@ -296,21 +378,34 @@ export function useTaskWorkspace({
 
   const handleTaskCreated = (createdTask) => {
     setRecentlyCreatedTaskId(createdTask.id);
-    queryClient.setQueryData(tasksQueryKey, (current = []) => [
-      ...current,
-      createdTask,
-    ]);
+    queryClient.setQueryData(tasksKey, (current) =>
+      current
+        ? {
+            ...current,
+            pages: current.pages.map((page, index) =>
+              index === 0 ? [...page, createdTask] : page,
+            ),
+          }
+        : { pages: [[createdTask]], pageParams: [0] },
+    );
     setSelectedId(createdTask.id);
     setFilter('current');
   };
 
   const handleProjectUpdated = (updatedProject) => {
-    queryClient.setQueryData(tasksQueryKey, (current = []) =>
-      current.map((task) =>
-        task.project?.id === updatedProject.id
-          ? { ...task, project: { ...task.project, ...updatedProject } }
-          : task,
-      ),
+    queryClient.setQueryData(tasksKey, (current) =>
+      current
+        ? {
+            ...current,
+            pages: current.pages.map((page) =>
+              page.map((task) =>
+                task.project?.id === updatedProject.id
+                  ? { ...task, project: { ...task.project, ...updatedProject } }
+                  : task,
+              ),
+            ),
+          }
+        : current,
     );
   };
 
@@ -344,7 +439,7 @@ export function useTaskWorkspace({
         });
         return;
       }
-      queryClient.setQueryData(taskSessionQueryKey, (current) => ({
+      queryClient.setQueryData(sessionKey, (current) => ({
         ...current,
         runningTaskId: task.id,
         runningHistoryId: inserted.id,
@@ -379,13 +474,13 @@ export function useTaskWorkspace({
           description: commentError.message,
         });
       }
-      queryClient.setQueryData(taskSessionQueryKey, (current) => ({
+      queryClient.setQueryData(sessionKey, (current) => ({
         ...current,
         runningTaskId: null,
         runningHistoryId: null,
       }));
     }
-    queryClient.invalidateQueries({ queryKey: taskSessionQueryKey });
+    queryClient.invalidateQueries({ queryKey: sessionKey });
     queryClient.invalidateQueries({ queryKey: ['task-history', task.id] });
     setHistoryVersion((version) => version + 1);
   };
@@ -427,10 +522,17 @@ export function useTaskWorkspace({
     historyVersion,
     loadMoreWorkspaceActivity: fetchNextWorkspaceActivityPage,
     loading,
+    loadMoreTasks: fetchNextTasksPage,
+    hasMoreTasks: Boolean(hasMoreTasks),
+    loadingMoreTasks: tasksLoadingMore,
     query,
     recentlyCreatedTaskId,
     runningTaskId,
     searchResults,
+    searchError: searchQueryError?.message ?? '',
+    searchHasMore: Boolean(hasMoreSearchResults),
+    searchLoading: searchLoading || searchLoadingMore,
+    loadMoreSearchResults: fetchNextSearchPage,
     selected,
     setFilter,
     setQuery,

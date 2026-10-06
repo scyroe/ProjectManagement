@@ -211,31 +211,55 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
         };
       });
 
-    return [...projectEvents, ...taskEvents].filter((event) => {
-      if (
-        projectFilter !== 'all' &&
-        !event.projectIds.includes(projectFilter)
-      ) {
-        return false;
-      }
-      if (clientFilter !== 'all' && !event.clientIds.includes(clientFilter)) {
-        return false;
-      }
-      if (event.task && statusFilter === 'open' && event.completed)
-        return false;
-      if (event.task && statusFilter === 'completed' && !event.completed) {
-        return false;
-      }
-      return true;
+    const milestoneEvents = calendar.milestones.flatMap((milestone) => {
+      const project = projectById.get(milestone.project_id);
+      if (!project || !milestone.due_date) return [];
+      return [
+        {
+          id: `milestone-${milestone.id}`,
+          date: milestone.due_date,
+          kind: 'milestone',
+          title: milestone.name,
+          description: milestone.description,
+          projectIds: [project.id],
+          clientIds: project.clientIds,
+          projectNames: [project.name],
+          clientNames: project.clients.map((client) => client.name),
+          statusLabel: milestone.completed_at ? t.completed : t.milestone,
+        },
+      ];
     });
+
+    return [...projectEvents, ...taskEvents, ...milestoneEvents].filter(
+      (event) => {
+        if (
+          projectFilter !== 'all' &&
+          !event.projectIds.includes(projectFilter)
+        ) {
+          return false;
+        }
+        if (clientFilter !== 'all' && !event.clientIds.includes(clientFilter)) {
+          return false;
+        }
+        if (event.task && statusFilter === 'open' && event.completed)
+          return false;
+        if (event.task && statusFilter === 'completed' && !event.completed) {
+          return false;
+        }
+        return true;
+      },
+    );
   }, [
     clientFilter,
+    calendar.milestones,
     projectById,
     projectFilter,
     projects,
     statusFilter,
     strings.common.noState,
     t.priorities,
+    t.completed,
+    t.milestone,
     workspace.tasks,
   ]);
 
@@ -432,6 +456,54 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
     }
   };
 
+  const handleExportCalendar = () => {
+    const escapeText = (value) =>
+      String(value ?? '')
+        .replaceAll('\\', '\\\\')
+        .replaceAll(';', '\\;')
+        .replaceAll(',', '\\,')
+        .replace(/\r?\n/g, '\\n');
+    const addOneDay = (value) => {
+      const date = new Date(`${value}T00:00:00Z`);
+      date.setUTCDate(date.getUTCDate() + 1);
+      return date.toISOString().slice(0, 10).replaceAll('-', '');
+    };
+    const entries = events
+      .filter((event) => event.date)
+      .map((event) =>
+        [
+          'BEGIN:VEVENT',
+          `UID:${escapeText(event.id)}@projectmanagement`,
+          `DTSTAMP:${new Date()
+            .toISOString()
+            .replaceAll('-', '')
+            .replaceAll(':', '')
+            .replace(/\.\d{3}/, '')}`,
+          `DTSTART;VALUE=DATE:${event.date.replaceAll('-', '')}`,
+          `DTEND;VALUE=DATE:${addOneDay(event.date)}`,
+          `SUMMARY:${escapeText(event.title)}`,
+          `DESCRIPTION:${escapeText([event.kind, event.projectNames?.join(', '), event.statusLabel, event.description].filter(Boolean).join(' · '))}`,
+          'END:VEVENT',
+        ].join('\r\n'),
+      );
+    const content = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//ProjectManagement//Workspace Calendar//EN',
+      'CALSCALE:GREGORIAN',
+      ...entries,
+      'END:VCALENDAR',
+    ].join('\r\n');
+    const url = URL.createObjectURL(
+      new Blob([content], { type: 'text/calendar;charset=utf-8' }),
+    );
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'workspace-calendar.ics';
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+
   const eventLabels = {
     client: t.client,
     dragToReschedule: t.dragToReschedule,
@@ -445,6 +517,7 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
     projectStart: t.projectStart,
     status: t.status,
     taskDue: t.taskDue,
+    milestone: t.milestone,
   };
   const renderEvent = (event, compact = false) => (
     <CalendarEventItem
@@ -477,6 +550,16 @@ function Calendar({ calendar, navigate, weekStartsOn, workspace }) {
             </button>
           ))}
         </fieldset>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleExportCalendar}
+          disabled={!events.length}
+        >
+          <CalendarDays aria-hidden="true" />
+          {t.exportCalendar}
+        </Button>
       </div>
 
       <div className="flex flex-wrap items-end gap-3">

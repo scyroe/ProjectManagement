@@ -24,6 +24,7 @@ const Projects = ({
   onProjectSaved,
   searchQuery = '',
   setSearchQuery,
+  workspaceId,
   workspace,
 }) => {
   const t = useStrings().projectsPage;
@@ -111,6 +112,7 @@ const Projects = ({
             <ProjectWorkspace
               key={selectedProject.id}
               project={selectedProject}
+              workspaceId={workspaceId}
               workspace={workspace}
               onProjectSaved={onProjectSaved}
               onNewTask={onNewTask}

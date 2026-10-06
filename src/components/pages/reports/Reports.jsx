@@ -219,6 +219,42 @@ const Reports = ({ workspace, navigate, userId }) => {
         trackedMinutes,
       };
     }, [filteredActivity, t.noProject, taskById]);
+  const effortSummary = useMemo(() => {
+    const actualByTask = new Map();
+    for (const item of filteredActivity) {
+      if (!item.task_id || !item.duration_minutes) continue;
+      actualByTask.set(
+        item.task_id,
+        (actualByTask.get(item.task_id) ?? 0) + item.duration_minutes,
+      );
+    }
+    const rows = [...actualByTask]
+      .flatMap(([taskId, actualMinutes]) => {
+        const task = taskById.get(taskId);
+        if (!task?.estimate_minutes) return [];
+        return [
+          {
+            id: taskId,
+            title: task.title,
+            estimateMinutes: task.estimate_minutes,
+            actualMinutes,
+            difference: actualMinutes - task.estimate_minutes,
+          },
+        ];
+      })
+      .sort(
+        (first, second) =>
+          Math.abs(second.difference) - Math.abs(first.difference),
+      );
+    return {
+      estimatedMinutes: rows.reduce(
+        (total, row) => total + row.estimateMinutes,
+        0,
+      ),
+      actualMinutes: rows.reduce((total, row) => total + row.actualMinutes, 0),
+      rows: rows.slice(0, 8),
+    };
+  }, [filteredActivity, taskById]);
   const {
     completedTasks,
     completionRate,
@@ -366,6 +402,52 @@ const Reports = ({ workspace, navigate, userId }) => {
         loading={reportLoading}
         onSelect={openTasksWithFilter}
       />
+
+      <Frame stacked>
+        <CompactSectionHeader
+          title={t.effortComparisonTitle}
+          description={t.effortComparisonDescription}
+        />
+        <FramePanel className="space-y-3 p-3 shadow-none">
+          <div className="grid gap-2 sm:grid-cols-3">
+            <EffortMetric
+              label={t.estimated}
+              minutes={effortSummary.estimatedMinutes}
+            />
+            <EffortMetric
+              label={t.actual}
+              minutes={effortSummary.actualMinutes}
+            />
+            <EffortMetric
+              label={t.variance}
+              minutes={
+                effortSummary.actualMinutes - effortSummary.estimatedMinutes
+              }
+            />
+          </div>
+          {effortSummary.rows.map((row) => (
+            <div
+              key={row.id}
+              className="flex flex-wrap items-center justify-between gap-2 border-t pt-2 text-xs"
+            >
+              <span className="min-w-0 flex-1 truncate font-medium">
+                {row.title}
+              </span>
+              <span className="text-muted-foreground">
+                {t.estimated}: {durationLabel(row.estimateMinutes)} · {t.actual}
+                : {durationLabel(row.actualMinutes)} · {t.variance}:{' '}
+                {row.difference > 0 ? '+' : ''}
+                {durationLabel(row.difference)}
+              </span>
+            </div>
+          ))}
+          {!effortSummary.rows.length && (
+            <p className="text-center text-xs text-muted-foreground">
+              {t.noEffortData}
+            </p>
+          )}
+        </FramePanel>
+      </Frame>
 
       <section className="grid gap-3 xl:grid-cols-[repeat(auto-fit,minmax(min(100%,24rem),1fr))]">
         <Frame stacked>
@@ -545,6 +627,18 @@ const Reports = ({ workspace, navigate, userId }) => {
       </section>
     </div>
   );
+
+  function EffortMetric({ label, minutes }) {
+    return (
+      <div className="rounded-lg border bg-muted/30 p-3">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="mt-1 text-base font-semibold tabular-nums">
+          {minutes < 0 ? '−' : ''}
+          {durationLabel(Math.abs(minutes))}
+        </p>
+      </div>
+    );
+  }
 
   const OperationalView = () => (
     <div className="space-y-3">

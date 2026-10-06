@@ -1,4 +1,5 @@
-import { FolderKanban, GripVertical } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { FolderKanban, GripVertical, TriangleAlert } from 'lucide-react';
 import { useMemo } from 'react';
 import { dateLabel, priorityVariant } from '@/components/Common/taskUtils';
 import { Badge } from '@/components/reui/badge';
@@ -11,6 +12,7 @@ import {
 } from '@/components/reui/frame';
 import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
+import { supabase } from '@/lib/supabase';
 
 const fallbackStates = [
   { id: 'backlog', name: 'Backlog', color: 'slate', is_completed: false },
@@ -23,6 +25,23 @@ const fallbackStates = [
 const ProjectBoard = ({ workspace }) => {
   const strings = useStrings();
   const { loading, tasks, updateTaskState } = workspace;
+  const dependenciesQuery = useQuery({
+    queryKey: [
+      'project-board-dependencies',
+      tasks
+        .map((task) => task.id)
+        .sort()
+        .join(','),
+    ],
+    enabled: tasks.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('task_dependencies')
+        .select('task_id,depends_on_task_id');
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
   const { columns, tasksByState } = useMemo(() => {
     const statesById = new Map();
     const tasksByState = new Map();
@@ -42,6 +61,18 @@ const ProjectBoard = ({ workspace }) => {
       tasksByState,
     };
   }, [tasks]);
+  const blockedTaskCounts = new Map();
+  for (const dependency of dependenciesQuery.data ?? []) {
+    const prerequisite = tasks.find(
+      (task) => task.id === dependency.depends_on_task_id,
+    );
+    if (!prerequisite?.state?.is_completed) {
+      blockedTaskCounts.set(
+        dependency.task_id,
+        (blockedTaskCounts.get(dependency.task_id) ?? 0) + 1,
+      );
+    }
+  }
 
   return (
     <Frame className="h-full min-h-0" stacked>
@@ -55,6 +86,14 @@ const ProjectBoard = ({ workspace }) => {
         <FolderKanban className="size-5 text-primary" />
       </FrameHeader>
       <FramePanel className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-3 pb-0 shadow-none">
+        {dependenciesQuery.error && (
+          <p
+            role="alert"
+            className="mb-2 rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs text-destructive"
+          >
+            {dependenciesQuery.error.message}
+          </p>
+        )}
         <div
           className="grid h-full min-h-0 min-w-0 gap-3"
           style={{
@@ -104,6 +143,18 @@ const ProjectBoard = ({ workspace }) => {
                           {task.title}
                         </p>
                       </div>
+                      {blockedTaskCounts.has(task.id) && (
+                        <p className="mt-2 flex items-center gap-1.5 pl-6 text-xs text-warning-foreground">
+                          <TriangleAlert
+                            className="size-3.5 shrink-0"
+                            aria-hidden="true"
+                          />
+                          {strings.taskDependencies.blocked.replace(
+                            '{count}',
+                            String(blockedTaskCounts.get(task.id)),
+                          )}
+                        </p>
+                      )}
                       <p className="mt-2 truncate pl-6 text-xs text-muted-foreground">
                         {task.project?.name ?? 'No project'}
                       </p>

@@ -19,11 +19,13 @@ import { useProjectActivity } from '@/hooks/projects/use-project-activity';
 import { useStrings } from '@/lib/i18n';
 import ProjectActivityPanel from './ProjectActivityPanel';
 import ProjectFormEditor from './ProjectFormEditor';
+import ProjectTemplateControls from './ProjectTemplateControls';
 
 const ProjectWorkspace = ({
   onNewTask,
   onProjectSaved,
   project,
+  workspaceId,
   workspace,
 }) => {
   const strings = useStrings();
@@ -116,6 +118,11 @@ const ProjectWorkspace = ({
                 </Badge>
               </FrameDescription>
             </div>
+            <ProjectTemplateControls
+              project={project}
+              tasks={projectTasks}
+              workspaceId={workspaceId}
+            />
           </div>
           <div
             className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-4"

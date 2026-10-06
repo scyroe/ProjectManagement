@@ -82,6 +82,9 @@
       "placeholder": "Caută în workspace...",
       "queryHelp": "Filtrează sarcinile cu status:\"In progress\", priority:high, project:website sau tag:design.",
       "noResults": "Nu s-au găsit elemente în workspace.",
+      "loading": "Se încarcă rezultatele căutării...",
+      "loadMore": "Încarcă mai multe sarcini",
+      "searchError": "Căutarea sarcinilor nu a reușit",
       "recentSearches": "Căutări recente",
       "groups": {
         "tasks": "Sarcini",
@@ -95,6 +98,15 @@
       "entries": [
         { "action": "Deschide căutarea în workspace", "keys": "Ctrl / ⌘ + K" },
         { "action": "Creează o sarcină", "keys": "N" },
+        {
+          "action": "Pornește sau oprește cronometrul sarcinii selectate",
+          "keys": "Space"
+        },
+        { "action": "Schimbă starea sarcinii selectate", "keys": "Alt + 1–5" },
+        {
+          "action": "Navighează între vizualizări",
+          "keys": "Ctrl / ⌘ + Alt + 1–7"
+        },
         { "action": "Afișează această listă", "keys": "?" },
         { "action": "Închide un dialog sau restaurează cardul", "keys": "Esc" }
       ]
@@ -313,6 +325,9 @@
     "taskDue": "Termen sarcină",
     "projectStart": "Început proiect",
     "projectDeadline": "Termen proiect",
+    "milestone": "Etapă",
+    "completed": "Finalizată",
+    "exportCalendar": "Exportă calendarul",
     "project": "Proiect",
     "client": "Client",
     "status": "Stare",
@@ -362,7 +377,21 @@
     "noComment": "Nu a fost adăugat niciun comentariu.",
     "inProgress": "În desfășurare",
     "zoomIn": "Mărește",
-    "zoomOut": "Micșorează"
+    "zoomOut": "Micșorează",
+    "exportCsv": "Exportă CSV",
+    "recentSessions": "Înregistrări de timp",
+    "noSessions": "Nu există înregistrări de timp în această perioadă.",
+    "editEntry": "Editează",
+    "editTitle": "Editează înregistrarea de timp",
+    "startTime": "Ora de început",
+    "endTime": "Ora de sfârșit",
+    "notes": "Note",
+    "cancel": "Anulează",
+    "saveEntry": "Salvează înregistrarea",
+    "saving": "Se salvează...",
+    "entryUpdated": "Înregistrare de timp actualizată",
+    "editError": "Înregistrarea de timp nu a putut fi actualizată",
+    "invalidInterval": "Ora de sfârșit trebuie să fie după ora de început."
   },
   "clientsPage": {
     "title": "Clienți",
@@ -463,6 +492,12 @@
     "operationalHealthDescription": "Finalizare generală și ritm de livrare",
     "completeSuffix": "finalizat",
     "completionRate": "Rata de finalizare",
+    "effortComparisonTitle": "Efort estimat și efectiv",
+    "effortComparisonDescription": "Timpul înregistrat comparat cu estimările pentru perioada selectată",
+    "estimated": "Estimat",
+    "actual": "Efectiv",
+    "variance": "Diferență",
+    "noEffortData": "Nu există sarcini cu estimări și timp înregistrat în această perioadă.",
     "doneSuffix": "finalizate",
     "activeSuffix": "active",
     "portfolioMixTitle": "Structura portofoliului",
@@ -860,6 +895,8 @@
       "overdue": "Restante"
     },
     "loading": "Se încarcă sarcinile...",
+    "loadMoreTasks": "Încarcă mai multe sarcini",
+    "loadingMoreTasks": "Se încarcă mai multe sarcini...",
     "empty": "Nicio sarcină găsită.",
     "emptyDescription": "Creează o sarcină pentru a începe lucrul sau modifică filtrele curente.",
     "workingStatus": "În desfășurare · Cronometru pornit",
@@ -980,6 +1017,91 @@
     },
     "authForm": {
       "accountCreated": "Cont creat. Verifică-ți emailul pentru a confirma contul."
+    }
+  },
+  "projectTemplates": {
+    "saveTemplate": "Salvează ca șablon",
+    "applyTemplate": "Aplică șablonul",
+    "saveTitle": "Salvează șablonul proiectului",
+    "applyTitle": "Aplică șablonul proiectului",
+    "saveDescription": "Salvează structura sarcinilor proiectului pentru reutilizare.",
+    "applyDescription": "Adaugă sarcinile șablonului în {project}.",
+    "templateName": "Numele șablonului",
+    "chooseTemplate": "Alege un șablon",
+    "applyNotice": "Sarcinile sunt adăugate proiectului; cele existente nu sunt modificate.",
+    "saveError": "Șablonul proiectului nu a putut fi salvat",
+    "saved": "Șablon de proiect salvat",
+    "applyError": "Șablonul proiectului nu a putut fi aplicat",
+    "applied": "Sarcinile șablonului au fost adăugate proiectului",
+    "noTaskState": "Nu este configurată nicio stare deschisă pentru sarcini.",
+    "emptyTemplate": "Acest șablon nu conține sarcini.",
+    "cancel": "Anulează"
+  },
+  "workspaceManagement": {
+    "switchLabel": "Spațiu de lucru activ",
+    "create": "Spațiu nou",
+    "createTitle": "Creează un spațiu de lucru",
+    "createDescription": "Creează un spațiu separat pentru o echipă sau un proiect.",
+    "nameLabel": "Numele spațiului",
+    "cancel": "Anulează",
+    "loading": "Se încarcă spațiul…",
+    "unnamed": "Spațiu fără nume",
+    "switchError": "Nu s-a putut schimba spațiul",
+    "createError": "Nu s-a putut crea spațiul",
+    "sessionRequired": "Sesiunea a expirat. Conectează-te din nou și reîncearcă.",
+    "sessionChanged": "Contul conectat s-a schimbat. Reîncarcă aplicația și reîncearcă.",
+    "created": "Spațiu creat",
+    "loadError": "Informațiile spațiului nu au putut fi încărcate",
+    "preferencesError": "Nu s-au putut salva preferințele",
+    "memberNotFound": "Numele de utilizator nu a fost găsit",
+    "memberError": "Nu s-a putut actualiza apartenența la spațiu",
+    "memberAdded": "Membru adăugat",
+    "membersTitle": "Membri și roluri",
+    "membersDescription": "Adaugă conturi existente după numele de utilizator și alege accesul.",
+    "username": "Nume de utilizator",
+    "usernamePlaceholder": "ex. alex-1234abcd",
+    "role": "Rol",
+    "roles": {
+      "owner": "Proprietar",
+      "admin": "Administrator",
+      "editor": "Editor",
+      "viewer": "Vizualizator"
+    },
+    "addMember": "Adaugă membru",
+    "roleFor": "Rol pentru {name}",
+    "remove": "Elimină",
+    "notificationsTitle": "Preferințe notificări",
+    "notificationsDescription": "Alege notificările din aplicație pe care le primești.",
+    "notificationKinds": {
+      "mention": "Mențiuni",
+      "assignment": "Atribuiri de sarcini",
+      "reminder": "Mementouri pentru termen",
+      "overdue": "Sarcini restante"
+    },
+    "digest": "Frecvența rezumatului",
+    "digestFrequencies": {
+      "off": "Dezactivat",
+      "daily": "Zilnic",
+      "weekly": "Săptămânal"
+    },
+    "digestDeliveryNote": "Preferința este salvată, dar trimiterea emailurilor necesită un serviciu configurat.",
+    "automationError": "Nu s-a putut actualiza automatizarea",
+    "automationsTitle": "Automatizări pentru sarcini",
+    "automationsDescription": "Când o sarcină intră într-o stare potrivită, îi setează automat prioritatea sau responsabilul.",
+    "ruleName": "Numele regulii",
+    "whenFrom": "La părăsirea stării",
+    "whenTo": "La intrarea în starea",
+    "anyState": "Orice stare",
+    "action": "Acțiune",
+    "setPriority": "Setează prioritatea",
+    "assignToMember": "Atribuie unui membru",
+    "actionValue": "Valoare",
+    "addAutomation": "Adaugă automatizare",
+    "priorities": {
+      "low": "Scăzută",
+      "medium": "Medie",
+      "high": "Ridicată",
+      "urgent": "Urgentă"
     }
   }
 }

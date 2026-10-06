@@ -26,6 +26,10 @@ const SearchDialog = ({
   query,
   recentSearches,
   tasks,
+  searchError,
+  searchHasMore,
+  searchLoading,
+  onLoadMoreSearchResults,
 }) => {
   const strings = useStrings();
   const t = strings.layout.searchDialog;
@@ -173,11 +177,36 @@ const SearchDialog = ({
               );
             }}
           />
+        ) : searchLoading ? (
+          <p
+            role="status"
+            className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground"
+          >
+            {t.loading}
+          </p>
         ) : query.trim() ? (
           <p className="rounded-lg border border-border/70 p-6 text-center text-sm text-muted-foreground">
             {t.noResults}
           </p>
         ) : null}
+        {searchError && (
+          <p
+            role="alert"
+            className="mt-2 rounded-md border border-destructive/30 bg-destructive/5 p-2 text-sm text-destructive"
+          >
+            {t.searchError}: {searchError}
+          </p>
+        )}
+        {searchHasMore && (
+          <button
+            type="button"
+            className="mt-2 w-full rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted"
+            disabled={searchLoading}
+            onClick={() => onLoadMoreSearchResults()}
+          >
+            {searchLoading ? t.loading : t.loadMore}
+          </button>
+        )}
       </DialogContent>
     </Dialog>
   );

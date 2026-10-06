@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
-const clientsQueryKey = ['clients'];
+const clientsQueryKey = (workspaceId) => ['clients', workspaceId];
 const dayInMs = 24 * 60 * 60 * 1000;
 
 const clientSelect =
@@ -80,9 +80,10 @@ const buildClientProgress = (client, today, dueSoonEnd) => {
   };
 };
 
-export function useClients({ enabled = true }) {
+export function useClients({ enabled = true, workspaceId }) {
   const t = useStrings().toasts.clients;
   const queryClient = useQueryClient();
+  const queryKey = clientsQueryKey(workspaceId);
   const [query, setQuery] = useState('');
 
   const {
@@ -90,7 +91,7 @@ export function useClients({ enabled = true }) {
     isLoading: loading,
     error: queryError,
   } = useQuery({
-    queryKey: clientsQueryKey,
+    queryKey,
     queryFn: async () => {
       const { data, error: loadError } = await supabase
         .from('clients')
@@ -121,7 +122,7 @@ export function useClients({ enabled = true }) {
   }, [clients, query]);
 
   const handleClientCreated = (createdClient) => {
-    queryClient.setQueryData(clientsQueryKey, (current = []) =>
+    queryClient.setQueryData(queryKey, (current = []) =>
       [
         ...current,
         {
@@ -136,7 +137,7 @@ export function useClients({ enabled = true }) {
   };
 
   const handleClientUpdated = (updatedClient) => {
-    queryClient.setQueryData(clientsQueryKey, (current = []) =>
+    queryClient.setQueryData(queryKey, (current = []) =>
       current
         .map((client) =>
           client.id === updatedClient.id
@@ -171,7 +172,7 @@ export function useClients({ enabled = true }) {
       dueSoon: 0,
     };
 
-    queryClient.setQueryData(clientsQueryKey, (current = []) =>
+    queryClient.setQueryData(queryKey, (current = []) =>
       current.map((client) =>
         linkedClientIds.includes(client.id)
           ? {
@@ -203,7 +204,7 @@ export function useClients({ enabled = true }) {
       dueSoon: 0,
     };
 
-    queryClient.setQueryData(clientsQueryKey, (current = []) =>
+    queryClient.setQueryData(queryKey, (current = []) =>
       current.map((client) => {
         const projects = client.projects.filter(
           (project) => project.id !== updatedProject.id,

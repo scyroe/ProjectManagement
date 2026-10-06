@@ -40,7 +40,9 @@ export function CalendarEventItem({
       ? labels.taskDue
       : event.kind === 'projectStart'
         ? labels.projectStart
-        : labels.projectDeadline;
+        : event.kind === 'milestone'
+          ? labels.milestone
+          : labels.projectDeadline;
   const previewDetails = useMemo(
     () =>
       [

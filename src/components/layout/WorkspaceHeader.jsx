@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useStrings } from '@/lib/i18n';
+import WorkspaceSwitcher from './WorkspaceSwitcher';
 
 const WorkspaceHeader = ({
   accountPanelCollapsed,
@@ -32,6 +33,7 @@ const WorkspaceHeader = ({
   onSidebarToggle,
   sidebarCollapsed,
   taskMetrics,
+  workspaces,
 }) => {
   const strings = useStrings();
   const t = strings.layout.workspaceHeader;
@@ -58,6 +60,7 @@ const WorkspaceHeader = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        {workspaces && <WorkspaceSwitcher workspaces={workspaces} />}
         {activeRoute === 'tasks' && <TaskWorkspaceHeader {...taskMetrics} />}
         <DropdownMenu>
           <DropdownMenuTrigger

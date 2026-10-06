@@ -6,6 +6,7 @@ import Projects from '@/components/pages/projects/Projects';
 import Reports from '@/components/pages/reports/Reports';
 import TaskWorkspace from '@/components/pages/tasks/TaskWorkspace';
 import WorkLog from '@/components/pages/work-log/WorkLog';
+import { useStrings } from '@/lib/i18n';
 import EmptyPage from './EmptyPage';
 
 function WorkspaceRouteContent({
@@ -27,7 +28,10 @@ function WorkspaceRouteContent({
   onAddSubtask,
   animationsEnabled,
   weekStartsOn,
+  workspaceReady,
+  workspaceId,
 }) {
+  const loadingLabel = useStrings().workspaceManagement.loading;
   return (
     <LazyMotion features={domMax}>
       <AnimatePresence mode="wait" initial={false}>
@@ -43,7 +47,14 @@ function WorkspaceRouteContent({
           }
           className="flex h-full min-h-0 flex-col"
         >
-          {activeRoute === 'dashboard' ? (
+          {!workspaceReady ? (
+            <p
+              role="status"
+              className="m-auto rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground"
+            >
+              {loadingLabel}
+            </p>
+          ) : activeRoute === 'dashboard' ? (
             <Dashboard
               workspace={workspace}
               navigate={navigate}
@@ -67,6 +78,7 @@ function WorkspaceRouteContent({
               onNewProject={onNewProject}
               onNewTask={onNewTask}
               onProjectSaved={onProjectSaved}
+              workspaceId={workspaceId}
               clientProgress={clientsState.allClients}
               clientError={clientsState.error}
               clientLoading={clientsState.loading}
@@ -98,7 +110,11 @@ function WorkspaceRouteContent({
               userId={userId}
             />
           ) : activeRoute === 'work-log' ? (
-            <WorkLog weekStartsOn={weekStartsOn} />
+            <WorkLog
+              weekStartsOn={weekStartsOn}
+              workspaceId={workspaceId}
+              userId={userId}
+            />
           ) : (
             <EmptyPage route={currentPage} />
           )}

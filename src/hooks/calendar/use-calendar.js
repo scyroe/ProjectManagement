@@ -3,18 +3,25 @@ import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
-const projectsQueryKey = ['calendar-projects'];
-const tasksQueryKey = ['tasks'];
+const projectsQueryKey = (workspaceId) => ['calendar-projects', workspaceId];
+const milestonesQueryKey = (workspaceId) => [
+  'calendar-milestones',
+  workspaceId,
+];
+const tasksQueryKey = (workspaceId) => ['tasks', workspaceId];
 
-export function useCalendar({ enabled = true } = {}) {
+export function useCalendar({ enabled = true, workspaceId } = {}) {
   const t = useStrings().calendarPage;
   const queryClient = useQueryClient();
+  const projectKey = projectsQueryKey(workspaceId);
+  const milestoneKey = milestonesQueryKey(workspaceId);
+  const taskKey = tasksQueryKey(workspaceId);
   const {
     data: projects = [],
     isLoading: projectsLoading,
     error: projectsQueryError,
   } = useQuery({
-    queryKey: projectsQueryKey,
+    queryKey: projectKey,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
@@ -23,6 +30,23 @@ export function useCalendar({ enabled = true } = {}) {
         )
         .order('name');
 
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+    enabled,
+  });
+  const {
+    data: milestones = [],
+    isLoading: milestonesLoading,
+    error: milestonesQueryError,
+  } = useQuery({
+    queryKey: milestoneKey,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('project_milestones')
+        .select('id,project_id,name,description,due_date,completed_at')
+        .not('due_date', 'is', null)
+        .order('due_date');
       if (error) throw new Error(error.message);
       return data ?? [];
     },
@@ -42,27 +66,36 @@ export function useCalendar({ enabled = true } = {}) {
       return data;
     },
     onMutate: async ({ taskId, dueDate }) => {
-      await queryClient.cancelQueries({ queryKey: tasksQueryKey });
-      const previousTasks = queryClient.getQueryData(tasksQueryKey);
-      queryClient.setQueryData(tasksQueryKey, (current = []) =>
-        current.map((task) =>
-          task.id === taskId ? { ...task, due_date: dueDate } : task,
-        ),
+      await queryClient.cancelQueries({ queryKey: taskKey });
+      const previousTasks = queryClient.getQueryData(taskKey);
+      queryClient.setQueryData(taskKey, (current) =>
+        current
+          ? {
+              ...current,
+              pages: current.pages.map((page) =>
+                page.map((task) =>
+                  task.id === taskId ? { ...task, due_date: dueDate } : task,
+                ),
+              ),
+            }
+          : current,
       );
       return { previousTasks };
     },
     onError: (error, _variables, context) => {
       if (context?.previousTasks) {
-        queryClient.setQueryData(tasksQueryKey, context.previousTasks);
+        queryClient.setQueryData(taskKey, context.previousTasks);
       }
       toast.error(t.scheduleError, { description: error.message });
     },
     onSuccess: () => toast.success(t.taskScheduled),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: taskKey }),
   });
 
   return {
-    error: projectsQueryError?.message ?? '',
+    error: projectsQueryError?.message ?? milestonesQueryError?.message ?? '',
+    milestones,
+    milestonesLoading,
     projects,
     projectsLoading,
     scheduleTask: (taskId, dueDate) =>

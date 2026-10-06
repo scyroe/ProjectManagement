@@ -32,6 +32,9 @@ const TaskList = ({
   onNewTask,
   recentlyCreatedTaskId,
   onTaskAnimationComplete,
+  onLoadMoreTasks,
+  hasMoreTasks = false,
+  loadingMoreTasks = false,
   title,
   description,
   showSummaryHeader = true,
@@ -127,8 +130,8 @@ const TaskList = ({
           onSecondaryChange={onProjectFilterChange}
         />
       </FrameHeader>
-      <FramePanel className="min-h-0 flex-1 overflow-hidden p-0 shadow-none">
-        <AnimatedTabPanel activeId={filter} className="h-full">
+      <FramePanel className="flex min-h-0 flex-1 flex-col overflow-hidden p-0 shadow-none">
+        <AnimatedTabPanel activeId={filter} className="min-h-0 flex-1">
           {loading && (
             <p className="p-6 text-center text-sm text-muted-foreground">
               {t.loading}
@@ -267,6 +270,19 @@ const TaskList = ({
             </div>
           )}
         </AnimatedTabPanel>
+        {hasMoreTasks && (
+          <div className="shrink-0 border-t p-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingMoreTasks}
+              onClick={() => onLoadMoreTasks?.()}
+            >
+              {loadingMoreTasks ? t.loadingMoreTasks : t.loadMoreTasks}
+            </Button>
+          </div>
+        )}
       </FramePanel>
     </Frame>
   );

@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import VirtualSelect from '@/components/ui/virtual-select';
 import { supportedLanguages, useLanguage } from '@/lib/i18n';
+import WorkspaceAdministration from './WorkspaceAdministration';
 import WorkspaceDataTools from './WorkspaceDataTools';
 
 const shapeByStyleId = {
@@ -59,6 +60,7 @@ const SettingsDialog = ({
   onWeekStartsOnChange,
   tasks = [],
   userId,
+  workspaces,
 }) => {
   const { language, setLanguage, strings } = useLanguage();
   const t = strings.settingsDialog;
@@ -304,6 +306,12 @@ const SettingsDialog = ({
                 </div>
               </div>
             </section>
+            {open && (
+              <WorkspaceAdministration
+                userId={userId}
+                workspaces={workspaces}
+              />
+            )}
             <WorkspaceDataTools tasks={tasks} userId={userId} />
           </FramePanel>
         </Frame>

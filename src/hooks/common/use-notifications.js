@@ -4,16 +4,25 @@ import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
-const notificationsQueryKey = (userId) => ['notifications', userId];
+const notificationsQueryKey = (userId, workspaceId) => [
+  'notifications',
+  userId,
+  workspaceId,
+];
 const profileQueryKey = (userId) => ['profile', userId];
 const dayInMs = 24 * 60 * 60 * 1000;
 
-export function useNotifications({ tasks, userId }) {
+export function useNotifications({
+  tasks,
+  userId,
+  enabled = true,
+  workspaceId,
+}) {
   const t = useStrings().layout.userPanel;
   const queryClient = useQueryClient();
 
   const notificationsQuery = useQuery({
-    queryKey: notificationsQueryKey(userId),
+    queryKey: notificationsQueryKey(userId, workspaceId),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('notifications')
@@ -24,7 +33,7 @@ export function useNotifications({ tasks, userId }) {
       if (error) throw new Error(error.message);
       return data ?? [];
     },
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && enabled,
     refetchInterval: 60_000,
   });
 
@@ -33,7 +42,7 @@ export function useNotifications({ tasks, userId }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username,display_name')
+        .select('username,display_name,notification_preferences')
         .eq('id', userId)
         .maybeSingle();
       if (error) throw new Error(error.message);
@@ -60,6 +69,13 @@ export function useNotifications({ tasks, userId }) {
         const dueEnd = new Date(`${task.due_date}T23:59:59`);
         return dueStart <= reminderEnd || dueEnd < now;
       })
+      .filter((task) => {
+        const kind =
+          new Date(`${task.due_date}T23:59:59`) < new Date()
+            ? 'overdue'
+            : 'reminder';
+        return profileQuery.data?.notification_preferences?.[kind] !== false;
+      })
       .map((task) => {
         const overdue = new Date(`${task.due_date}T23:59:59`) < new Date();
         return {
@@ -72,10 +88,16 @@ export function useNotifications({ tasks, userId }) {
           dedupe_key: `due:${task.id}:${task.due_date}`,
         };
       });
-  }, [tasks, t.overdueReminderTitle, t.reminderTitle, userId]);
+  }, [
+    profileQuery.data?.notification_preferences,
+    tasks,
+    t.overdueReminderTitle,
+    t.reminderTitle,
+    userId,
+  ]);
 
   useEffect(() => {
-    if (!reminderRows.length) return;
+    if (!enabled || !profileQuery.isSuccess || !reminderRows.length) return;
 
     const createReminders = async () => {
       const { error } = await supabase
@@ -89,12 +111,20 @@ export function useNotifications({ tasks, userId }) {
         return;
       }
       queryClient.invalidateQueries({
-        queryKey: notificationsQueryKey(userId),
+        queryKey: notificationsQueryKey(userId, workspaceId),
       });
     };
 
     createReminders();
-  }, [queryClient, reminderRows, t.reminderError, userId]);
+  }, [
+    enabled,
+    profileQuery.isSuccess,
+    queryClient,
+    reminderRows,
+    t.reminderError,
+    userId,
+    workspaceId,
+  ]);
 
   useEffect(() => {
     if (notificationsQuery.error) {
@@ -122,7 +152,7 @@ export function useNotifications({ tasks, userId }) {
       return;
     }
     queryClient.invalidateQueries({
-      queryKey: notificationsQueryKey(userId),
+      queryKey: notificationsQueryKey(userId, workspaceId),
     });
   };
 

@@ -5,7 +5,13 @@ import TaskFormDialog from '@/components/pages/tasks/TaskFormDialog';
 import KeyboardShortcutsDialog from './KeyboardShortcutsDialog';
 import SearchDialog from './SearchDialog';
 
-function WorkspaceDialogStack({ dialogs, preferences, userId, workspace }) {
+function WorkspaceDialogStack({
+  dialogs,
+  preferences,
+  userId,
+  workspace,
+  workspaces,
+}) {
   const {
     clientForm,
     handleSearchEntitySelect,
@@ -38,6 +44,7 @@ function WorkspaceDialogStack({ dialogs, preferences, userId, workspace }) {
         onOpenChange={setSettingsOpen}
         tasks={workspace.tasks}
         userId={userId}
+        workspaces={workspaces}
         {...preferences}
       />
       <SearchDialog
@@ -46,6 +53,10 @@ function WorkspaceDialogStack({ dialogs, preferences, userId, workspace }) {
         query={searchQuery}
         onQueryChange={setSearchQuery}
         tasks={workspace.searchResults}
+        searchError={workspace.searchError}
+        searchHasMore={workspace.searchHasMore}
+        searchLoading={workspace.searchLoading}
+        onLoadMoreSearchResults={workspace.loadMoreSearchResults}
         projects={searchProjects}
         clients={searchClients}
         recentSearches={recentSearches}

@@ -14,6 +14,9 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
     handleTaskUpdated,
     historyVersion,
     loading,
+    hasMoreTasks,
+    loadingMoreTasks,
+    loadMoreTasks,
     query,
     runningTaskId,
     recentlyCreatedTaskId,
@@ -89,6 +92,9 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
               onNewTask={onNewTask}
               recentlyCreatedTaskId={recentlyCreatedTaskId}
               onTaskAnimationComplete={clearRecentlyCreatedTask}
+              hasMoreTasks={hasMoreTasks}
+              loadingMoreTasks={loadingMoreTasks}
+              onLoadMoreTasks={loadMoreTasks}
             />
           }
           second={
