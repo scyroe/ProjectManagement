@@ -1,5 +1,9 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -8,9 +12,12 @@ const notificationsQueryKey = (userId, workspaceId) => [
   'notifications',
   userId,
   workspaceId,
+  'pages',
 ];
 const profileQueryKey = (userId) => ['profile', userId];
 const dayInMs = 24 * 60 * 60 * 1000;
+const initialNotificationPageSize = 10;
+const additionalNotificationPageSize = 5;
 
 export function useNotifications({
   tasks,
@@ -20,21 +27,48 @@ export function useNotifications({
 }) {
   const t = useStrings().layout.userPanel;
   const queryClient = useQueryClient();
+  const notificationBaseline = useRef(null);
+  const notificationScope = `${userId ?? ''}:${workspaceId ?? ''}`;
 
-  const notificationsQuery = useQuery({
+  const notificationsQuery = useInfiniteQuery({
     queryKey: notificationsQueryKey(userId, workspaceId),
-    queryFn: async () => {
-      const { data, error } = await supabase
+    initialPageParam: null,
+    queryFn: async ({ pageParam }) => {
+      const pageSize =
+        pageParam === null
+          ? initialNotificationPageSize
+          : additionalNotificationPageSize;
+      let query = supabase
         .from('notifications')
         .select('id,kind,title,body,task_id,read_at,created_at')
         .eq('recipient_id', userId)
         .order('created_at', { ascending: false })
-        .limit(30);
+        .order('id', { ascending: false })
+        .limit(pageSize);
+      if (pageParam) {
+        query = query.or(
+          `created_at.lt.${pageParam.createdAt},and(created_at.eq.${pageParam.createdAt},id.lt.${pageParam.id})`,
+        );
+      }
+      const { data, error } = await query;
       if (error) throw new Error(error.message);
       return data ?? [];
     },
+    getNextPageParam: (lastPage, pages) => {
+      const pageSize =
+        pages.length === 1
+          ? initialNotificationPageSize
+          : additionalNotificationPageSize;
+      if (lastPage.length < pageSize) return undefined;
+      const lastNotification = lastPage[lastPage.length - 1];
+      return {
+        createdAt: lastNotification.created_at,
+        id: lastNotification.id,
+      };
+    },
     enabled: Boolean(userId) && enabled,
-    refetchInterval: 60_000,
+    refetchInterval: (query) =>
+      (query.state.data?.pages.length ?? 1) > 1 ? false : 60_000,
   });
 
   const profileQuery = useQuery({
@@ -50,6 +84,51 @@ export function useNotifications({
     },
     enabled: Boolean(userId),
   });
+
+  useEffect(() => {
+    if (!enabled || !userId || !workspaceId || !notificationsQuery.isSuccess) {
+      return;
+    }
+
+    const latestNotifications = notificationsQuery.data?.pages[0] ?? [];
+    const previous = notificationBaseline.current;
+    const currentIds = new Set(
+      latestNotifications.map((notification) => notification.id),
+    );
+
+    if (!previous || previous.scope !== notificationScope) {
+      notificationBaseline.current = {
+        scope: notificationScope,
+        ids: currentIds,
+      };
+      return;
+    }
+
+    const newNotifications = latestNotifications.filter(
+      (notification) =>
+        !notification.read_at && !previous.ids.has(notification.id),
+    );
+    notificationBaseline.current = {
+      scope: notificationScope,
+      ids: currentIds,
+    };
+
+    if (document.visibilityState !== 'visible') return;
+
+    for (const notification of newNotifications) {
+      toast.info(t.notificationKinds[notification.kind] ?? notification.title, {
+        description: notification.body ?? undefined,
+      });
+    }
+  }, [
+    enabled,
+    notificationScope,
+    notificationsQuery.data,
+    notificationsQuery.isSuccess,
+    t.notificationKinds,
+    userId,
+    workspaceId,
+  ]);
 
   const reminderRows = useMemo(() => {
     if (!userId) return [];
@@ -80,6 +159,7 @@ export function useNotifications({
       .map((task) => {
         const overdue = new Date(`${task.due_date}T23:59:59`) < new Date();
         return {
+          workspace_id: workspaceId,
           recipient_id: userId,
           actor_id: userId,
           task_id: task.id,
@@ -158,12 +238,19 @@ export function useNotifications({
     });
   };
 
+  const notifications = useMemo(
+    () => notificationsQuery.data?.pages.flat() ?? [],
+    [notificationsQuery.data],
+  );
+
   return {
+    hasMoreNotifications: notificationsQuery.hasNextPage,
+    loadMoreNotifications: notificationsQuery.fetchNextPage,
+    loadingMoreNotifications: notificationsQuery.isFetchingNextPage,
     markRead,
-    notifications: notificationsQuery.data ?? [],
+    notifications,
     profile: profileQuery.data,
-    unreadCount: (notificationsQuery.data ?? []).filter(
-      (notification) => !notification.read_at,
-    ).length,
+    unreadCount: notifications.filter((notification) => !notification.read_at)
+      .length,
   };
 }

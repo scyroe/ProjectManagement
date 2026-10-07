@@ -263,10 +263,12 @@ const TaskList = ({
               <p className="max-w-sm text-sm text-muted-foreground">
                 {t.emptyDescription}
               </p>
-              <Button type="button" className="mt-2" onClick={onNewTask}>
-                <Plus aria-hidden="true" />
-                {t.newTask}
-              </Button>
+              {onNewTask && (
+                <Button type="button" className="mt-2" onClick={onNewTask}>
+                  <Plus aria-hidden="true" />
+                  {t.newTask}
+                </Button>
+              )}
             </div>
           )}
         </AnimatedTabPanel>

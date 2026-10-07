@@ -16,8 +16,12 @@ import UserPanelNotifications from './UserPanelNotifications';
 function UserPanel({
   collapsed,
   email,
+  hasMoreNotifications,
+  loadingMoreNotifications,
   notifications,
+  onLoadMoreNotifications,
   onExpand,
+  onMarkNotificationRead,
   onOpenNotification,
   onSettings,
   onShortcuts,
@@ -74,8 +78,10 @@ function UserPanel({
           </Button>
         </FrameHeader>
         <FramePanel
-          className={`flex-1 overflow-y-auto border-0 bg-transparent shadow-none ${
-            collapsed ? 'flex flex-col items-center p-2' : 'space-y-6 p-5'
+          className={`flex min-h-0 flex-1 flex-col border-0 bg-transparent shadow-none ${
+            collapsed
+              ? 'items-center overflow-y-auto p-2'
+              : 'overflow-hidden p-0'
           }`}
         >
           {collapsed ? (
@@ -85,6 +91,7 @@ function UserPanel({
                 onExpand={onExpand}
                 onShortcuts={onShortcuts}
                 t={t}
+                unreadCount={unreadCount}
               />
               <span
                 role="img"
@@ -95,15 +102,21 @@ function UserPanel({
             </div>
           ) : (
             <>
-              <UserPanelIdentity
-                email={email}
-                profile={profile}
-                syncStatusLabel={syncStatusLabel}
-                syncStatusTone={syncStatusTone}
-                t={t}
-              />
+              <div className="shrink-0 px-5 pt-5">
+                <UserPanelIdentity
+                  email={email}
+                  profile={profile}
+                  syncStatusLabel={syncStatusLabel}
+                  syncStatusTone={syncStatusTone}
+                  t={t}
+                />
+              </div>
               <UserPanelNotifications
+                hasMoreNotifications={hasMoreNotifications}
+                loadingMoreNotifications={loadingMoreNotifications}
                 notifications={notifications}
+                onLoadMoreNotifications={onLoadMoreNotifications}
+                onMarkNotificationRead={onMarkNotificationRead}
                 onOpenNotification={onOpenNotification}
                 t={t}
                 unreadCount={unreadCount}

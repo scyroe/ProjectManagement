@@ -6,7 +6,6 @@ export function useAppShell() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarCollapsedFinished, setSidebarCollapsedFinished] =
     useState(true);
 
@@ -61,8 +60,6 @@ export function useAppShell() {
     setAccountPanelCollapsed,
     setSearchOpen,
     setSearchQuery,
-    setSettingsOpen,
-    settingsOpen,
     sidebarCollapsed,
     setSidebarCollapsed,
     sidebarCollapsedFinished,

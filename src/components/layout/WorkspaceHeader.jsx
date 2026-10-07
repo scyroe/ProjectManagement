@@ -26,6 +26,7 @@ const WorkspaceHeader = ({
   activeRoute,
   currentPage,
   onAccountPanelToggle,
+  onAddUser,
   onNewClient,
   onNewProject,
   onNewTask,
@@ -88,6 +89,12 @@ const WorkspaceHeader = ({
               <UserPlus aria-hidden="true" />
               {t.newClient}
             </DropdownMenuItem>
+            {workspaces?.canManageMembers && (
+              <DropdownMenuItem onClick={onAddUser}>
+                <UserPlus aria-hidden="true" />
+                {t.newUser}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <Button

@@ -187,7 +187,7 @@ export function useWorkspaces(userId) {
       const { data, error } = await supabase
         .from('workspace_members')
         .select(
-          'user_id,role,profile:profiles!workspace_members_user_id_profiles_fkey(username,display_name)',
+          'user_id,role,created_at,profile:profiles!workspace_members_user_id_profiles_fkey(username,display_name,weekly_capacity_minutes)',
         )
         .eq('workspace_id', activeMembership.workspace_id)
         .order('created_at');
@@ -217,6 +217,38 @@ export function useWorkspaces(userId) {
     });
   };
 
+  const handleUpdateMemberProfile = async ({
+    userId,
+    displayName,
+    weeklyCapacityMinutes,
+  }) => {
+    const workspaceId = activeMembership?.workspace_id;
+    if (!workspaceId) {
+      toast.error(t.membersPage.profileUpdateError);
+      return false;
+    }
+    const { error } = await supabase.rpc('update_workspace_member_profile', {
+      p_workspace_id: workspaceId,
+      p_user_id: userId,
+      p_display_name: displayName.trim(),
+      p_weekly_capacity_minutes: weeklyCapacityMinutes,
+    });
+    if (error) {
+      toast.error(t.membersPage.profileUpdateError, {
+        description: error.message,
+      });
+      return false;
+    }
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: ['workspace-members', workspaceId],
+      }),
+      queryClient.invalidateQueries({ queryKey: ['profiles'] }),
+    ]);
+    toast.success(t.membersPage.profileUpdated);
+    return true;
+  };
+
   const handleRemoveMember = async (userIdToRemove) => {
     const { error } = await supabase
       .from('workspace_members')
@@ -242,9 +274,11 @@ export function useWorkspaces(userId) {
     error,
     handleAddMember,
     handleRemoveMember,
+    handleUpdateMemberProfile,
     handleUpdateMemberRole,
     memberships,
     members: membersQuery.data ?? [],
+    membersLoading: membersQuery.isLoading,
     notificationPreferences: profileQuery.data?.notification_preferences ?? {},
     isReady,
     setActiveWorkspace: handleWorkspaceChange,

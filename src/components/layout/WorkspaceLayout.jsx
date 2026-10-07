@@ -23,8 +23,6 @@ function WorkspaceLayout({
     setAccountPanelCollapsed,
     setSearchOpen,
     setSearchQuery,
-    setSettingsOpen,
-    settingsOpen,
     setSidebarCollapsed,
     sidebarCollapsed,
     sidebarCollapsedFinished,
@@ -51,6 +49,7 @@ function WorkspaceLayout({
     handleOpenNotification,
     handleSearchEntitySelect,
     layoutStrings,
+    memberDialogOpen,
     notificationState,
     onClientSaved,
     onCreateTaskForProject,
@@ -63,6 +62,7 @@ function WorkspaceLayout({
     searchClients,
     searchProjects,
     setClientForm,
+    setMemberDialogOpen,
     setProjectForm,
     setProjectSearchQuery,
     setShortcutsOpen,
@@ -77,7 +77,13 @@ function WorkspaceLayout({
 
   return (
     <AnimationPreferencesProvider enabled={animationsEnabled}>
-      <div className="min-h-screen bg-background text-foreground">
+      <div
+        className={`bg-background text-foreground ${
+          activeRoute === 'settings'
+            ? 'fixed inset-0 overflow-hidden'
+            : 'min-h-screen'
+        }`}
+      >
         {(!sidebarCollapsed || !accountPanelCollapsed) && (
           <button
             type="button"
@@ -123,6 +129,7 @@ function WorkspaceLayout({
             onNewClient={() => openClientForm()}
             onNewProject={() => openProjectForm()}
             onNewTask={() => openTaskForm()}
+            onAddUser={() => setMemberDialogOpen(true)}
             onSearch={() => setSearchOpen(true)}
             onSidebarToggle={() =>
               setSidebarCollapsed((collapsed) => !collapsed)
@@ -139,6 +146,7 @@ function WorkspaceLayout({
               currentPage={currentPage}
               navigate={navigate}
               onAddSubtask={openTaskForm}
+              onAddUser={() => setMemberDialogOpen(true)}
               onClientUpdated={clientsState.handleClientUpdated}
               onEditProject={openProjectForm}
               onProjectSaved={onProjectSaved}
@@ -149,6 +157,21 @@ function WorkspaceLayout({
               projectSearchQuery={projectSearchQuery}
               animationsEnabled={animationsEnabled}
               userId={userId}
+              workspaces={workspaces}
+              preferences={{
+                animationMode,
+                onAnimationModeChange: setAnimationMode,
+                colorMode,
+                onColorModeChange: setColorMode,
+                style,
+                onStyleChange: setStyle,
+                theme,
+                onThemeChange: setTheme,
+                defaultTaskFilter,
+                onDefaultTaskFilterChange: setDefaultTaskFilter,
+                weekStartsOn,
+                onWeekStartsOnChange: setWeekStartsOn,
+              }}
               weekStartsOn={weekStartsOn}
               workspaceReady={
                 workspaces.isReady && Boolean(workspaces.activeWorkspaceId)
@@ -161,22 +184,26 @@ function WorkspaceLayout({
         <UserPanel
           collapsed={accountPanelCollapsed}
           email={userEmail}
+          hasMoreNotifications={notificationState.hasMoreNotifications}
+          loadingMoreNotifications={notificationState.loadingMoreNotifications}
           notifications={notificationState.notifications}
+          onLoadMoreNotifications={notificationState.loadMoreNotifications}
           unreadCount={notificationState.unreadCount}
           profile={notificationState.profile}
           syncStatus={syncStatus}
+          onMarkNotificationRead={notificationState.markRead}
           onOpenNotification={handleOpenNotification}
           onToggle={() => setAccountPanelCollapsed((collapsed) => !collapsed)}
           onExpand={() => setAccountPanelCollapsed(false)}
-          onSettings={() => setSettingsOpen(true)}
+          onSettings={() => navigate('settings')}
           onShortcuts={() => setShortcutsOpen(true)}
         />
         <WorkspaceDialogStack
           dialogs={{
             shortcutsOpen,
             setShortcutsOpen,
-            settingsOpen,
-            setSettingsOpen,
+            memberDialogOpen,
+            setMemberDialogOpen,
             searchOpen,
             setSearchOpen,
             searchQuery,
@@ -196,21 +223,6 @@ function WorkspaceLayout({
             onCreateTaskForProject,
             onProjectSaved,
           }}
-          preferences={{
-            animationMode,
-            onAnimationModeChange: setAnimationMode,
-            colorMode,
-            onColorModeChange: setColorMode,
-            style,
-            onStyleChange: setStyle,
-            theme,
-            onThemeChange: setTheme,
-            defaultTaskFilter,
-            onDefaultTaskFilterChange: setDefaultTaskFilter,
-            weekStartsOn,
-            onWeekStartsOnChange: setWeekStartsOn,
-          }}
-          userId={userId}
           workspaces={workspaces}
           workspace={workspace}
         />

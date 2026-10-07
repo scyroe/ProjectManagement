@@ -28,6 +28,7 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
     initialProjectId: null,
   });
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [clientForm, setClientForm] = useState({ open: false, client: null });
   const [projectForm, setProjectForm] = useState({
     open: false,
@@ -42,6 +43,7 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
         activeRoute === 'projects' ||
         activeRoute === 'calendar' ||
         activeRoute === 'reports' ||
+        activeRoute === 'settings' ||
         appShell.searchOpen),
     workspaceId: workspaces.activeWorkspaceId,
     defaultTaskFilter:
@@ -52,7 +54,7 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
           }[preferences.defaultTaskFilter] ?? preferences.defaultTaskFilter)
         : preferences.defaultTaskFilter,
     includeWorkspaceActivity: activeRoute === 'reports',
-    loadAllTasks: activeRoute !== 'tasks',
+    loadAllTasks: activeRoute !== 'tasks' && activeRoute !== 'users',
     onMetricsChange: setTaskMetrics,
     searchQuery: appShell.searchQuery,
     userId,
@@ -112,7 +114,7 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
     const dialogOpen =
       appShell.searchOpen ||
       shortcutsOpen ||
-      appShell.settingsOpen ||
+      memberDialogOpen ||
       taskFormDialog.open ||
       clientForm.open ||
       projectForm.open;
@@ -198,10 +200,10 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
     appShell.searchOpen,
-    appShell.settingsOpen,
     appShell.setSearchOpen,
     activeRoute,
     clientForm.open,
+    memberDialogOpen,
     projectForm.open,
     shortcutsOpen,
     taskFormDialog.open,
@@ -270,6 +272,7 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
     handleOpenNotification,
     handleSearchEntitySelect,
     layoutStrings,
+    memberDialogOpen,
     notificationState,
     onClientSaved,
     onCreateTaskForProject,
@@ -283,6 +286,7 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
     searchClients,
     searchProjects,
     setClientForm,
+    setMemberDialogOpen,
     setProjectForm,
     setProjectSearchQuery,
     setShortcutsOpen,

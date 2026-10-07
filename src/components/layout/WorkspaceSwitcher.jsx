@@ -1,3 +1,4 @@
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -47,9 +48,10 @@ function WorkspaceSwitcher({ workspaces }) {
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          className="gap-2"
           onClick={() => setOpen(true)}
         >
+          <Plus aria-hidden="true" />
           {t.create}
         </Button>
       </div>

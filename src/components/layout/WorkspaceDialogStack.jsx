@@ -1,17 +1,11 @@
 import ClientFormDialog from '@/components/pages/clients/ClientFormDialog';
 import ProjectFormDialog from '@/components/pages/projects/ProjectFormDialog';
-import SettingsDialog from '@/components/pages/settings/SettingsDialog';
+import WorkspaceMemberDialog from '@/components/pages/settings/WorkspaceMemberDialog';
 import TaskFormDialog from '@/components/pages/tasks/TaskFormDialog';
 import KeyboardShortcutsDialog from './KeyboardShortcutsDialog';
 import SearchDialog from './SearchDialog';
 
-function WorkspaceDialogStack({
-  dialogs,
-  preferences,
-  userId,
-  workspace,
-  workspaces,
-}) {
+function WorkspaceDialogStack({ dialogs, workspace, workspaces }) {
   const {
     clientForm,
     handleSearchEntitySelect,
@@ -25,10 +19,10 @@ function WorkspaceDialogStack({
     setProjectForm,
     setSearchOpen,
     setSearchQuery,
-    setSettingsOpen,
+    memberDialogOpen,
+    setMemberDialogOpen,
     setShortcutsOpen,
     setTaskFormDialog,
-    settingsOpen,
     shortcutsOpen,
     taskFormDialog,
   } = dialogs;
@@ -39,13 +33,10 @@ function WorkspaceDialogStack({
         open={shortcutsOpen}
         onOpenChange={setShortcutsOpen}
       />
-      <SettingsDialog
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-        tasks={workspace.tasks}
-        userId={userId}
+      <WorkspaceMemberDialog
+        open={memberDialogOpen}
+        onOpenChange={setMemberDialogOpen}
         workspaces={workspaces}
-        {...preferences}
       />
       <SearchDialog
         open={searchOpen}

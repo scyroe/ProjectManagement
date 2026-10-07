@@ -494,29 +494,29 @@ begin
   end if;
 
   for mention in
-    select distinct profile.id
+    select distinct profile.id, task.workspace_id
     from public.profiles as profile
     cross join lateral regexp_matches(
       new.note,
       '@([[:alnum:]_.-]+)',
       'gi'
     ) as matches(captured)
+    join public.tasks as task
+      on task.id = new.task_id
     where lower(profile.username) = lower(matches.captured[1])
-      and profile.id <> new.user_id
       and coalesce((profile.notification_preferences ->> 'mention')::boolean, true)
       and exists (
         select 1
-        from public.tasks as task
-        join public.workspace_members as member
-          on member.workspace_id = task.workspace_id
-        where task.id = new.task_id
+        from public.workspace_members as member
+        where member.workspace_id = task.workspace_id
           and member.user_id = profile.id
       )
   loop
     insert into public.notifications (
-      recipient_id, actor_id, task_id, kind, title, body
+      workspace_id, recipient_id, actor_id, task_id, kind, title, body
     )
     values (
+      mention.workspace_id,
       mention.id,
       new.user_id,
       new.task_id,
@@ -562,9 +562,10 @@ begin
   end if;
 
   insert into public.notifications (
-    recipient_id, actor_id, task_id, kind, title, body
+    workspace_id, recipient_id, actor_id, task_id, kind, title, body
   )
   values (
+    new.workspace_id,
     new.assigned_to,
     (select auth.uid()),
     new.id,
@@ -903,12 +904,81 @@ as $$
   limit 1;
 $$;
 
+create or replace function public.update_workspace_member_profile(
+  p_workspace_id uuid,
+  p_user_id uuid,
+  p_display_name text,
+  p_weekly_capacity_minutes integer
+)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  actor_id uuid := (select auth.uid());
+  actor_role text;
+  target_role text;
+begin
+  if actor_id is null then
+    raise exception 'Authentication required' using errcode = '28000';
+  end if;
+  if p_workspace_id is null or p_user_id is null then
+    raise exception 'Workspace and user are required' using errcode = '22023';
+  end if;
+  if p_display_name is null or length(trim(p_display_name)) = 0 then
+    raise exception 'Display name is required' using errcode = '22023';
+  end if;
+  if length(trim(p_display_name)) > 120 then
+    raise exception 'Display name must be 120 characters or fewer' using errcode = '22023';
+  end if;
+  if p_weekly_capacity_minutes is null or p_weekly_capacity_minutes <= 0 then
+    raise exception 'Weekly capacity must be positive' using errcode = '22023';
+  end if;
+
+  select member.role
+  into actor_role
+  from public.workspace_members as member
+  where member.workspace_id = p_workspace_id
+    and member.user_id = actor_id;
+
+  if actor_role is null or actor_role not in ('owner', 'admin') then
+    raise exception 'Workspace admin access required' using errcode = '42501';
+  end if;
+
+  select member.role
+  into target_role
+  from public.workspace_members as member
+  where member.workspace_id = p_workspace_id
+    and member.user_id = p_user_id;
+
+  if target_role is null then
+    raise exception 'User is not a member of this workspace' using errcode = '42501';
+  end if;
+  if target_role = 'owner' and actor_role <> 'owner' then
+    raise exception 'Only the workspace owner can edit the owner profile' using errcode = '42501';
+  end if;
+
+  update public.profiles as profile
+  set display_name = trim(p_display_name),
+      weekly_capacity_minutes = p_weekly_capacity_minutes,
+      updated_at = now()
+  where profile.id = p_user_id;
+
+  if not found then
+    raise exception 'User profile not found' using errcode = 'P0002';
+  end if;
+end;
+$$;
+
 revoke all on function public.has_workspace_role(uuid, text[]) from public, anon;
 revoke all on function public.active_workspace_id() from public, anon;
 revoke all on function public.find_workspace_user(text) from public, anon;
+revoke all on function public.update_workspace_member_profile(uuid, uuid, text, integer) from public, anon, authenticated;
 grant execute on function public.has_workspace_role(uuid, text[]) to authenticated;
 grant execute on function public.active_workspace_id() to authenticated;
 grant execute on function public.find_workspace_user(text) to authenticated;
+grant execute on function public.update_workspace_member_profile(uuid, uuid, text, integer) to authenticated;
 
 update public.clients set workspace_id = (select id from public.workspaces where is_default) where workspace_id is null;
 update public.projects set workspace_id = (select id from public.workspaces where is_default) where workspace_id is null;
@@ -957,7 +1027,6 @@ alter table public.project_clients alter column workspace_id set default public.
 alter table public.task_dependencies alter column workspace_id set default public.active_workspace_id();
 alter table public.project_milestones alter column workspace_id set default public.active_workspace_id();
 alter table public.task_templates alter column workspace_id set default public.active_workspace_id();
-alter table public.notifications alter column workspace_id set default public.active_workspace_id();
 alter table public.notifications alter column workspace_id drop default;
 
 create table if not exists public.project_templates (

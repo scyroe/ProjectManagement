@@ -4,6 +4,10 @@ import {
   AnimatedTabIndicator,
   AnimatedTabPanel,
 } from '@/components/Common/animated-tabs';
+import {
+  filterTasksByView,
+  searchTasksByText,
+} from '@/components/Common/task-view-filters';
 import ProjectBoard from '@/components/pages/projects/ProjectBoard';
 import TaskActionNoteDialog from '@/components/pages/tasks/TaskActionNoteDialog';
 import TaskList from '@/components/pages/tasks/TaskList';
@@ -49,38 +53,14 @@ const ProjectWorkspace = ({
     return workspace.tasks.filter((task) => projectTaskIds.has(task.id));
   }, [project.id, workspace.tasks]);
   const todayKey = new Date().setHours(0, 0, 0, 0);
-  const filteredTasks = useMemo(() => {
-    if (taskFilter === 'all') return projectTasks;
-    if (taskFilter === 'completed') {
-      return projectTasks.filter((task) => task.state?.is_completed);
-    }
-    if (taskFilter === 'due-weekend' || taskFilter === 'overdue') {
-      const today = new Date(todayKey);
-      const weekendStart = new Date(today);
-      const daysUntilSaturday =
-        today.getDay() === 0 ? -1 : (6 - today.getDay() + 7) % 7;
-      weekendStart.setDate(weekendStart.getDate() + daysUntilSaturday);
-      const nextMonday = new Date(weekendStart);
-      nextMonday.setDate(nextMonday.getDate() + 2);
-      return projectTasks.filter((task) => {
-        if (!task.due_date || task.state?.is_completed) return false;
-        const dueDate = new Date(`${task.due_date}T00:00:00`);
-        if (taskFilter === 'overdue') return dueDate < today;
-        return dueDate >= weekendStart && dueDate < nextMonday;
-      });
-    }
-    return projectTasks.filter((task) => !task.state?.is_completed);
-  }, [projectTasks, taskFilter, todayKey]);
-  const visibleTasks = useMemo(() => {
-    const query = taskQuery.trim().toLocaleLowerCase();
-    return query
-      ? filteredTasks.filter((task) =>
-          `${task.title} ${task.description ?? ''}`
-            .toLocaleLowerCase()
-            .includes(query),
-        )
-      : filteredTasks;
-  }, [filteredTasks, taskQuery]);
+  const filteredTasks = useMemo(
+    () => filterTasksByView(projectTasks, taskFilter, todayKey),
+    [projectTasks, taskFilter, todayKey],
+  );
+  const visibleTasks = useMemo(
+    () => searchTasksByText(filteredTasks, taskQuery),
+    [filteredTasks, taskQuery],
+  );
   const { entries, loading, tasks, error } = useProjectActivity({
     enabled: tab === 'activity',
     projectId: project.id,

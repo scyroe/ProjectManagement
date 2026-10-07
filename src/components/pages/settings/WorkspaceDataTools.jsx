@@ -272,9 +272,9 @@ const WorkspaceDataTools = ({ tasks, userId }) => {
   };
 
   return (
-    <section className="space-y-3 border-t pt-4">
+    <section className="space-y-3">
       <div>
-        <h3 className="text-sm font-semibold">{t.title}</h3>
+        <h2 className="text-sm font-semibold">{t.title}</h2>
         <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>
       </div>
       <div className="flex flex-wrap gap-2">

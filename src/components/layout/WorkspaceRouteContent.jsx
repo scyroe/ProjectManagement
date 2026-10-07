@@ -4,6 +4,8 @@ import Clients from '@/components/pages/clients/Clients';
 import Dashboard from '@/components/pages/dashboard/Dashboard';
 import Projects from '@/components/pages/projects/Projects';
 import Reports from '@/components/pages/reports/Reports';
+import SettingsPage from '@/components/pages/settings/SettingsPage';
+import WorkspaceMembersPage from '@/components/pages/settings/WorkspaceMembersPage';
 import TaskWorkspace from '@/components/pages/tasks/TaskWorkspace';
 import WorkLog from '@/components/pages/work-log/WorkLog';
 import { useStrings } from '@/lib/i18n';
@@ -18,6 +20,7 @@ function WorkspaceRouteContent({
   onNewClient,
   onNewProject,
   onNewTask,
+  onAddUser,
   onProjectSaved,
   projectSearchQuery,
   setProjectSearchQuery,
@@ -30,6 +33,8 @@ function WorkspaceRouteContent({
   weekStartsOn,
   workspaceReady,
   workspaceId,
+  workspaces,
+  preferences,
 }) {
   const loadingLabel = useStrings().workspaceManagement.loading;
   return (
@@ -45,7 +50,9 @@ function WorkspaceRouteContent({
               ? { duration: 0.18, ease: 'easeOut' }
               : { duration: 0 }
           }
-          className="flex h-full min-h-0 flex-col"
+          className={`flex h-full min-h-0 flex-col ${
+            activeRoute === 'settings' ? 'overflow-y-auto' : ''
+          }`}
         >
           {!workspaceReady ? (
             <p
@@ -114,6 +121,19 @@ function WorkspaceRouteContent({
               weekStartsOn={weekStartsOn}
               workspaceId={workspaceId}
               userId={userId}
+            />
+          ) : activeRoute === 'users' ? (
+            <WorkspaceMembersPage
+              workspace={workspace}
+              workspaces={workspaces}
+              onAddUser={onAddUser}
+            />
+          ) : activeRoute === 'settings' ? (
+            <SettingsPage
+              tasks={workspace.tasks}
+              userId={userId}
+              workspaces={workspaces}
+              {...preferences}
             />
           ) : (
             <EmptyPage route={currentPage} />

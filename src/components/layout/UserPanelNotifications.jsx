@@ -1,44 +1,110 @@
+import { Check } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+
 function UserPanelNotifications({
+  hasMoreNotifications,
+  loadingMoreNotifications,
   notifications,
+  onLoadMoreNotifications,
+  onMarkNotificationRead,
   onOpenNotification,
   t,
   unreadCount,
 }) {
+  const loadMorePending = useRef(false);
+
+  useEffect(() => {
+    if (!loadingMoreNotifications) loadMorePending.current = false;
+  }, [loadingMoreNotifications]);
+
+  const handleLoadMore = () => {
+    if (
+      !hasMoreNotifications ||
+      loadingMoreNotifications ||
+      loadMorePending.current
+    ) {
+      return;
+    }
+    loadMorePending.current = true;
+    onLoadMoreNotifications();
+  };
+
   return (
-    <section>
-      <div className="mb-3 flex items-center justify-between">
+    <section className="flex min-h-0 flex-1 flex-col px-5 pb-5 pt-6">
+      <div className="mb-3 flex shrink-0 items-center justify-between">
         <h3 className="text-sm font-semibold">{t.notifications}</h3>
         {unreadCount > 0 && (
-          <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
+          <span className="rounded-full border border-warning/30 bg-warning/20 px-2 py-0.5 text-xs font-medium text-warning-foreground">
             {unreadCount}
           </span>
         )}
       </div>
-      <div className="space-y-2" aria-live="polite">
+      <div
+        className="min-h-0 flex-1 space-y-2 overflow-y-auto"
+        aria-live="polite"
+        onScroll={(event) => {
+          const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
+          if (scrollHeight - scrollTop - clientHeight <= 24) {
+            handleLoadMore();
+          }
+        }}
+      >
         {notifications.length ? (
           notifications.map((notification) => (
-            <button
+            <article
               key={notification.id}
-              type="button"
-              className={`w-full rounded-lg border bg-card p-3 text-left focus-visible:ring-3 focus-visible:ring-ring/50 ${
+              className={`relative rounded-lg border bg-card p-3 ${
                 notification.read_at ? '' : 'border-primary/40 bg-primary/5'
               }`}
-              onClick={() => onOpenNotification(notification)}
             >
-              <span className="block text-sm font-medium">
-                {t.notificationKinds[notification.kind] ?? notification.title}
-              </span>
-              {notification.body && (
-                <span className="mt-1 block text-xs font-normal text-muted-foreground">
-                  {notification.body}
+              <button
+                type="button"
+                className="w-full rounded-md pr-7 text-left focus-visible:ring-3 focus-visible:ring-ring/50"
+                onClick={() => onOpenNotification(notification)}
+              >
+                <span className="block text-sm font-medium">
+                  {t.notificationKinds[notification.kind] ?? notification.title}
                 </span>
+                {notification.body && (
+                  <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                    {notification.body}
+                  </span>
+                )}
+              </button>
+              {!notification.read_at && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  className="absolute right-2 top-2 text-muted-foreground hover:text-success"
+                  aria-label={t.markNotificationRead}
+                  title={t.markNotificationRead}
+                  onClick={() => onMarkNotificationRead(notification)}
+                >
+                  <Check />
+                </Button>
               )}
-            </button>
+            </article>
           ))
         ) : (
           <p className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
             {t.noNotifications}
           </p>
+        )}
+        {hasMoreNotifications && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full"
+            disabled={loadingMoreNotifications}
+            onClick={handleLoadMore}
+          >
+            {loadingMoreNotifications
+              ? t.loadingMoreNotifications
+              : t.loadMoreNotifications}
+          </Button>
         )}
       </div>
     </section>

@@ -31,7 +31,7 @@ function ListFilterToolbar({
   const secondaryId = `${id}-secondary-filter`;
   const searchInputId = `${id}-search-filter`;
   const primaryLabelValue =
-    primaryOptions.find((option) => option.value === primaryValue)?.label ??
+    primaryOptions?.find((option) => option.value === primaryValue)?.label ??
     primaryValue;
   const secondaryLabelValue =
     secondaryOptions?.find((option) => option.value === secondaryValue)
@@ -56,24 +56,26 @@ function ListFilterToolbar({
           }`}
           inert={searchOpen}
         >
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <label
-              htmlFor={primaryId}
-              className="truncate text-xs font-medium text-muted-foreground"
-            >
-              {primaryLabel}
-            </label>
-            <VirtualSelect
-              id={primaryId}
-              ariaLabel={primaryLabel}
-              searchLabel={primaryLabel}
-              value={primaryValue}
-              onChange={onPrimaryChange}
-              placeholder={primaryLabelValue}
-              options={primaryOptions}
-              triggerClassName="min-w-0 w-full"
-            />
-          </div>
+          {primaryOptions?.length > 0 && (
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <label
+                htmlFor={primaryId}
+                className="truncate text-xs font-medium text-muted-foreground"
+              >
+                {primaryLabel}
+              </label>
+              <VirtualSelect
+                id={primaryId}
+                ariaLabel={primaryLabel}
+                searchLabel={primaryLabel}
+                value={primaryValue}
+                onChange={onPrimaryChange}
+                placeholder={primaryLabelValue}
+                options={primaryOptions}
+                triggerClassName="min-w-0 w-full"
+              />
+            </div>
+          )}
           {secondaryOptions?.length > 0 && (
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <label
@@ -134,16 +136,18 @@ function ListFilterToolbar({
       >
         {searchOpen ? <X /> : <Search />}
       </Button>
-      <Button
-        type="button"
-        size="icon"
-        className="size-8 shrink-0"
-        aria-label={addLabel}
-        title={addLabel}
-        onClick={onAdd}
-      >
-        <Plus />
-      </Button>
+      {onAdd && (
+        <Button
+          type="button"
+          size="icon"
+          className="size-8 shrink-0"
+          aria-label={addLabel}
+          title={addLabel}
+          onClick={onAdd}
+        >
+          <Plus />
+        </Button>
+      )}
     </div>
   );
 }

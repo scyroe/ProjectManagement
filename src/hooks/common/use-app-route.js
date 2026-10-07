@@ -5,6 +5,8 @@ import {
   Clock3,
   FolderKanban,
   LayoutDashboard,
+  Settings2,
+  UserRound,
   Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -17,6 +19,8 @@ export const routes = [
   { id: 'calendar', icon: CalendarDays },
   { id: 'work-log', icon: Clock3 },
   { id: 'reports', icon: BarChart3 },
+  { id: 'users', icon: UserRound },
+  { id: 'settings', icon: Settings2 },
 ];
 
 const getRouteFromHash = () => {
