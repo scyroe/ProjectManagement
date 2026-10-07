@@ -18,13 +18,12 @@ const profileQueryKey = (userId) => ['profile', userId];
 const dayInMs = 24 * 60 * 60 * 1000;
 const initialNotificationPageSize = 10;
 const additionalNotificationPageSize = 5;
+const reminderPageSize = 500;
 
-export function useNotifications({
-  tasks,
-  userId,
-  enabled = true,
-  workspaceId,
-}) {
+const formatDate = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+export function useNotifications({ userId, enabled = true, workspaceId }) {
   const t = useStrings().layout.userPanel;
   const queryClient = useQueryClient();
   const notificationBaseline = useRef(null);
@@ -42,6 +41,7 @@ export function useNotifications({
         .from('notifications')
         .select('id,kind,title,body,task_id,read_at,created_at')
         .eq('recipient_id', userId)
+        .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false })
         .order('id', { ascending: false })
         .limit(pageSize);
@@ -67,8 +67,9 @@ export function useNotifications({
       };
     },
     enabled: Boolean(userId) && enabled,
-    refetchInterval: (query) =>
-      (query.state.data?.pages.length ?? 1) > 1 ? false : 60_000,
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   const profileQuery = useQuery({
@@ -83,6 +84,40 @@ export function useNotifications({
       return data;
     },
     enabled: Boolean(userId),
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const reminderEndDate = formatDate(new Date(today.getTime() + dayInMs));
+  const reminderCandidatesQuery = useQuery({
+    queryKey: [
+      'notification-reminder-candidates',
+      userId,
+      workspaceId,
+      reminderEndDate,
+    ],
+    queryFn: async () => {
+      const candidates = [];
+      for (let offset = 0; ; offset += reminderPageSize) {
+        const { data, error } = await supabase
+          .from('tasks')
+          .select(
+            'id,workspace_id,title,due_date,assigned_to,state:task_states!inner(is_completed)',
+          )
+          .eq('workspace_id', workspaceId)
+          .eq('assigned_to', userId)
+          .eq('state.is_completed', false)
+          .not('due_date', 'is', null)
+          .lte('due_date', reminderEndDate)
+          .order('due_date')
+          .order('id')
+          .range(offset, offset + reminderPageSize - 1);
+        if (error) throw new Error(error.message);
+        candidates.push(...(data ?? []));
+        if ((data ?? []).length < reminderPageSize) return candidates;
+      }
+    },
+    enabled: Boolean(enabled && userId && workspaceId),
   });
 
   useEffect(() => {
@@ -132,23 +167,8 @@ export function useNotifications({
 
   const reminderRows = useMemo(() => {
     if (!userId) return [];
-    const now = new Date();
-    const reminderEnd = new Date(now.getTime() + dayInMs);
 
-    return tasks
-      .filter((task) => {
-        if (
-          task.workspace_id !== workspaceId ||
-          !task.due_date ||
-          task.assigned_to !== userId ||
-          task.state?.is_completed
-        ) {
-          return false;
-        }
-        const dueStart = new Date(`${task.due_date}T00:00:00`);
-        const dueEnd = new Date(`${task.due_date}T23:59:59`);
-        return dueStart <= reminderEnd || dueEnd < now;
-      })
+    return (reminderCandidatesQuery.data ?? [])
       .filter((task) => {
         const kind =
           new Date(`${task.due_date}T23:59:59`) < new Date()
@@ -171,7 +191,7 @@ export function useNotifications({
       });
   }, [
     profileQuery.data?.notification_preferences,
-    tasks,
+    reminderCandidatesQuery.data,
     t.overdueReminderTitle,
     t.reminderTitle,
     userId,
@@ -207,6 +227,14 @@ export function useNotifications({
     userId,
     workspaceId,
   ]);
+
+  useEffect(() => {
+    if (reminderCandidatesQuery.error) {
+      toast.error(t.reminderError, {
+        description: reminderCandidatesQuery.error.message,
+      });
+    }
+  }, [reminderCandidatesQuery.error, t.reminderError]);
 
   useEffect(() => {
     if (notificationsQuery.error) {

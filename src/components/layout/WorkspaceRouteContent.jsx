@@ -65,13 +65,11 @@ function WorkspaceRouteContent({
             <Dashboard
               workspace={workspace}
               navigate={navigate}
-              clients={clientsState.allClients}
-              clientsError={clientsState.error}
-              clientsLoading={clientsState.loading}
               onNewClient={onNewClient}
               onNewProject={onNewProject}
               onNewTask={onNewTask}
               userId={userId}
+              workspaceId={workspaceId}
             />
           ) : activeRoute === 'tasks' ? (
             <TaskWorkspace
@@ -115,6 +113,7 @@ function WorkspaceRouteContent({
               workspace={workspace}
               navigate={navigate}
               userId={userId}
+              workspaceId={workspaceId}
             />
           ) : activeRoute === 'work-log' ? (
             <WorkLog
@@ -130,7 +129,6 @@ function WorkspaceRouteContent({
             />
           ) : activeRoute === 'settings' ? (
             <SettingsPage
-              tasks={workspace.tasks}
               userId={userId}
               workspaces={workspaces}
               {...preferences}

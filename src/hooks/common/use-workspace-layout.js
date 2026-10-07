@@ -11,12 +11,15 @@ import { useStrings } from '@/lib/i18n';
 
 export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
   const layoutStrings = useStrings().layout;
-  const syncStatus = useRealtimeSync();
   const appShell = useAppShell();
   const preferences = useWorkspacePreferences();
   const workspaces = useWorkspaces(userId);
   const workspaceReady =
     workspaces.isReady && Boolean(workspaces.activeWorkspaceId);
+  const syncStatus = useRealtimeSync({
+    userId,
+    workspaceId: workspaces.activeWorkspaceId,
+  });
   const [taskMetrics, setTaskMetrics] = useState({
     currentCount: 0,
     completedCount: 0,
@@ -43,7 +46,6 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
         activeRoute === 'projects' ||
         activeRoute === 'calendar' ||
         activeRoute === 'reports' ||
-        activeRoute === 'settings' ||
         appShell.searchOpen),
     workspaceId: workspaces.activeWorkspaceId,
     defaultTaskFilter:
@@ -54,8 +56,23 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
           }[preferences.defaultTaskFilter] ?? preferences.defaultTaskFilter)
         : preferences.defaultTaskFilter,
     includeWorkspaceActivity: activeRoute === 'reports',
-    loadAllTasks: activeRoute !== 'tasks' && activeRoute !== 'users',
+    loadAllTasks:
+      activeRoute === 'projects' ||
+      activeRoute === 'calendar' ||
+      activeRoute === 'reports',
+    loadSession:
+      activeRoute === 'tasks' ||
+      activeRoute === 'dashboard' ||
+      activeRoute === 'projects' ||
+      activeRoute === 'calendar',
+    loadTasks:
+      activeRoute === 'tasks' ||
+      activeRoute === 'projects' ||
+      activeRoute === 'calendar' ||
+      activeRoute === 'reports' ||
+      appShell.searchOpen,
     onMetricsChange: setTaskMetrics,
+    searchEnabled: appShell.searchOpen,
     searchQuery: appShell.searchQuery,
     userId,
   });
@@ -64,7 +81,6 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
       workspaceReady &&
       (activeRoute === 'clients' ||
         activeRoute === 'projects' ||
-        activeRoute === 'dashboard' ||
         appShell.searchOpen),
     workspaceId: workspaces.activeWorkspaceId,
   });
@@ -74,7 +90,6 @@ export function useWorkspaceLayout({ activeRoute, navigate, userId }) {
     workspaceId: workspaces.activeWorkspaceId,
   });
   const notificationState = useNotifications({
-    tasks: workspace.tasks,
     userId,
     enabled: workspaceReady,
     workspaceId: workspaces.activeWorkspaceId,

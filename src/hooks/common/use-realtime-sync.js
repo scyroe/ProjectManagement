@@ -4,7 +4,7 @@ import { useStrings } from '@/lib/i18n';
 import { queryClient } from '@/lib/query-client';
 import { supabase } from '@/lib/supabase';
 
-const invalidationKeysByTable = {
+const workspaceScopedTables = {
   clients: [
     ['clients'],
     ['calendar-projects'],
@@ -18,44 +18,108 @@ const invalidationKeysByTable = {
     ['task-form-options'],
     ['workspace-activity'],
     ['client-activity'],
+    ['dashboard-summary'],
+    ['team-workload'],
   ],
-  project_clients: [['clients'], ['calendar-projects'], ['client-activity']],
   tasks: [
     ['tasks'],
     ['clients'],
     ['task-history'],
     ['project-activity'],
     ['client-activity'],
+    ['task-session'],
+    ['work-log'],
+    ['workspace-activity'],
+    ['dashboard-summary'],
+    ['team-workload'],
+    ['notification-reminder-candidates'],
   ],
+  task_states: [
+    ['tasks'],
+    ['clients'],
+    ['task-form-options'],
+    ['dashboard-summary'],
+    ['team-workload'],
+    ['notification-reminder-candidates'],
+  ],
+  task_history: [
+    ['task-session'],
+    ['task-history'],
+    ['work-log'],
+    ['workspace-activity'],
+    ['project-activity'],
+    ['client-activity'],
+    ['dashboard-summary'],
+  ],
+  project_clients: [['clients'], ['calendar-projects'], ['client-activity']],
   task_projects: [
     ['tasks'],
     ['clients'],
     ['project-activity'],
     ['client-activity'],
+    ['dashboard-summary'],
   ],
-  task_states: [['tasks'], ['clients'], ['task-form-options']],
-  task_history: [
-    ['task-session'],
-    ['task-history'],
-    ['workspace-activity'],
-    ['project-activity'],
-    ['client-activity'],
-  ],
-  notifications: [['notifications']],
-  profiles: [['profiles']],
   task_dependencies: [['task-dependencies']],
-  project_milestones: [['project-milestones']],
+  project_milestones: [['calendar-milestones']],
   task_templates: [['task-templates'], ['task-form-options']],
+  project_templates: [['project-templates']],
+  workspace_members: [
+    ['workspace-members'],
+    ['profiles'],
+    ['workspace-memberships'],
+  ],
+  workspace_automations: [['workspace-automations']],
 };
 
-export function useRealtimeSync() {
+const userScopedTables = {
+  notifications: [['notifications']],
+  profiles: [['profile'], ['profiles'], ['active-workspace']],
+};
+
+const getScopedQueryKeys = (queryKeys, workspaceId, userId) =>
+  queryKeys.flatMap((queryKey) => {
+    const [key] = queryKey;
+    if (key === 'notifications') return [[key, userId]];
+    if (
+      key === 'workspace-activity' ||
+      key === 'task-session' ||
+      key === 'notifications' ||
+      key === 'notification-reminder-candidates'
+    ) {
+      return [[key, userId, workspaceId]];
+    }
+    if (
+      key === 'workspace-memberships' ||
+      key === 'profile' ||
+      key === 'active-workspace'
+    ) {
+      return [[key, userId]];
+    }
+    if (
+      key === 'task-history' ||
+      key === 'project-activity' ||
+      key === 'client-activity' ||
+      key === 'task-dependencies' ||
+      key === 'task-templates'
+    ) {
+      return [queryKey];
+    }
+    if (key === 'profiles') {
+      return workspaceId ? [[key, workspaceId], queryKey] : [queryKey];
+    }
+    return workspaceId ? [[...queryKey, workspaceId]] : [queryKey];
+  });
+
+export function useRealtimeSync({ userId, workspaceId } = {}) {
   const t = useStrings().layout.syncStatus;
   const [syncStatus, setSyncStatus] = useState(() =>
     navigator.onLine ? 'connecting' : 'offline',
   );
 
   useEffect(() => {
-    const channel = supabase.channel('db-changes');
+    const channel = supabase.channel(
+      `db-changes-${userId ?? 'none'}-${workspaceId ?? 'none'}`,
+    );
     const pendingQueryKeys = new Map();
     let invalidateTimeout;
     let failureReported = false;
@@ -77,12 +141,34 @@ export function useRealtimeSync() {
       }, 50);
     };
 
-    for (const [table, queryKeys] of Object.entries(invalidationKeysByTable)) {
-      channel.on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table },
-        () => queueInvalidation(queryKeys),
-      );
+    if (workspaceId) {
+      for (const [table, queryKeys] of Object.entries(workspaceScopedTables)) {
+        channel.on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table,
+            filter: `workspace_id=eq.${workspaceId}`,
+          },
+          () =>
+            queueInvalidation(
+              getScopedQueryKeys(queryKeys, workspaceId, userId),
+            ),
+        );
+      }
+    }
+
+    if (userId) {
+      for (const [table, queryKeys] of Object.entries(userScopedTables)) {
+        const config = { event: '*', schema: 'public', table };
+        if (table === 'notifications') {
+          config.filter = `recipient_id=eq.${userId}`;
+        }
+        channel.on('postgres_changes', config, () =>
+          queueInvalidation(getScopedQueryKeys(queryKeys, workspaceId, userId)),
+        );
+      }
     }
 
     channel.subscribe((status, error) => {
@@ -129,7 +215,13 @@ export function useRealtimeSync() {
       window.removeEventListener('online', handleOnline);
       supabase.removeChannel(channel);
     };
-  }, [t.connectionError, t.offlineMessage, t.reconnecting]);
+  }, [
+    t.connectionError,
+    t.offlineMessage,
+    t.reconnecting,
+    userId,
+    workspaceId,
+  ]);
 
   return syncStatus;
 }

@@ -28,6 +28,7 @@ export function useCalendar({ enabled = true, workspaceId } = {}) {
         .select(
           'id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name),linked_clients:project_clients(client_id,client:clients(id,name))',
         )
+        .eq('workspace_id', workspaceId)
         .order('name');
 
       if (error) throw new Error(error.message);
@@ -45,6 +46,7 @@ export function useCalendar({ enabled = true, workspaceId } = {}) {
       const { data, error } = await supabase
         .from('project_milestones')
         .select('id,project_id,name,description,due_date,completed_at')
+        .eq('workspace_id', workspaceId)
         .not('due_date', 'is', null)
         .order('due_date');
       if (error) throw new Error(error.message);

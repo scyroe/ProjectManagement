@@ -43,6 +43,35 @@ export function useWorkspaces(userId) {
     ) ??
     memberships[0] ??
     null;
+  const invalidateWorkspaceQueries = useCallback(
+    (workspaceIdToRefresh) =>
+      Promise.all(
+        [
+          ['tasks', workspaceIdToRefresh],
+          ['task-search', workspaceIdToRefresh],
+          ['task-session', userId, workspaceIdToRefresh],
+          ['clients', workspaceIdToRefresh],
+          ['calendar-projects', workspaceIdToRefresh],
+          ['calendar-milestones', workspaceIdToRefresh],
+          ['dashboard-summary', workspaceIdToRefresh],
+          ['team-workload', workspaceIdToRefresh],
+          ['notification-reminder-candidates', userId, workspaceIdToRefresh],
+          ['notifications', userId, workspaceIdToRefresh],
+          ['workspace-activity', userId, workspaceIdToRefresh],
+          ['workspace-members', workspaceIdToRefresh],
+          ['work-log', workspaceIdToRefresh],
+          ['workspace-automations', workspaceIdToRefresh],
+          ['project-templates', workspaceIdToRefresh],
+          ['task-form-options', workspaceIdToRefresh],
+          ['task-history'],
+          ['task-dependencies'],
+          ['project-activity'],
+          ['client-activity'],
+          ['profiles'],
+        ].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+      ),
+    [queryClient, userId],
+  );
 
   const handleWorkspaceChange = useCallback(
     async (workspaceId) => {
@@ -66,9 +95,15 @@ export function useWorkspaces(userId) {
         ...current,
         active_workspace_id: workspaceId,
       }));
-      await queryClient.invalidateQueries();
+      await invalidateWorkspaceQueries(workspaceId);
     },
-    [memberships, queryClient, t.switchError, userId],
+    [
+      invalidateWorkspaceQueries,
+      memberships,
+      queryClient,
+      t.switchError,
+      userId,
+    ],
   );
 
   useEffect(() => {
@@ -123,14 +158,21 @@ export function useWorkspaces(userId) {
       .eq('id', user.id);
     if (selectError) {
       toast.error(t.createError, { description: selectError.message });
-      await queryClient.invalidateQueries();
+      await queryClient.invalidateQueries({
+        queryKey: ['active-workspace', user.id],
+      });
       return false;
     }
     queryClient.setQueryData(['active-workspace', user.id], (current) => ({
       ...current,
       active_workspace_id: workspace.id,
     }));
-    await queryClient.invalidateQueries();
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: ['workspace-memberships', user.id],
+      }),
+      invalidateWorkspaceQueries(workspace.id),
+    ]);
     toast.success(t.created);
     return true;
   };

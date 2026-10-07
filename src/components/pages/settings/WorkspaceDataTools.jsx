@@ -69,37 +69,59 @@ const parseCsv = (source) => {
   return rows;
 };
 
-const WorkspaceDataTools = ({ tasks, userId }) => {
+const WorkspaceDataTools = ({ userId, workspaceId }) => {
   const strings = useStrings();
   const t = strings.settingsDialog.dataTools;
   const queryClient = useQueryClient();
   const [importing, setImporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
-  const handleExport = () => {
-    const rows = tasks.map((task) => [
-      task.title,
-      task.description,
-      task.project?.code,
-      task.priority,
-      task.state?.name,
-      task.due_date,
-      task.estimate_minutes,
-      JSON.stringify(task.tags ?? []),
-      task.recurrence_interval,
-      task.recurrence_unit,
-      task.recurrence_until,
-    ]);
-    const csv = [headers, ...rows]
-      .map((row) => row.map(csvCell).join(','))
-      .join('\r\n');
-    const url = URL.createObjectURL(
-      new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }),
-    );
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = 'workspace-tasks.csv';
-    anchor.click();
-    URL.revokeObjectURL(url);
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const tasks = [];
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await supabase
+          .from('tasks')
+          .select(
+            'id,title,description,priority,due_date,estimate_minutes,tags,recurrence_interval,recurrence_unit,recurrence_until,project:projects!project_id(code),state:task_states(name)',
+          )
+          .eq('workspace_id', workspaceId)
+          .order('id')
+          .range(offset, offset + 499);
+        if (error) throw new Error(error.message);
+        tasks.push(...(data ?? []));
+        if ((data ?? []).length < 500) break;
+      }
+      const rows = tasks.map((task) => [
+        task.title,
+        task.description,
+        task.project?.code,
+        task.priority,
+        task.state?.name,
+        task.due_date,
+        task.estimate_minutes,
+        JSON.stringify(task.tags ?? []),
+        task.recurrence_interval,
+        task.recurrence_unit,
+        task.recurrence_until,
+      ]);
+      const csv = [headers, ...rows]
+        .map((row) => row.map(csvCell).join(','))
+        .join('\r\n');
+      const url = URL.createObjectURL(
+        new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }),
+      );
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'workspace-tasks.csv';
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error(t.exportError, { description: error.message });
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleImport = async (event) => {
@@ -120,10 +142,14 @@ const WorkspaceDataTools = ({ tasks, userId }) => {
       }
 
       const [projectsResponse, statesResponse] = await Promise.all([
-        supabase.from('projects').select('id,code'),
+        supabase
+          .from('projects')
+          .select('id,code')
+          .eq('workspace_id', workspaceId),
         supabase
           .from('task_states')
           .select('id,name,is_completed')
+          .eq('workspace_id', workspaceId)
           .order('sort_order'),
       ]);
       if (projectsResponse.error)
@@ -228,6 +254,7 @@ const WorkspaceDataTools = ({ tasks, userId }) => {
           }
         }
         return {
+          workspace_id: workspaceId,
           project_id: project.id,
           state_id: state.id,
           assigned_to: userId,
@@ -255,7 +282,17 @@ const WorkspaceDataTools = ({ tasks, userId }) => {
         })),
       );
       if (linkError) {
-        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ['tasks', workspaceId],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ['dashboard-summary', workspaceId],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ['team-workload', workspaceId],
+          }),
+        ]);
         throw new Error(
           `${t.tasksImportedButLinksFailed} ${linkError.message}`,
         );
@@ -263,7 +300,15 @@ const WorkspaceDataTools = ({ tasks, userId }) => {
       toast.success(
         t.importSuccess.replace('{count}', String(imported.length)),
       );
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['tasks', workspaceId] }),
+        queryClient.invalidateQueries({
+          queryKey: ['dashboard-summary', workspaceId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['team-workload', workspaceId],
+        }),
+      ]);
     } catch (error) {
       toast.error(t.importError, { description: error.message });
     } finally {
@@ -278,9 +323,14 @@ const WorkspaceDataTools = ({ tasks, userId }) => {
         <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="outline" onClick={handleExport}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleExport}
+          disabled={exporting || !workspaceId}
+        >
           <Download />
-          {t.exportTasks}
+          {exporting ? t.exporting : t.exportTasks}
         </Button>
         <Label
           className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border px-3 text-sm font-medium hover:bg-muted"

@@ -203,8 +203,10 @@ function WorkLog({ weekStartsOn, workspaceId, userId }) {
       ]);
       return [...completedSessions, ...inProgressSessions];
     },
-    enabled: Boolean(range),
-    refetchInterval: 60_000,
+    enabled: Boolean(range && workspaceId),
+    staleTime: 60_000,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   const timeline = useMemo(() => {

@@ -5,13 +5,12 @@ import { useStrings } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
 const taskSelect =
-  'id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,state_id,project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)))';
-
-const taskFormOptionsQueryKey = ['task-form-options'];
+  'id,workspace_id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,state_id,project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,client_id,client:clients!client_id(id,name)))';
 
 export function useTaskDetails({ task, onUpdated }) {
   const t = useStrings().toasts.taskDetails;
   const queryClient = useQueryClient();
+  const workspaceId = task.workspace_id;
   const [form, setForm] = useState(() => getFormValues(task));
   const [saving, setSaving] = useState(false);
   const [updatingCompletion, setUpdatingCompletion] = useState(false);
@@ -22,7 +21,7 @@ export function useTaskDetails({ task, onUpdated }) {
     isLoading: loadingOptions,
     error: optionsError,
   } = useQuery({
-    queryKey: taskFormOptionsQueryKey,
+    queryKey: ['task-form-options', workspaceId],
     queryFn: async () => {
       const [
         { data: projectData, error: projectError },
@@ -32,15 +31,19 @@ export function useTaskDetails({ task, onUpdated }) {
         supabase
           .from('projects')
           .select('id,name,code,client_id,client:clients!client_id(id,name)')
+          .eq('workspace_id', workspaceId)
           .order('name'),
         supabase
           .from('task_states')
           .select('id,name,color,is_completed,sort_order')
+          .eq('workspace_id', workspaceId)
           .order('sort_order'),
         supabase
-          .from('profiles')
-          .select('id,username,display_name')
-          .order('display_name'),
+          .from('workspace_members')
+          .select(
+            'profile:profiles!workspace_members_user_id_profiles_fkey(id,username,display_name)',
+          )
+          .eq('workspace_id', workspaceId),
       ]);
 
       if (projectError || stateError || profileError) {
@@ -49,11 +52,14 @@ export function useTaskDetails({ task, onUpdated }) {
         );
       }
       return {
-        profiles: profileData ?? [],
+        profiles: (profileData ?? [])
+          .map((member) => member.profile)
+          .filter(Boolean),
         projects: projectData ?? [],
         taskStates: stateData ?? [],
       };
     },
+    enabled: Boolean(workspaceId),
   });
 
   useEffect(() => {

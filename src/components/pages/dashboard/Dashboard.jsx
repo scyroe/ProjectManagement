@@ -14,15 +14,13 @@ import DashboardRecentActivity from '@/components/pages/dashboard/DashboardRecen
 import { useDashboard } from '@/hooks/common/use-dashboard';
 
 const Dashboard = ({
-  clients = [],
-  clientsError = '',
-  clientsLoading = false,
   workspace,
   navigate,
   onNewClient,
   onNewProject,
   onNewTask,
   userId,
+  workspaceId,
 }) => {
   const {
     actionLabel,
@@ -63,14 +61,12 @@ const Dashboard = ({
     toggleTimer,
     visibleActivity,
   } = useDashboard({
-    clients,
-    clientsError,
-    clientsLoading,
     navigate,
     onNewClient,
     onNewProject,
     onNewTask,
     userId,
+    workspaceId,
     workspace,
   });
 
@@ -93,28 +89,14 @@ const Dashboard = ({
           {error}
         </div>
       )}
-      {clientsError && (
-        <div
-          className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
-          role="alert"
-        >
-          {clientsError}
-        </div>
-      )}
-
       <MetricStrip
         columns={5}
         loading={loading}
         metrics={[
-          [t.metrics.current, currentTasks.length, ListTodo, 'text-primary'],
-          [
-            t.metrics.completed,
-            completedTasks.length,
-            CheckCircle2,
-            'text-success',
-          ],
+          [t.metrics.current, currentTasks, ListTodo, 'text-primary'],
+          [t.metrics.completed, completedTasks, CheckCircle2, 'text-success'],
           [t.metrics.active, runningTaskId ? 1 : 0, Play, 'text-success'],
-          [t.metrics.dueSoon, dueSoonTasks.length, CalendarDays, 'text-info'],
+          [t.metrics.dueSoon, dueSoonTasks, CalendarDays, 'text-info'],
           [t.metrics.overdue, overdueCount, TriangleAlert, 'text-warning'],
         ]}
         onSelect={(label) =>

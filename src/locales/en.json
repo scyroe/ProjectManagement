@@ -655,6 +655,8 @@
       "title": "Workspace data",
       "description": "Export tasks to CSV or import a validated CSV as new tasks. Import never updates or deletes existing tasks.",
       "exportTasks": "Export tasks",
+      "exporting": "Exporting...",
+      "exportError": "Could not export tasks.",
       "importTasks": "Import tasks",
       "importing": "Importing...",
       "emptyFile": "The CSV file has no task rows.",

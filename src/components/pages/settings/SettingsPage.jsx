@@ -49,7 +49,6 @@ function SettingsPage({
   onDefaultTaskFilterChange,
   weekStartsOn,
   onWeekStartsOnChange,
-  tasks = [],
   userId,
   workspaces,
 }) {
@@ -365,7 +364,10 @@ function SettingsPage({
         </div>
       )}
       <div className="order-6 rounded-xl border bg-card p-4">
-        <WorkspaceDataTools tasks={tasks} userId={userId} />
+        <WorkspaceDataTools
+          userId={userId}
+          workspaceId={workspaces.activeWorkspaceId}
+        />
       </div>
       {import.meta.env.DEV && (
         <section className="order-7 space-y-3 rounded-xl border bg-card p-4">

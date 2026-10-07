@@ -659,6 +659,293 @@ end;
 $$;
 
 revoke execute on function public.spawn_next_recurring_task() from public, anon, authenticated;
+
+create or replace function public.get_workspace_dashboard_summary(
+  p_workspace_id uuid,
+  p_today date
+)
+returns jsonb
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  with scoped_tasks as (
+    select
+      task.id,
+      task.title,
+      task.priority,
+      task.due_date,
+      task.project_id,
+      state.id as state_id,
+      state.name as state_name,
+      state.color as state_color,
+      state.sort_order as state_sort_order,
+      state.is_completed,
+      project.name as project_name,
+      project.code as project_code
+    from public.tasks as task
+    join public.task_states as state on state.id = task.state_id
+    left join public.projects as project on project.id = task.project_id
+    where task.workspace_id = p_workspace_id
+      and p_workspace_id = (select public.active_workspace_id())
+  ),
+  task_counts as (
+    select
+      count(*) as total_count,
+      count(*) filter (where not is_completed) as current_count,
+      count(*) filter (where is_completed) as completed_count,
+      count(*) filter (
+        where not is_completed
+          and due_date >= p_today
+          and due_date <= p_today + 7
+      ) as due_soon_count,
+      count(*) filter (
+        where not is_completed and due_date < p_today
+      ) as overdue_count
+    from scoped_tasks
+  ),
+  workspace_totals as (
+    select
+      (
+        select count(*)
+        from public.clients as client
+        where client.workspace_id = p_workspace_id
+          and p_workspace_id = (select public.active_workspace_id())
+      ) as client_count,
+      (
+        select count(*)
+        from public.projects as project
+        where project.workspace_id = p_workspace_id
+          and p_workspace_id = (select public.active_workspace_id())
+      ) as project_count
+  ),
+  attention_tasks as (
+    select coalesce(
+      jsonb_agg(
+        jsonb_build_object(
+          'id', task.id,
+          'title', task.title,
+          'priority', task.priority,
+          'due_date', task.due_date,
+          'state', jsonb_build_object(
+            'is_completed', task.is_completed
+          ),
+          'project', case
+            when task.project_id is null then null
+            else jsonb_build_object(
+              'id', task.project_id,
+              'name', task.project_name,
+              'code', task.project_code
+            )
+          end
+        )
+        order by
+          case when task.due_date < p_today then 0 else 1 end,
+          task.due_date,
+          task.id
+      ),
+      '[]'::jsonb
+    ) as items
+    from (
+      select *
+      from scoped_tasks
+      where not is_completed
+        and due_date <= p_today + 7
+      order by
+        case when due_date < p_today then 0 else 1 end,
+        due_date,
+        id
+      limit 6
+    ) as task
+  ),
+  project_progress as (
+    select coalesce(
+      jsonb_agg(
+        jsonb_build_object(
+          'project', jsonb_build_object(
+            'id', project_id,
+            'name', project_name
+          ),
+          'total', total_count,
+          'completed', completed_count
+        )
+        order by total_count desc, project_name
+      ),
+      '[]'::jsonb
+    ) as items
+    from (
+      select
+        project_id,
+        project_name,
+        count(*) as total_count,
+        count(*) filter (where is_completed) as completed_count
+      from scoped_tasks
+      where project_id is not null
+      group by project_id, project_name
+    ) as progress
+  ),
+  project_options as (
+    select coalesce(
+      jsonb_agg(
+        jsonb_build_object('id', project.id, 'name', project.name, 'code', project.code)
+        order by project.name
+      ),
+      '[]'::jsonb
+    ) as items
+    from public.projects as project
+    where project.workspace_id = p_workspace_id
+      and p_workspace_id = (select public.active_workspace_id())
+  ),
+  recent_activity as (
+    select coalesce(
+      jsonb_agg(
+        jsonb_build_object(
+          'id', activity.id,
+          'task_id', activity.task_id,
+          'action', activity.action,
+          'created_at', activity.created_at,
+          'task', jsonb_build_object(
+            'id', activity.task_id,
+            'title', activity.task_title,
+            'project', case
+              when activity.project_id is null then null
+              else jsonb_build_object(
+                'id', activity.project_id,
+                'name', activity.project_name,
+                'code', activity.project_code
+              )
+            end,
+            'linked_projects', activity.linked_projects
+          )
+        )
+        order by activity.created_at desc, activity.id desc
+      ),
+      '[]'::jsonb
+    ) as items
+    from (
+      select
+        history.id,
+        history.task_id,
+        history.action,
+        history.created_at,
+        task.title as task_title,
+        task.project_id,
+        project.name as project_name,
+        project.code as project_code,
+        coalesce(
+          (
+            select jsonb_agg(
+              jsonb_build_object(
+                'project',
+                jsonb_build_object(
+                  'id', linked_project.id,
+                  'name', linked_project.name,
+                  'code', linked_project.code
+                )
+              )
+              order by linked_project.name
+            )
+            from public.task_projects as task_project
+            join public.projects as linked_project
+              on linked_project.id = task_project.project_id
+            where task_project.task_id = task.id
+          ),
+          '[]'::jsonb
+        ) as linked_projects
+      from public.task_history as history
+      join public.tasks as task on task.id = history.task_id
+      left join public.projects as project on project.id = task.project_id
+      where history.workspace_id = p_workspace_id
+        and history.user_id = (select auth.uid())
+        and p_workspace_id = (select public.active_workspace_id())
+      order by history.created_at desc, history.id desc
+      limit 6
+    ) as activity
+  ),
+  activity_actions as (
+    select coalesce(jsonb_agg(distinct history.action), '[]'::jsonb) as items
+    from public.task_history as history
+    where history.workspace_id = p_workspace_id
+      and history.user_id = (select auth.uid())
+      and p_workspace_id = (select public.active_workspace_id())
+  ),
+  activity_counts as (
+    select
+      count(*) filter (where history.created_at >= now() - interval '7 days')
+        as current_week_count,
+      count(*) filter (
+        where history.created_at >= now() - interval '14 days'
+          and history.created_at < now() - interval '7 days'
+      ) as previous_week_count
+    from public.task_history as history
+    where history.workspace_id = p_workspace_id
+      and history.user_id = (select auth.uid())
+      and p_workspace_id = (select public.active_workspace_id())
+  )
+  select jsonb_build_object(
+    'clientCount', workspace_totals.client_count,
+    'projectCount', workspace_totals.project_count,
+    'totalTaskCount', task_counts.total_count,
+    'currentTaskCount', task_counts.current_count,
+    'completedTaskCount', task_counts.completed_count,
+    'dueSoonCount', task_counts.due_soon_count,
+    'overdueCount', task_counts.overdue_count,
+    'attentionTasks', attention_tasks.items,
+    'projectProgress', project_progress.items,
+    'projectOptions', project_options.items,
+    'activity', recent_activity.items,
+    'activityActions', activity_actions.items,
+    'thisWeekActivity', activity_counts.current_week_count,
+    'previousWeekActivity', activity_counts.previous_week_count
+  )
+  from task_counts
+  cross join workspace_totals
+  cross join attention_tasks
+  cross join project_progress
+  cross join project_options
+  cross join recent_activity
+  cross join activity_actions
+  cross join activity_counts;
+$$;
+
+create or replace function public.get_workspace_team_workload(
+  p_workspace_id uuid,
+  p_start_date date,
+  p_end_date date
+)
+returns table (
+  assigned_to uuid,
+  task_count bigint,
+  estimated_minutes bigint,
+  tasks_without_estimate bigint
+)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select
+    task.assigned_to,
+    count(*) as task_count,
+    coalesce(sum(task.estimate_minutes), 0)::bigint as estimated_minutes,
+    count(*) filter (
+      where task.estimate_minutes is null or task.estimate_minutes = 0
+    ) as tasks_without_estimate
+  from public.tasks as task
+  join public.task_states as state on state.id = task.state_id
+  where task.workspace_id = p_workspace_id
+    and p_workspace_id = (select public.active_workspace_id())
+    and task.due_date >= p_start_date
+    and task.due_date <= p_end_date
+    and not state.is_completed
+  group by task.assigned_to;
+$$;
+
+revoke execute on function public.get_workspace_dashboard_summary(uuid, date) from public, anon;
+grant execute on function public.get_workspace_dashboard_summary(uuid, date) to authenticated;
+revoke execute on function public.get_workspace_team_workload(uuid, date, date) from public, anon;
+grant execute on function public.get_workspace_team_workload(uuid, date, date) to authenticated;
 drop trigger if exists on_task_completion_spawn_recurrence on public.tasks;
 create trigger on_task_completion_spawn_recurrence
 after update of state_id on public.tasks
@@ -1057,7 +1344,9 @@ alter table public.workspace_automations add constraint workspace_automations_ac
 create index if not exists clients_workspace_idx on public.clients(workspace_id, created_at desc);
 create index if not exists projects_workspace_idx on public.projects(workspace_id, updated_at desc);
 create index if not exists tasks_workspace_due_idx on public.tasks(workspace_id, due_date, id);
+create index if not exists tasks_workspace_assignee_due_idx on public.tasks(workspace_id, assigned_to, due_date, id);
 create index if not exists task_history_workspace_created_idx on public.task_history(workspace_id, created_at desc, id);
+create index if not exists task_history_workspace_user_created_idx on public.task_history(workspace_id, user_id, created_at desc, id);
 create index if not exists workspace_members_user_idx on public.workspace_members(user_id, workspace_id);
 create index if not exists workspace_automations_trigger_idx on public.workspace_automations(workspace_id, from_state_id, to_state_id) where enabled;
 

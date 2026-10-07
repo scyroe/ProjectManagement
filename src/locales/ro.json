@@ -671,6 +671,8 @@
       "title": "Date workspace",
       "description": "Exportă sarcinile în CSV sau importă un CSV valid ca sarcini noi. Importul nu modifică și nu șterge sarcini existente.",
       "exportTasks": "Exportă sarcinile",
+      "exporting": "Se exportă...",
+      "exportError": "Nu s-au putut exporta sarcinile.",
       "importTasks": "Importă sarcini",
       "importing": "Se importă...",
       "emptyFile": "Fișierul CSV nu conține sarcini.",

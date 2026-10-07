@@ -96,6 +96,7 @@ export function useClients({ enabled = true, workspaceId }) {
       const { data, error: loadError } = await supabase
         .from('clients')
         .select(clientSelect)
+        .eq('workspace_id', workspaceId)
         .order('name');
 
       if (loadError) throw new Error(loadError.message ?? t.loadError);

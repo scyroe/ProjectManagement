@@ -85,7 +85,7 @@ const getActivitySubject = (item, taskById, t) => {
   return `${entityLabel}: ${item.entity_title}`;
 };
 
-const Reports = ({ workspace, navigate, userId }) => {
+const Reports = ({ workspace, navigate, userId, workspaceId }) => {
   const strings = useStrings();
   const t = strings.reports;
   const locale = useLanguage().language === 'ro' ? 'ro-RO' : 'en-US';
@@ -1007,7 +1007,7 @@ const Reports = ({ workspace, navigate, userId }) => {
 
   return (
     <div className="min-h-0 flex-1 space-y-3 overflow-auto pb-1">
-      <TeamWorkloadPanel tasks={tasks} userId={userId} />
+      <TeamWorkloadPanel userId={userId} workspaceId={workspaceId} />
       <section className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-2">
         <fieldset className="flex flex-wrap items-center gap-1 rounded-lg bg-muted p-1">
           <legend className="sr-only">{t.rangeLabel}</legend>

@@ -16,21 +16,49 @@ import { supabase } from '@/lib/supabase';
 
 const dayInMs = 24 * 60 * 60 * 1000;
 
-const TeamWorkloadPanel = ({ tasks, userId }) => {
+const formatDate = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const TeamWorkloadPanel = ({ userId, workspaceId }) => {
   const t = useStrings();
   const queryClient = useQueryClient();
   const [capacityHours, setCapacityHours] = useState('');
-  const { data: profiles = [], error } = useQuery({
-    queryKey: ['profiles'],
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const startDate = formatDate(today);
+  const end = new Date(today.getTime() + 7 * dayInMs);
+  const endDate = formatDate(end);
+  const { data: profiles = [], error: profilesError } = useQuery({
+    queryKey: ['profiles', workspaceId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('id,username,display_name,weekly_capacity_minutes')
-        .order('display_name');
+        .from('workspace_members')
+        .select(
+          'user_id,profile:profiles!workspace_members_user_id_profiles_fkey(id,username,display_name,weekly_capacity_minutes)',
+        )
+        .eq('workspace_id', workspaceId);
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((member) => member.profile).filter(Boolean);
+    },
+    enabled: Boolean(workspaceId),
+  });
+  const { data: workloadRows = [], error: workloadError } = useQuery({
+    queryKey: ['team-workload', workspaceId, startDate, endDate],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc(
+        'get_workspace_team_workload',
+        {
+          p_workspace_id: workspaceId,
+          p_start_date: startDate,
+          p_end_date: endDate,
+        },
+      );
       if (error) throw new Error(error.message);
       return data ?? [];
     },
+    enabled: Boolean(workspaceId),
   });
+  const error = profilesError || workloadError;
 
   useEffect(() => {
     if (error) {
@@ -48,9 +76,6 @@ const TeamWorkloadPanel = ({ tasks, userId }) => {
   }, [currentProfile]);
 
   const workloads = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const end = new Date(today.getTime() + 7 * dayInMs);
     const groups = new Map(
       profiles.map((profile) => [
         profile.id,
@@ -73,16 +98,8 @@ const TeamWorkloadPanel = ({ tasks, userId }) => {
       withoutEstimate: 0,
     });
 
-    for (const task of tasks) {
-      if (
-        task.state?.is_completed ||
-        !task.due_date ||
-        new Date(`${task.due_date}T00:00:00`) < today ||
-        new Date(`${task.due_date}T00:00:00`) > end
-      ) {
-        continue;
-      }
-      const id = task.assigned_to ?? 'unassigned';
+    for (const row of workloadRows) {
+      const id = row.assigned_to ?? 'unassigned';
       const current = groups.get(id) ?? {
         id,
         name: t.teamWorkload.unknownMember,
@@ -91,14 +108,14 @@ const TeamWorkloadPanel = ({ tasks, userId }) => {
         tasks: 0,
         withoutEstimate: 0,
       };
-      current.tasks += 1;
-      current.estimate += task.estimate_minutes ?? 0;
-      if (!task.estimate_minutes) current.withoutEstimate += 1;
+      current.tasks = Number(row.task_count);
+      current.estimate = Number(row.estimated_minutes);
+      current.withoutEstimate = Number(row.tasks_without_estimate);
       groups.set(id, current);
     }
 
     return [...groups.values()].filter((item) => item.tasks);
-  }, [profiles, t.teamWorkload, tasks]);
+  }, [profiles, t.teamWorkload, workloadRows]);
 
   const handleSaveCapacity = async (event) => {
     event.preventDefault();
@@ -116,7 +133,7 @@ const TeamWorkloadPanel = ({ tasks, userId }) => {
       return;
     }
     toast.success(t.toasts.teamWorkload.updated);
-    queryClient.invalidateQueries({ queryKey: ['profiles'] });
+    queryClient.invalidateQueries({ queryKey: ['profiles', workspaceId] });
   };
 
   return (

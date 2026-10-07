@@ -114,7 +114,10 @@ export function useTaskWorkspace({
   defaultTaskFilter = 'current',
   includeWorkspaceActivity = false,
   loadAllTasks = true,
+  loadSession = true,
+  loadTasks = true,
   onMetricsChange,
+  searchEnabled = true,
   searchQuery,
   userId,
   workspaceId,
@@ -128,12 +131,25 @@ export function useTaskWorkspace({
   const [filter, setFilter] = useState(defaultTaskFilter);
   const [historyVersion, setHistoryVersion] = useState(0);
   const [recentlyCreatedTaskId, setRecentlyCreatedTaskId] = useState(null);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(
+    searchQuery ?? '',
+  );
   const clearRecentlyCreatedTask = useCallback((taskId) => {
     setRecentlyCreatedTaskId((currentTaskId) =>
       currentTaskId === taskId ? null : currentTaskId,
     );
   }, []);
-  const serverSearchText = getServerSearchText(searchQuery ?? '');
+  useEffect(() => {
+    const timeoutId = setTimeout(
+      () => setDebouncedSearchQuery(searchQuery ?? ''),
+      300,
+    );
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const rawServerSearchText = getServerSearchText(searchQuery ?? '');
+  const serverSearchText = getServerSearchText(debouncedSearchQuery);
+  const searchSettling = rawServerSearchText !== serverSearchText;
 
   const {
     data: taskSearchPages,
@@ -153,6 +169,7 @@ export function useTaskWorkspace({
           type: 'websearch',
           config: 'simple',
         })
+        .eq('workspace_id', workspaceId)
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('id')
         .range(pageParam, pageParam + taskSearchPageSize - 1);
@@ -164,7 +181,7 @@ export function useTaskWorkspace({
       lastPage.length < taskSearchPageSize
         ? undefined
         : pages.length * taskSearchPageSize,
-    enabled: Boolean(workspaceId && serverSearchText),
+    enabled: Boolean(workspaceId && searchEnabled && serverSearchText),
   });
 
   const {
@@ -181,6 +198,7 @@ export function useTaskWorkspace({
       const { data, error: taskError } = await supabase
         .from('tasks')
         .select(taskSelect)
+        .eq('workspace_id', workspaceId)
         .order('due_date', { ascending: true, nullsFirst: false })
         .order('id')
         .range(pageParam, pageParam + taskPageSize - 1);
@@ -189,7 +207,7 @@ export function useTaskWorkspace({
     },
     getNextPageParam: (lastPage, pages) =>
       lastPage.length < taskPageSize ? undefined : pages.length * taskPageSize,
-    enabled: enabled && Boolean(workspaceId),
+    enabled: enabled && loadTasks && Boolean(workspaceId),
   });
   const tasks = useMemo(() => taskPages?.pages.flat() ?? [], [taskPages]);
 
@@ -228,7 +246,8 @@ export function useTaskWorkspace({
       const lastEntry = lastPage[lastPage.length - 1];
       return { createdAt: lastEntry.created_at, id: lastEntry.id };
     },
-    enabled: enabled && includeWorkspaceActivity && Boolean(userId),
+    enabled:
+      enabled && includeWorkspaceActivity && Boolean(userId && workspaceId),
   });
   const workspaceActivity = useMemo(
     () => workspaceActivityPages?.pages.flat() ?? [],
@@ -248,44 +267,39 @@ export function useTaskWorkspace({
   } = useQuery({
     queryKey: sessionKey,
     queryFn: async () => {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
-      if (userError || !userData.user) throw new Error(t.signInToLoad);
-
-      const [historyResponse, activeResponse] = await Promise.all([
-        supabase
-          .from('task_history')
-          .select(
-            'id,task_id,user_id,user_email,action,note,started_at,stopped_at,duration_minutes,created_at',
-          )
-          .eq('user_id', userData.user.id)
-          .order('created_at', { ascending: false })
-          .limit(500),
-        supabase
-          .from('task_history')
-          .select('id,task_id')
-          .eq('user_id', userData.user.id)
-          .eq('action', 'started')
-          .is('stopped_at', null)
-          .order('created_at', { ascending: false })
-          .maybeSingle(),
-      ]);
+      const { data: activeTask, error: activeTaskError } = await supabase
+        .from('task_history')
+        .select('id,task_id,task:tasks!task_id(id,title)')
+        .eq('workspace_id', workspaceId)
+        .eq('user_id', userId)
+        .eq('action', 'started')
+        .is('stopped_at', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (activeTaskError) throw new Error(activeTaskError.message);
 
       return {
-        activity: historyResponse.data ?? [],
-        runningHistoryId: activeResponse.data?.id ?? null,
-        runningTaskId: activeResponse.data?.task_id ?? null,
+        activity: [],
+        runningHistoryId: activeTask?.id ?? null,
+        runningTaskId: activeTask?.task_id ?? null,
+        runningTask: activeTask?.task ?? null,
       };
     },
-    enabled,
+    enabled: enabled && loadSession && Boolean(userId && workspaceId),
   });
 
   const activity = session?.activity ?? [];
   const runningHistoryId = session?.runningHistoryId ?? null;
   const runningTaskId = session?.runningTaskId ?? null;
+  const runningTask = session?.runningTask ?? null;
   const loading =
-    tasksLoading || sessionLoading || (loadAllTasks && tasksLoadingMore);
-  const error = tasksQueryError?.message || sessionQueryError?.message || '';
+    (loadTasks && (tasksLoading || (loadAllTasks && tasksLoadingMore))) ||
+    (loadSession && sessionLoading);
+  const error =
+    (loadTasks && tasksQueryError?.message) ||
+    (loadSession && sessionQueryError?.message) ||
+    '';
 
   useEffect(() => {
     setFilter(defaultTaskFilter);
@@ -330,11 +344,18 @@ export function useTaskWorkspace({
     return tasks.filter((task) => matchesSearchQuery(task, searchQuery));
   }, [searchQuery, tasks]);
   const searchResults = useMemo(() => {
+    if (searchSettling) return [];
     if (!serverSearchText) return localSearchResults;
     return (taskSearchPages?.pages.flat() ?? []).filter((task) =>
       matchesSearchQuery(task, searchQuery),
     );
-  }, [localSearchResults, searchQuery, serverSearchText, taskSearchPages]);
+  }, [
+    localSearchResults,
+    searchQuery,
+    searchSettling,
+    serverSearchText,
+    taskSearchPages,
+  ]);
 
   const selected = useMemo(
     () => tasks.find((task) => task.id === selectedId) ?? tasks[0],
@@ -371,6 +392,7 @@ export function useTaskWorkspace({
         ...current,
         runningTaskId: null,
         runningHistoryId: null,
+        runningTask: null,
       }));
       setHistoryVersion((version) => version + 1);
     }
@@ -443,6 +465,7 @@ export function useTaskWorkspace({
         ...current,
         runningTaskId: task.id,
         runningHistoryId: inserted.id,
+        runningTask: { id: task.id, title: task.title },
       }));
     } else {
       const { error: updateError } = await supabase
@@ -478,6 +501,7 @@ export function useTaskWorkspace({
         ...current,
         runningTaskId: null,
         runningHistoryId: null,
+        runningTask: null,
       }));
     }
     queryClient.invalidateQueries({ queryKey: sessionKey });
@@ -528,10 +552,12 @@ export function useTaskWorkspace({
     query,
     recentlyCreatedTaskId,
     runningTaskId,
+    runningTask,
     searchResults,
     searchError: searchQueryError?.message ?? '',
     searchHasMore: Boolean(hasMoreSearchResults),
-    searchLoading: searchLoading || searchLoadingMore,
+    searchLoading:
+      (searchEnabled && searchSettling) || searchLoading || searchLoadingMore,
     loadMoreSearchResults: fetchNextSearchPage,
     selected,
     setFilter,
