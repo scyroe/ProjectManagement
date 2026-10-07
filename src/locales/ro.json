@@ -680,7 +680,10 @@
       "importSuccess": "Au fost importate {count} sarcini.",
       "importError": "Nu s-au putut importa sarcinile.",
       "tasksImportedButLinksFailed": "Sarcinile au fost create, dar proiectele nu au putut fi asociate:"
-    }
+    },
+    "transferDiagnosticsTitle": "Diagnosticare pentru dezvoltatori",
+    "transferDiagnosticsDescription": "Măsoară dimensiunea răspunsurilor Supabase în timp ce testezi navigarea între pagini. Jurnalele apar în consola browserului și sunt disponibile doar în mediul de dezvoltare.",
+    "transferDiagnosticsToggle": "Înregistrează dimensiunea cererilor Supabase"
   },
   "activity": {
     "presets": {

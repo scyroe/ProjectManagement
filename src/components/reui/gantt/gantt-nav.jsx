@@ -1,22 +1,27 @@
 // Title: Gantt Nav
 // Description: Composable navigation - Today, view selector, prev/next, go-to-date, period title, and a free toolbar slot.
 
-"use client";
-import { useState } from "react";
+'use client';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
+import { cn } from 'cn';
+import { format } from 'date-fns';
+import {
+  CalendarIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from 'lucide-react';
+import { useState } from 'react';
 import {
   useGanttNavigation,
   useGanttScale,
   useGanttSettings,
   useGanttViewConfig,
-} from "@/components/reui/gantt/gantt"
-import { toZoned } from "@/components/reui/gantt/gantt-lib"
-import { mergeProps } from "@base-ui/react/merge-props"
-import { useRender } from "@base-ui/react/use-render"
-import { format } from "date-fns"
-
-import { cn } from "cn"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+} from '@/components/reui/gantt/gantt';
+import { toZoned } from '@/components/reui/gantt/gantt-lib';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,62 +29,52 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from '@/components/ui/popover';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, CalendarIcon } from "lucide-react"
+} from '@/components/ui/tooltip';
 
-const GANTT_SCALES = ["day", "week", "month", "quarter", "year"]
+const GANTT_SCALES = ['day', 'week', 'month', 'quarter', 'year'];
 
 /** Configured nav button variant/size (viewConfig.navButtonVariant/Size). */
 function useNavButtonProps() {
-  const viewConfig = useGanttViewConfig()
+  const viewConfig = useGanttViewConfig();
   return {
     variant: viewConfig.navButtonVariant,
     size: viewConfig.navButtonSize,
-    iconSize: viewConfig.navButtonSize === "sm" ? "icon-sm" : "icon",
-  }
+    iconSize: viewConfig.navButtonSize === 'sm' ? 'icon-sm' : 'icon',
+  };
 }
 
 /** Hover/focus-visible tooltip wrapper; renders the bare button when disabled. */
-function NavTooltip({
-  content,
-  children
-}) {
-  if (content === null || content === undefined) return children
+function NavTooltip({ content, children }) {
+  if (content === null || content === undefined) return children;
   return (
     <Tooltip>
       <TooltipTrigger render={children} />
       <TooltipContent side="bottom">{content}</TooltipContent>
     </Tooltip>
-  )
+  );
 }
 
-function GanttNavToday({
-  className,
-  render,
-  children,
-  tooltip,
-  ...props
-}) {
-  const { today, isToday } = useGanttNavigation()
-  const settings = useGanttSettings()
-  const nav = useNavButtonProps()
+function GanttNavToday({ className, render, children, tooltip, ...props }) {
+  const { today, isToday } = useGanttNavigation();
+  const settings = useGanttSettings();
+  const nav = useNavButtonProps();
   // zoned: a system-zone new Date() can name a different day than Today opens
   const defaultTooltip = format(
     toZoned(new Date(), settings.timeZone),
     settings.i18n.formats.dayTitle,
-    { locale: settings.locale }
-  )
+    { locale: settings.locale },
+  );
   return (
     <NavTooltip content={tooltip === undefined ? defaultTooltip : tooltip}>
       <Button
@@ -95,19 +90,13 @@ function GanttNavToday({
         {children ?? settings.i18n.labels.today}
       </Button>
     </NavTooltip>
-  )
+  );
 }
 
-function GanttNavPrev({
-  className,
-  render,
-  children,
-  tooltip,
-  ...props
-}) {
-  const { prev } = useGanttNavigation()
-  const settings = useGanttSettings()
-  const nav = useNavButtonProps()
+function GanttNavPrev({ className, render, children, tooltip, ...props }) {
+  const { prev } = useGanttNavigation();
+  const settings = useGanttSettings();
+  const nav = useNavButtonProps();
   return (
     <NavTooltip
       content={tooltip === undefined ? settings.i18n.labels.previous : tooltip}
@@ -122,24 +111,16 @@ function GanttNavPrev({
         render={render}
         {...props}
       >
-        {children ?? (
-          <ChevronLeftIcon className="size-4" aria-hidden="true" />
-        )}
+        {children ?? <ChevronLeftIcon className="size-4" aria-hidden="true" />}
       </Button>
     </NavTooltip>
-  )
+  );
 }
 
-function GanttNavNext({
-  className,
-  render,
-  children,
-  tooltip,
-  ...props
-}) {
-  const { next } = useGanttNavigation()
-  const settings = useGanttSettings()
-  const nav = useNavButtonProps()
+function GanttNavNext({ className, render, children, tooltip, ...props }) {
+  const { next } = useGanttNavigation();
+  const settings = useGanttSettings();
+  const nav = useNavButtonProps();
   return (
     <NavTooltip
       content={tooltip === undefined ? settings.i18n.labels.next : tooltip}
@@ -154,29 +135,22 @@ function GanttNavNext({
         render={render}
         {...props}
       >
-        {children ?? (
-          <ChevronRightIcon className="size-4" aria-hidden="true" />
-        )}
+        {children ?? <ChevronRightIcon className="size-4" aria-hidden="true" />}
       </Button>
     </NavTooltip>
-  )
+  );
 }
 
-function GanttTitle({
-  className,
-  render,
-  format: formatTitle,
-  ...props
-}) {
-  const { title } = useGanttNavigation()
+function GanttTitle({ className, render, format: formatTitle, ...props }) {
+  const { title } = useGanttNavigation();
   const defaultProps = {
-    "data-slot": "gantt-title",
-    "aria-live": "polite",
-    className: cn("min-w-0 truncate text-sm font-semibold", className),
+    'data-slot': 'gantt-title',
+    'aria-live': 'polite',
+    className: cn('min-w-0 truncate text-sm font-semibold', className),
     children: formatTitle?.({ title }) ?? title,
-  }
+  };
   return useRender({
-    defaultTagName: "div",
+    defaultTagName: 'div',
     render,
     props: mergeProps(defaultProps, props),
   });
@@ -194,28 +168,28 @@ function GanttScaleSwitcher({
   scales = GANTT_SCALES,
   ...props
 }) {
-  const { scale, setScale } = useGanttScale()
-  const settings = useGanttSettings()
-  const nav = useNavButtonProps()
-  const labels = settings.i18n.labels
+  const { scale, setScale } = useGanttScale();
+  const settings = useGanttSettings();
+  const nav = useNavButtonProps();
+  const labels = settings.i18n.labels;
   // Controlled open: selecting a scale swaps the whole track subtree in the
   // same click, so closing must not depend on the menu's internal handler.
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   // Hover-only tooltip: when the menu closes, Base UI focuses the trigger
   // again and a focus-opened tooltip would flash - ignore focus opens.
-  const [tipOpen, setTipOpen] = useState(false)
+  const [tipOpen, setTipOpen] = useState(false);
 
   const selectScale = (next) => {
-    setOpen(false)
-    setScale(next)
-  }
+    setOpen(false);
+    setScale(next);
+  };
 
   return (
     <DropdownMenu
       open={open}
       onOpenChange={(next) => {
-        setOpen(next)
-        if (next) setTipOpen(false)
+        setOpen(next);
+        if (next) setTipOpen(false);
       }}
     >
       {/* Tooltip on an overlay-opener: hover-only (focus opens ignored) and
@@ -226,8 +200,8 @@ function GanttScaleSwitcher({
         onOpenChange={(next, details) => {
           // opens are hover-only; the trigger-focus open that follows a
           // menu close is ignored, closes always land
-          if (next && details?.reason !== "trigger-hover") return
-          setTipOpen(next)
+          if (next && details?.reason !== 'trigger-hover') return;
+          setTipOpen(next);
         }}
       >
         <DropdownMenuTrigger
@@ -239,7 +213,7 @@ function GanttScaleSwitcher({
                   size={nav.size}
                   data-slot="gantt-scale-switcher"
                   aria-label={labels.selectView}
-                  className={cn("gap-1", className)}
+                  className={cn('gap-1', className)}
                 />
               }
             />
@@ -249,7 +223,10 @@ function GanttScaleSwitcher({
           {children ?? (
             <>
               {labels.scales[scale]}
-              <ChevronDownIcon className="size-4 opacity-60" aria-hidden="true" />
+              <ChevronDownIcon
+                className="size-4 opacity-60"
+                aria-hidden="true"
+              />
             </>
           )}
         </DropdownMenuTrigger>
@@ -284,14 +261,12 @@ function GanttScaleSwitcher({
  * Compact go-to-date picker (shadcn Calendar in a popover). No tooltip by
  * design: it opens an overlay (see the NavButtonProps tooltip policy).
  */
-function GanttDatePicker({
-  className
-}) {
-  const { date, goTo } = useGanttNavigation()
-  const settings = useGanttSettings()
-  const nav = useNavButtonProps()
-  const [open, setOpen] = useState(false)
-  const zoned = toZoned(date, settings.timeZone)
+function GanttDatePicker({ className }) {
+  const { date, goTo } = useGanttNavigation();
+  const settings = useGanttSettings();
+  const nav = useNavButtonProps();
+  const [open, setOpen] = useState(false);
+  const zoned = toZoned(date, settings.timeZone);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -317,8 +292,8 @@ function GanttDatePicker({
           weekStartsOn={settings.weekStartsOn}
           onSelect={(next) => {
             if (next) {
-              goTo(next)
-              setOpen(false)
+              goTo(next);
+              setOpen(false);
             }
           }}
         />
@@ -328,23 +303,19 @@ function GanttDatePicker({
 }
 
 /** Free slot for consumer toolbar buttons; pure layout shell. */
-function GanttToolbar({
-  className,
-  render,
-  ...props
-}) {
-  const viewConfig = useGanttViewConfig()
+function GanttToolbar({ className, render, ...props }) {
+  const viewConfig = useGanttViewConfig();
   const defaultProps = {
-    "data-slot": "gantt-toolbar",
+    'data-slot': 'gantt-toolbar',
     className: cn(
-      "flex items-center gap-2",
+      'flex items-center gap-2',
       viewConfig.classNames?.toolbar,
-      className
+      className,
     ),
     children: props.children,
-  }
+  };
   return useRender({
-    defaultTagName: "div",
+    defaultTagName: 'div',
     render,
     props: mergeProps(defaultProps, props),
   });
@@ -355,22 +326,17 @@ function GanttToolbar({
  * prev/next, title, spacer. GanttDatePicker stays available for custom
  * compositions. Pass children to use it as a pure layout shell instead.
  */
-function GanttNav({
-  className,
-  render,
-  children,
-  ...props
-}) {
-  const viewConfig = useGanttViewConfig()
+function GanttNav({ className, render, children, ...props }) {
+  const viewConfig = useGanttViewConfig();
   const defaultProps = {
-    "data-slot": "gantt-nav",
+    'data-slot': 'gantt-nav',
     className: cn(
       // px so the toolbar controls do not hug the container edge; border-b
       // separates the toolbar from the column header below it
-      "flex min-w-0 flex-wrap items-center gap-2 border-b px-3 py-2",
-      viewConfig.stickyNav && "bg-background sticky top-0 z-30",
+      'flex min-w-0 flex-wrap items-center gap-2 border-b px-3 py-2',
+      viewConfig.stickyNav && 'bg-background sticky top-0 z-30',
       viewConfig.classNames?.nav,
-      className
+      className,
     ),
     children: children ?? (
       // Shared provider: first tooltip waits, moving between buttons is instant
@@ -385,9 +351,9 @@ function GanttNav({
         <div className="grow" />
       </TooltipProvider>
     ),
-  }
+  };
   return useRender({
-    defaultTagName: "div",
+    defaultTagName: 'div',
     render,
     props: mergeProps(defaultProps, props),
   });
@@ -403,4 +369,4 @@ export {
   GanttScaleSwitcher,
   GanttTitle,
   GanttToolbar,
-}
+};

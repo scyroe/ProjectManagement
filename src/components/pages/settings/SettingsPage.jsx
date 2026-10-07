@@ -8,9 +8,10 @@ import {
   Play,
   Sun,
 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import VirtualSelect from '@/components/ui/virtual-select';
 import { supportedLanguages, useLanguage } from '@/lib/i18n';
+import { supabaseTransferDiagnosticsStorageKey } from '@/lib/supabase-transfer-diagnostics';
 import WorkspaceAdministration from './WorkspaceAdministration';
 import WorkspaceDataTools from './WorkspaceDataTools';
 
@@ -54,6 +55,13 @@ function SettingsPage({
 }) {
   const { language, setLanguage, strings } = useLanguage();
   const t = strings.settingsDialog;
+  const [transferDiagnosticsEnabled, setTransferDiagnosticsEnabled] = useState(
+    () =>
+      import.meta.env.DEV &&
+      typeof window !== 'undefined' &&
+      window.localStorage.getItem(supabaseTransferDiagnosticsStorageKey) ===
+        'true',
+  );
   const styleOptions = useMemo(
     () =>
       t.styles.map((option) => ({
@@ -359,6 +367,33 @@ function SettingsPage({
       <div className="order-6 rounded-xl border bg-card p-4">
         <WorkspaceDataTools tasks={tasks} userId={userId} />
       </div>
+      {import.meta.env.DEV && (
+        <section className="order-7 space-y-3 rounded-xl border bg-card p-4">
+          <div>
+            <h2 className="text-sm font-semibold">
+              {t.transferDiagnosticsTitle}
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t.transferDiagnosticsDescription}
+            </p>
+          </div>
+          <label className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
+            <input
+              type="checkbox"
+              checked={transferDiagnosticsEnabled}
+              onChange={(event) => {
+                const enabled = event.target.checked;
+                window.localStorage.setItem(
+                  supabaseTransferDiagnosticsStorageKey,
+                  String(enabled),
+                );
+                setTransferDiagnosticsEnabled(enabled);
+              }}
+            />
+            {t.transferDiagnosticsToggle}
+          </label>
+        </section>
+      )}
     </div>
   );
 }

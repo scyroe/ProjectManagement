@@ -34,7 +34,7 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
     },
   });
   const statesQuery = useQuery({
-    queryKey: ['workspace-task-states', workspaceId],
+    queryKey: ['workspace-task-states', workspaceId, 'first-open'],
     enabled: Boolean(workspaceId),
     queryFn: async () => {
       const { data, error } = await supabase

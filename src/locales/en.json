@@ -664,7 +664,10 @@
       "importSuccess": "Imported {count} tasks.",
       "importError": "Could not import tasks.",
       "tasksImportedButLinksFailed": "Tasks were created, but project links could not be saved:"
-    }
+    },
+    "transferDiagnosticsTitle": "Developer diagnostics",
+    "transferDiagnosticsDescription": "Measure Supabase response payload sizes while testing page navigation. Logs appear in the browser console and are available only in development.",
+    "transferDiagnosticsToggle": "Log Supabase request sizes"
   },
   "activity": {
     "presets": {
