@@ -1,5 +1,6 @@
 import {
   AlignLeft,
+  BriefcaseBusiness,
   CalendarDays,
   CircleDollarSign,
   FileText,
@@ -18,6 +19,7 @@ import {
 
 const fieldIcons = [
   { pattern: /search|query/, icon: Search },
+  { pattern: /workspace/, icon: BriefcaseBusiness },
   { pattern: /email|mail/, icon: Mail },
   { pattern: /password|secret/, icon: LockKeyhole },
   { pattern: /phone|tel/, icon: Phone },

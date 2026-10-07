@@ -1039,6 +1039,8 @@
   },
   "workspaceManagement": {
     "switchLabel": "Spațiu de lucru activ",
+    "searchWorkspaces": "Caută spații de lucru",
+    "noWorkspacesFound": "Nu s-au găsit spații de lucru",
     "create": "Spațiu nou",
     "createTitle": "Creează un spațiu de lucru",
     "createDescription": "Creează un spațiu separat pentru o echipă sau un proiect.",

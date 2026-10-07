@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import VirtualSelect from '@/components/ui/virtual-select';
 import { useStrings } from '@/lib/i18n';
 
 function WorkspaceSwitcher({ workspaces }) {
@@ -15,6 +16,10 @@ function WorkspaceSwitcher({ workspaces }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const activeId = workspaces.activeWorkspaceId ?? '';
+  const workspaceOptions = workspaces.memberships.map((membership) => ({
+    value: membership.workspace_id,
+    label: membership.workspace?.name ?? t.unnamed,
+  }));
 
   const handleCreate = async (event) => {
     event.preventDefault();
@@ -27,24 +32,18 @@ function WorkspaceSwitcher({ workspaces }) {
   return (
     <>
       <div className="flex min-w-0 items-center gap-2">
-        {workspaces.memberships.length > 1 ? (
-          <select
-            aria-label={t.switchLabel}
-            className="h-9 max-w-44 rounded-md border bg-background px-2 text-sm font-medium"
-            value={activeId}
-            onChange={(event) => workspaces.setActiveWorkspace(event.target.value)}
-          >
-            {workspaces.memberships.map((membership) => (
-              <option key={membership.workspace_id} value={membership.workspace_id}>
-                {membership.workspace?.name ?? t.unnamed}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <span className="max-w-40 truncate text-sm font-medium">
-            {workspaces.activeWorkspace?.name ?? t.loading}
-          </span>
-        )}
+        <VirtualSelect
+          id="workspace-select"
+          ariaLabel={t.switchLabel}
+          searchLabel={t.searchWorkspaces}
+          emptyLabel={t.noWorkspacesFound}
+          placeholder={workspaces.activeWorkspace?.name ?? t.loading}
+          triggerClassName="w-48 max-w-[40vw]"
+          disabled={!workspaces.isReady || workspaceOptions.length < 2}
+          value={activeId}
+          options={workspaceOptions}
+          onChange={workspaces.setActiveWorkspace}
+        />
         <Button
           type="button"
           variant="outline"
@@ -62,7 +61,9 @@ function WorkspaceSwitcher({ workspaces }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md">
           <div className="space-y-1 pr-8">
-            <DialogTitle className="text-xl font-semibold">{t.createTitle}</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">
+              {t.createTitle}
+            </DialogTitle>
             <DialogDescription>{t.createDescription}</DialogDescription>
           </div>
           <form className="mt-4 space-y-4" onSubmit={handleCreate}>
@@ -78,7 +79,11 @@ function WorkspaceSwitcher({ workspaces }) {
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+              >
                 {t.cancel}
               </Button>
               <Button type="submit" disabled={!name.trim()}>

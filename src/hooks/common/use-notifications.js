@@ -59,6 +59,7 @@ export function useNotifications({
     return tasks
       .filter((task) => {
         if (
+          task.workspace_id !== workspaceId ||
           !task.due_date ||
           task.assigned_to !== userId ||
           task.state?.is_completed
@@ -94,6 +95,7 @@ export function useNotifications({
     t.overdueReminderTitle,
     t.reminderTitle,
     userId,
+    workspaceId,
   ]);
 
   useEffect(() => {

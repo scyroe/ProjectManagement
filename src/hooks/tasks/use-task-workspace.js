@@ -20,7 +20,7 @@ const taskSearchPageSize = 50;
 const taskPageSize = 250;
 
 const taskSelect =
-  'id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,parent_task_id,state_id,project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,sort_order,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)))';
+  'id,workspace_id,title,description,priority,due_date,estimate_minutes,recurrence_interval,recurrence_unit,recurrence_until,tags,assigned_to,parent_task_id,state_id,project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)),state:task_states(id,name,color,sort_order,is_completed),linked_projects:task_projects(project:projects!project_id(id,name,code,status,start_date,due_date,client_id,client:clients!client_id(id,name)))';
 const dayInMs = 24 * 60 * 60 * 1000;
 
 const isDueSoon = (task, today, dueSoonEnd) => {

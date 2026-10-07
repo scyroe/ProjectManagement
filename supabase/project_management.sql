@@ -958,6 +958,7 @@ alter table public.task_dependencies alter column workspace_id set default publi
 alter table public.project_milestones alter column workspace_id set default public.active_workspace_id();
 alter table public.task_templates alter column workspace_id set default public.active_workspace_id();
 alter table public.notifications alter column workspace_id set default public.active_workspace_id();
+alter table public.notifications alter column workspace_id drop default;
 
 create table if not exists public.project_templates (
   id uuid primary key default gen_random_uuid(),
@@ -1127,6 +1128,9 @@ begin
 
   if expected_workspace is null then
     raise exception 'Could not resolve workspace for %', tg_table_name;
+  end if;
+  if tg_table_name = 'notifications' and new.task_id is not null then
+    new.workspace_id := expected_workspace;
   end if;
   if new.workspace_id is not null and new.workspace_id <> expected_workspace then
     raise exception 'Workspace does not match the related record';
