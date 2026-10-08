@@ -1,16 +1,34 @@
 import { MessageSquare, Send } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { VirtualList } from '@/components/ui/virtual-list';
 import { useStrings } from '@/lib/i18n';
 
-const TaskComments = ({ history, onAddComment, profiles }) => {
+const TaskComments = ({
+  comments,
+  error,
+  hasMore,
+  loading,
+  loadingMore,
+  onAddComment,
+  onLoadMore,
+  onRetry,
+  profiles,
+}) => {
   const t = useStrings().taskComments;
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const mentionQuery = note.match(/@([a-z0-9_.-]*)$/i)?.[1];
+  const handleScroll = useCallback(
+    (event) => {
+      const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
+      if (hasMore && !error && scrollHeight - scrollTop - clientHeight < 80) {
+        onLoadMore();
+      }
+    },
+    [error, hasMore, onLoadMore],
+  );
   const mentionMatches =
     mentionQuery === undefined
       ? []
@@ -21,11 +39,6 @@ const TaskComments = ({ history, onAddComment, profiles }) => {
               .startsWith(mentionQuery.toLowerCase()),
           )
           .slice(0, 5);
-  const comments = useMemo(
-    () => history.filter((entry) => entry.action === 'commented'),
-    [history],
-  );
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!note.trim()) return;
@@ -36,47 +49,101 @@ const TaskComments = ({ history, onAddComment, profiles }) => {
   };
 
   return (
-    <div className="space-y-4">
-      {comments.length ? (
-        <VirtualList
-          ariaLabel={t.commentLabel}
-          className="max-h-96"
-          estimateSize={120}
-          getItemKey={(entry) => entry.id}
-          itemClassName="pb-2"
-          items={comments}
-          renderItem={(entry) => (
-            <article className="rounded-lg border p-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="size-4 text-primary" />
-                  <p className="text-sm font-medium">{t.commentLabel}</p>
-                </div>
-                <time className="text-xs text-muted-foreground">
-                  {new Date(entry.created_at).toLocaleString([], {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                  })}
-                </time>
-              </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
-                {entry.note}
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto" onScroll={handleScroll}>
+        {comments.length ? (
+          <div className="space-y-2">
+            <ul aria-label={t.commentLabel} className="space-y-2">
+              {comments.map((entry) => (
+                <li key={entry.id}>
+                  <article className="rounded-lg border p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="size-4 text-primary" />
+                        <p className="text-sm font-medium">{t.commentLabel}</p>
+                      </div>
+                      <time className="text-xs text-muted-foreground">
+                        {new Date(entry.created_at).toLocaleString([], {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit',
+                        })}
+                      </time>
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
+                      {entry.note}
+                    </p>
+                  </article>
+                </li>
+              ))}
+            </ul>
+            {error && (
+              <p role="alert" className="text-center text-sm text-destructive">
+                {t.loadError}
               </p>
-            </article>
-          )}
-        />
-      ) : (
-        <div className="rounded-lg border border-dashed p-6 text-center">
-          <MessageSquare className="mx-auto mb-2 size-6 text-muted-foreground" />
-          <p className="text-sm font-medium">{t.empty}</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {t.emptyDescription}
+            )}
+            {error && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full"
+                disabled={loadingMore}
+                onClick={onRetry}
+              >
+                {t.retry}
+              </Button>
+            )}
+            {hasMore && !error && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full"
+                disabled={loadingMore || Boolean(error)}
+                onClick={onLoadMore}
+              >
+                {loadingMore ? t.loadingMore : t.loadMore}
+              </Button>
+            )}
+          </div>
+        ) : loading ? (
+          <p
+            role="status"
+            className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground"
+          >
+            {t.loading}
           </p>
-        </div>
-      )}
-      <form className="space-y-3 border-t pt-4" onSubmit={handleSubmit}>
+        ) : error ? (
+          <div className="space-y-2 rounded-lg border border-dashed p-6 text-center">
+            <p role="alert" className="text-sm text-destructive">
+              {t.loadError}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={loadingMore}
+              onClick={onRetry}
+            >
+              {t.retry}
+            </Button>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-dashed p-6 text-center">
+            <MessageSquare className="mx-auto mb-2 size-6 text-muted-foreground" />
+            <p className="text-sm font-medium">{t.empty}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t.emptyDescription}
+            </p>
+          </div>
+        )}
+      </div>
+      <form
+        className="shrink-0 space-y-3 border-t pt-4"
+        onSubmit={handleSubmit}
+      >
         <Label htmlFor="task-comment">{t.commentLabel}</Label>
         <Textarea
           id="task-comment"

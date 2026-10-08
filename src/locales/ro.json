@@ -723,6 +723,11 @@
     },
     "empty": "Nicio activitate înregistrată încă",
     "emptyDescription": "Modificările și înregistrările de timp vor apărea aici.",
+    "loading": "Se încarcă activitatea...",
+    "loadError": "Activitatea sarcinii nu a putut fi încărcată.",
+    "loadMore": "Încarcă activitatea mai veche",
+    "loadingMore": "Se încarcă activitatea...",
+    "retry": "Reîncearcă",
     "trackedSuffix": "înregistrat"
   },
   "taskComments": {
@@ -731,6 +736,11 @@
     "mentionSuggestions": "Sugestii de menționare",
     "empty": "Niciun comentariu încă",
     "emptyDescription": "Adaugă prima actualizare la această sarcină.",
+    "loading": "Se încarcă comentariile...",
+    "loadError": "Comentariile sarcinii nu au putut fi încărcate.",
+    "loadMore": "Încarcă comentariile mai vechi",
+    "loadingMore": "Se încarcă comentariile...",
+    "retry": "Reîncearcă",
     "placeholder": "Scrie o actualizare sau o întrebare...",
     "posting": "Se publică...",
     "submit": "Publică comentariu"
@@ -879,6 +889,9 @@
     "emptyState": "Selectează o sarcină pentru a o inspecta.",
     "focusedTaskPrefix": "Sarcină în focus",
     "tabListLabel": "Vizualizări informații sarcină",
+    "loadingCompleteHistory": "Se încarcă istoricul complet al sarcinii...",
+    "historyLoadError": "Istoricul complet al sarcinii nu a putut fi încărcat.",
+    "retryHistory": "Reîncearcă",
     "tabs": {
       "details": "Detalii",
       "calendar": "Calendar",

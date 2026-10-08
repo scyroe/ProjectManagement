@@ -10,6 +10,7 @@ const VirtualList = ({
   getItemKey = defaultGetItemKey,
   itemClassName = '',
   items,
+  onScroll,
   overscan = 6,
   renderItem,
   semantic = true,
@@ -57,7 +58,11 @@ const VirtualList = ({
   });
 
   return (
-    <div ref={viewportRef} className={`min-h-0 overflow-auto ${className}`}>
+    <div
+      ref={viewportRef}
+      className={`min-h-0 overflow-auto ${className}`}
+      onScroll={onScroll}
+    >
       {semantic ? (
         <ul
           aria-label={ariaLabel}

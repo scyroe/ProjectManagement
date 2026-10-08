@@ -707,6 +707,11 @@
     },
     "empty": "No activity recorded yet",
     "emptyDescription": "Changes and time entries will appear here.",
+    "loading": "Loading activity...",
+    "loadError": "Could not load task activity.",
+    "loadMore": "Load older activity",
+    "loadingMore": "Loading activity...",
+    "retry": "Retry",
     "trackedSuffix": "tracked"
   },
   "taskComments": {
@@ -715,6 +720,11 @@
     "mentionSuggestions": "Mention suggestions",
     "empty": "No comments yet",
     "emptyDescription": "Add the first update to this task.",
+    "loading": "Loading comments...",
+    "loadError": "Could not load task comments.",
+    "loadMore": "Load older comments",
+    "loadingMore": "Loading comments...",
+    "retry": "Retry",
     "placeholder": "Write an update or question...",
     "posting": "Posting...",
     "submit": "Post comment"
@@ -863,6 +873,9 @@
     "emptyState": "Select a task to inspect it.",
     "focusedTaskPrefix": "Focused task",
     "tabListLabel": "Task information views",
+    "loadingCompleteHistory": "Loading the complete task history...",
+    "historyLoadError": "Could not load the complete task history.",
+    "retryHistory": "Retry",
     "tabs": {
       "details": "Details",
       "calendar": "Calendar",

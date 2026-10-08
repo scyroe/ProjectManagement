@@ -81,7 +81,7 @@ function WorkspaceLayout({
         className={`bg-background text-foreground ${
           activeRoute === 'settings'
             ? 'fixed inset-0 overflow-hidden'
-            : 'min-h-screen'
+            : 'h-dvh overflow-hidden'
         }`}
       >
         {(!sidebarCollapsed || !accountPanelCollapsed) && (
@@ -103,7 +103,7 @@ function WorkspaceLayout({
           onToggle={() => setSidebarCollapsed((collapsed) => !collapsed)}
         />
         <div
-          className={`transition-[padding] duration-200 ${
+          className={`flex h-full min-h-0 flex-col transition-[padding] duration-200 ${
             sidebarCollapsed
               ? accountPanelCollapsed
                 ? 'lg:pl-[49px] lg:pr-[49px]'
@@ -138,7 +138,7 @@ function WorkspaceLayout({
             taskMetrics={taskMetrics}
             workspaces={workspaces}
           />
-          <main className="flex h-[calc(100dvh-4rem)] min-h-0 flex-col p-3 sm:p-5">
+          <main className="flex min-h-0 flex-1 flex-col p-3 sm:p-5">
             <WorkspaceRouteContent
               activeRoute={activeRoute}
               calendarState={calendarState}

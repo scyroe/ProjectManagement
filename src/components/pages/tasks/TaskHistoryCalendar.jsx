@@ -31,7 +31,6 @@ const TaskHistoryCalendar = ({ history }) => {
 
   return (
     <VirtualList
-      className="max-h-[40rem]"
       estimateSize={280}
       getItemKey={([key]) => key}
       itemClassName="pb-6"
@@ -63,7 +62,7 @@ const TaskHistoryCalendar = ({ history }) => {
               </div>
             </div>
             <VirtualList
-              className="ml-5 max-h-96 border-l border-border pl-6"
+              className="ml-5 border-l border-border pl-6"
               estimateSize={88}
               getItemKey={(entry) => entry.id}
               itemClassName="pb-2"

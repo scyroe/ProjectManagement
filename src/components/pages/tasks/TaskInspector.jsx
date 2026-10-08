@@ -7,6 +7,7 @@ import {
   MessageSquare,
   Users,
 } from 'lucide-react';
+import { useCallback } from 'react';
 import ActivityPanel from '@/components/Common/ActivityPanel';
 import {
   AnimatedTabIndicator,
@@ -21,6 +22,7 @@ import {
   FramePanel,
   FrameTitle,
 } from '@/components/reui/frame';
+import { Button } from '@/components/ui/button';
 import { useTaskInspector } from '@/hooks/tasks/use-task-inspector';
 import { useStrings } from '@/lib/i18n';
 import TaskActivity from './TaskActivity';
@@ -40,7 +42,49 @@ const TaskInspector = ({
 }) => {
   const strings = useStrings();
   const t = strings.taskInspector;
-  const { addComment, history, profiles, setTab, tab } = useTaskInspector(task);
+  const {
+    activityHistory,
+    addComment,
+    comments,
+    commentsError,
+    commentsHasMore,
+    commentsLoading,
+    commentsLoadingMore,
+    hasMoreActivity,
+    history,
+    historyError,
+    historyHasMore,
+    historyLoading,
+    historyLoadingMore,
+    loadMoreActivity,
+    loadMoreComments,
+    profiles,
+    requiresCompleteHistory,
+    retryComments,
+    retryHistory,
+    setTab,
+    tab,
+  } = useTaskInspector(task);
+  const handleContentScroll = useCallback(
+    (event) => {
+      if (
+        tab !== 'activity' ||
+        !hasMoreActivity ||
+        historyError ||
+        historyLoadingMore
+      ) {
+        return;
+      }
+      const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
+      if (scrollHeight - scrollTop - clientHeight < 120) {
+        loadMoreActivity();
+      }
+    },
+    [hasMoreActivity, historyError, historyLoadingMore, loadMoreActivity, tab],
+  );
+  const completeHistoryLoading =
+    requiresCompleteHistory &&
+    (historyLoading || (historyHasMore && !historyError));
 
   if (!task) {
     return (
@@ -117,8 +161,22 @@ const TaskInspector = ({
           ))}
         </div>
       </FrameHeader>
-      <FramePanel className="min-h-0 flex-1 overflow-auto p-2.5 shadow-none">
-        <AnimatedTabPanel activeId={tab} className="min-h-full">
+      <FramePanel
+        className={`min-h-0 flex-1 p-2.5 shadow-none ${
+          tab === 'comments' || tab === 'team'
+            ? 'flex flex-col overflow-hidden'
+            : 'overflow-auto'
+        }`}
+        onScroll={handleContentScroll}
+      >
+        <AnimatedTabPanel
+          activeId={tab}
+          className={`min-h-0 flex-1 ${
+            tab === 'comments' || tab === 'team'
+              ? 'flex flex-col'
+              : 'min-h-full'
+          }`}
+        >
           {tab === 'details' ? (
             <div className="space-y-5">
               <TaskDetails
@@ -129,11 +187,80 @@ const TaskInspector = ({
               <TaskDependenciesPanel task={task} tasks={tasks} />
             </div>
           ) : tab === 'calendar' ? (
-            <TaskHistoryCalendar history={history} />
+            <div className="space-y-3">
+              {completeHistoryLoading && (
+                <p
+                  role="status"
+                  className="p-4 text-center text-sm text-muted-foreground"
+                >
+                  {t.loadingCompleteHistory}
+                </p>
+              )}
+              {historyError && (
+                <div
+                  role="alert"
+                  className="space-y-2 rounded-lg border border-destructive/30 p-4 text-center"
+                >
+                  <p className="text-sm text-destructive">
+                    {t.historyLoadError}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={retryHistory}
+                  >
+                    {t.retryHistory}
+                  </Button>
+                </div>
+              )}
+              {!completeHistoryLoading &&
+                (!historyError || history.length > 0) && (
+                  <TaskHistoryCalendar history={history} />
+                )}
+            </div>
           ) : tab === 'activity' ? (
-            <TaskActivity history={history} />
+            <TaskActivity
+              error={historyError}
+              hasMore={hasMoreActivity}
+              history={activityHistory}
+              loading={historyLoading}
+              loadingMore={historyLoadingMore}
+              onLoadMore={loadMoreActivity}
+              onRetry={retryHistory}
+            />
           ) : tab === 'team' ? (
-            <ActivityPanel entries={history} />
+            <ActivityPanel
+              entries={history}
+              scrollable={false}
+              status={
+                historyError ? (
+                  <div
+                    role="alert"
+                    className="space-y-2 rounded-lg border border-destructive/30 p-4 text-center"
+                  >
+                    <p className="text-sm text-destructive">
+                      {t.historyLoadError}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={retryHistory}
+                    >
+                      {t.retryHistory}
+                    </Button>
+                  </div>
+                ) : completeHistoryLoading ? (
+                  <p
+                    role="status"
+                    className="p-4 text-center text-sm text-muted-foreground"
+                  >
+                    {t.loadingCompleteHistory}
+                  </p>
+                ) : null
+              }
+            />
           ) : tab === 'subtasks' ? (
             <TaskSubtasks
               task={task}
@@ -143,8 +270,14 @@ const TaskInspector = ({
             />
           ) : (
             <TaskComments
-              history={history}
+              comments={comments}
+              error={commentsError}
+              hasMore={commentsHasMore}
+              loading={commentsLoading}
+              loadingMore={commentsLoadingMore}
               onAddComment={addComment}
+              onLoadMore={loadMoreComments}
+              onRetry={retryComments}
               profiles={profiles}
             />
           )}

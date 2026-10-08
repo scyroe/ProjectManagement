@@ -27,7 +27,6 @@ const workspaceScopedTables = {
   tasks: [
     ['tasks'],
     ['clients'],
-    ['task-history'],
     ['project-activity'],
     ['client-activity'],
     ['task-session'],
@@ -71,6 +70,7 @@ const workspaceScopedTables = {
     ['task-form-profiles'],
     ['task-form-options'],
     ['profiles'],
+    ['task-comment-profiles'],
     ['workspace-memberships'],
   ],
   workspace_automations: [['workspace-automations']],
@@ -83,6 +83,7 @@ const userScopedTables = {
     ['profiles'],
     ['active-workspace'],
     ['task-form-profiles'],
+    ['task-comment-profiles'],
   ],
 };
 
@@ -155,6 +156,7 @@ export function useRealtimeSync({ userId, workspaceId } = {}) {
 
     if (workspaceId) {
       for (const [table, queryKeys] of Object.entries(workspaceScopedTables)) {
+        if (table === 'task_history') continue;
         channel.on(
           'postgres_changes',
           {
@@ -169,6 +171,25 @@ export function useRealtimeSync({ userId, workspaceId } = {}) {
             ),
         );
       }
+      channel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'task_history',
+          filter: `workspace_id=eq.${workspaceId}`,
+        },
+        (payload) => {
+          const taskId = payload.new?.task_id ?? payload.old?.task_id;
+          const queryKeys = workspaceScopedTables.task_history.filter(
+            ([key]) => key !== 'task-history',
+          );
+          queueInvalidation([
+            ...getScopedQueryKeys(queryKeys, workspaceId, userId),
+            ...(taskId ? [['task-history', taskId]] : []),
+          ]);
+        },
+      );
     }
 
     if (userId) {
