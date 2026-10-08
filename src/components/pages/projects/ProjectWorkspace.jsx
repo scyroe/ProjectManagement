@@ -149,6 +149,7 @@ const ProjectWorkspace = ({
                   onSaved={onProjectSaved}
                   open
                   project={project}
+                  workspaceId={workspaceId}
                 />
               </div>
             ) : tab === 'tasks' ? (

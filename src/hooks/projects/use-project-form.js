@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
@@ -17,13 +18,33 @@ const emptyForm = () => ({
   budget: '',
 });
 
-export function useProjectForm({ onCreateTask, onSaved, open, project }) {
+export function useProjectForm({
+  onCreateTask,
+  onSaved,
+  open,
+  project,
+  workspaceId,
+}) {
   const t = useStrings().toasts.projectForm;
   const [form, setForm] = useState(emptyForm);
   const [initialForm, setInitialForm] = useState(emptyForm);
-  const [clients, setClients] = useState([]);
-  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [loadingProject, setLoadingProject] = useState(false);
   const [saving, setSaving] = useState(false);
+  const clientsQuery = useQuery({
+    queryKey: ['project-form-clients', workspaceId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id,name')
+        .eq('workspace_id', workspaceId)
+        .order('name');
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+    enabled: Boolean(open && workspaceId),
+  });
+  const clients = clientsQuery.data ?? [];
+  const loadingOptions = clientsQuery.isLoading || loadingProject;
 
   useEffect(() => {
     if (!open) return;
@@ -36,25 +57,25 @@ export function useProjectForm({ onCreateTask, onSaved, open, project }) {
     if (!open) return;
 
     const loadOptions = async () => {
-      setLoadingOptions(true);
-      const [{ data, error }, projectResult] = await Promise.all([
-        supabase.from('clients').select('id,name').order('name'),
-        project
-          ? supabase
-              .from('projects')
-              .select(`${projectSelect},project_clients(client_id)`)
-              .eq('id', project.id)
-              .single()
-          : Promise.resolve({ data: null, error: null }),
-      ]);
+      if (!project) {
+        setLoadingProject(false);
+        return;
+      }
 
+      setLoadingProject(true);
+      const { data, error } = await supabase
+        .from('projects')
+        .select(`${projectSelect},project_clients(client_id)`)
+        .eq('id', project.id)
+        .single();
       if (error) {
         toast.error(t.loadOptionsError, { description: error.message });
-      } else {
-        setClients(data ?? []);
+        setLoadingProject(false);
+        return;
       }
-      if (!projectResult.error && projectResult.data) {
-        const savedProject = projectResult.data;
+
+      if (data) {
+        const savedProject = data;
         const loadedForm = {
           name: savedProject.name ?? '',
           code: savedProject.code ?? '',
@@ -70,11 +91,19 @@ export function useProjectForm({ onCreateTask, onSaved, open, project }) {
         setForm(loadedForm);
         setInitialForm(loadedForm);
       }
-      setLoadingOptions(false);
+      setLoadingProject(false);
     };
 
     loadOptions();
   }, [open, project, t]);
+
+  useEffect(() => {
+    if (open && clientsQuery.error) {
+      toast.error(t.loadOptionsError, {
+        description: clientsQuery.error.message,
+      });
+    }
+  }, [clientsQuery.error, open, t]);
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));

@@ -1,3 +1,4 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useStrings } from '@/lib/i18n';
@@ -30,70 +31,92 @@ export function useTaskForm({
   onStartTask,
   open,
   parentTask,
+  workspaceId,
 }) {
   const t = useStrings().toasts.taskForm;
+  const queryClient = useQueryClient();
   const [form, setForm] = useState(() =>
     emptyForm(parentTask, initialProjectId),
   );
-  const [projects, setProjects] = useState([]);
-  const [profiles, setProfiles] = useState([]);
-  const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState('');
-  const [loadingOptions, setLoadingOptions] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savingTemplate, setSavingTemplate] = useState(false);
+
+  const projectsQuery = useQuery({
+    queryKey: ['task-form-projects', workspaceId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id,name,code,client_id,client:clients!client_id(id,name)')
+        .eq('workspace_id', workspaceId)
+        .order('name');
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+    enabled: Boolean(open && workspaceId),
+  });
+  const profilesQuery = useQuery({
+    queryKey: ['task-form-profiles', workspaceId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('workspace_members')
+        .select(
+          'profile:profiles!workspace_members_user_id_profiles_fkey(id,username,display_name)',
+        )
+        .eq('workspace_id', workspaceId);
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((member) => member.profile).filter(Boolean);
+    },
+    enabled: Boolean(open && workspaceId),
+  });
+  const templatesQuery = useQuery({
+    queryKey: ['task-templates', workspaceId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('task_templates')
+        .select('id,name,template')
+        .eq('workspace_id', workspaceId)
+        .order('name');
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+    enabled: Boolean(open && workspaceId),
+  });
+  const projects = projectsQuery.data ?? [];
+  const profiles = profilesQuery.data ?? [];
+  const templates = templatesQuery.data ?? [];
+  const loadingOptions =
+    projectsQuery.isLoading ||
+    profilesQuery.isLoading ||
+    templatesQuery.isLoading;
 
   useEffect(() => {
     if (open) setForm(emptyForm(parentTask, initialProjectId));
   }, [initialProjectId, open, parentTask]);
 
   useEffect(() => {
-    if (!open) return;
+    if (open && projectsQuery.error) {
+      toast.error(t.loadOptionsError, {
+        description: projectsQuery.error.message,
+      });
+    }
+  }, [open, projectsQuery.error, t]);
 
-    const loadOptions = async () => {
-      setLoadingOptions(true);
-      const [projectResponse, templateResponse, profilesResponse] =
-        await Promise.all([
-          supabase
-            .from('projects')
-            .select('id,name,code,client_id,client:clients!client_id(id,name)')
-            .order('name'),
-          supabase
-            .from('task_templates')
-            .select('id,name,template')
-            .order('name'),
-          supabase
-            .from('profiles')
-            .select('id,username,display_name')
-            .order('display_name'),
-        ]);
+  useEffect(() => {
+    if (open && profilesQuery.error) {
+      toast.error(t.loadOptionsError, {
+        description: profilesQuery.error.message,
+      });
+    }
+  }, [open, profilesQuery.error, t]);
 
-      if (projectResponse.error) {
-        toast.error(t.loadOptionsError, {
-          description: projectResponse.error.message,
-        });
-      } else {
-        setProjects(projectResponse.data ?? []);
-      }
-      if (templateResponse.error) {
-        toast.error(t.loadTemplatesError, {
-          description: templateResponse.error.message,
-        });
-      } else {
-        setTemplates(templateResponse.data ?? []);
-      }
-      if (profilesResponse.error) {
-        toast.error(t.loadProfilesError, {
-          description: profilesResponse.error.message,
-        });
-      } else {
-        setProfiles(profilesResponse.data ?? []);
-      }
-      setLoadingOptions(false);
-    };
-
-    loadOptions();
-  }, [open, t]);
+  useEffect(() => {
+    if (open && templatesQuery.error) {
+      toast.error(t.loadTemplatesError, {
+        description: templatesQuery.error.message,
+      });
+    }
+  }, [open, t, templatesQuery.error]);
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -132,6 +155,7 @@ export function useTaskForm({
       .from('task_templates')
       .insert({
         name,
+        workspace_id: workspaceId,
         created_by: userData.user.id,
         template: {
           title: form.title.trim(),
@@ -148,10 +172,12 @@ export function useTaskForm({
     if (error) {
       toast.error(t.createTemplateError, { description: error.message });
     } else {
-      setTemplates((current) =>
-        [...current, data].toSorted((first, second) =>
-          first.name.localeCompare(second.name),
-        ),
+      queryClient.setQueryData(
+        ['task-templates', workspaceId],
+        (current = []) =>
+          [...current, data].toSorted((first, second) =>
+            first.name.localeCompare(second.name),
+          ),
       );
       setTemplateName('');
       toast.success(t.templateSaved);

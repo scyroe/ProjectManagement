@@ -15,6 +15,7 @@ const ProjectFormDialog = ({
   onSaved,
   open,
   project,
+  workspaceId,
 }) => {
   const t = useStrings().projectForm;
 
@@ -49,6 +50,7 @@ const ProjectFormDialog = ({
           }}
           open={open}
           project={project}
+          workspaceId={workspaceId}
         />
       </DialogContent>
     </Dialog>

@@ -18,6 +18,7 @@ function ProjectFormEditor({
   onSaved,
   open,
   project,
+  workspaceId,
 }) {
   const t = useStrings().projectForm;
   const idPrefix = inline ? 'project-details' : 'new-project';
@@ -44,6 +45,7 @@ function ProjectFormEditor({
     onSaved,
     open,
     project,
+    workspaceId,
   });
   const clientOptions = useMemo(
     () =>

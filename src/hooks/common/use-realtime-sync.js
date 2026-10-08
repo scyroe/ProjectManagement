@@ -7,7 +7,9 @@ import { supabase } from '@/lib/supabase';
 const workspaceScopedTables = {
   clients: [
     ['clients'],
+    ['project-form-clients'],
     ['calendar-projects'],
+    ['task-form-projects'],
     ['task-form-options'],
     ['workspace-activity'],
   ],
@@ -15,6 +17,7 @@ const workspaceScopedTables = {
     ['tasks'],
     ['clients'],
     ['calendar-projects'],
+    ['task-form-projects'],
     ['task-form-options'],
     ['workspace-activity'],
     ['client-activity'],
@@ -61,10 +64,12 @@ const workspaceScopedTables = {
   ],
   task_dependencies: [['task-dependencies']],
   project_milestones: [['calendar-milestones']],
-  task_templates: [['task-templates'], ['task-form-options']],
+  task_templates: [['task-templates']],
   project_templates: [['project-templates']],
   workspace_members: [
     ['workspace-members'],
+    ['task-form-profiles'],
+    ['task-form-options'],
     ['profiles'],
     ['workspace-memberships'],
   ],
@@ -73,7 +78,12 @@ const workspaceScopedTables = {
 
 const userScopedTables = {
   notifications: [['notifications']],
-  profiles: [['profile'], ['profiles'], ['active-workspace']],
+  profiles: [
+    ['profile'],
+    ['profiles'],
+    ['active-workspace'],
+    ['task-form-profiles'],
+  ],
 };
 
 const getScopedQueryKeys = (queryKeys, workspaceId, userId) =>
@@ -99,10 +109,12 @@ const getScopedQueryKeys = (queryKeys, workspaceId, userId) =>
       key === 'task-history' ||
       key === 'project-activity' ||
       key === 'client-activity' ||
-      key === 'task-dependencies' ||
-      key === 'task-templates'
+      key === 'task-dependencies'
     ) {
       return [queryKey];
+    }
+    if (key === 'task-templates') {
+      return workspaceId ? [[key, workspaceId]] : [queryKey];
     }
     if (key === 'profiles') {
       return workspaceId ? [[key, workspaceId], queryKey] : [queryKey];

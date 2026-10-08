@@ -22,6 +22,7 @@ function TaskFormDialog({
   onStartTask,
   open,
   parentTask,
+  workspaceId,
 }) {
   const strings = useStrings();
   const t = strings.taskForm;
@@ -48,6 +49,7 @@ function TaskFormDialog({
     },
     open,
     parentTask,
+    workspaceId,
   });
   const projectOptions = useMemo(
     () =>

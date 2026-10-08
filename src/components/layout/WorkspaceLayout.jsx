@@ -225,6 +225,7 @@ function WorkspaceLayout({
           }}
           workspaces={workspaces}
           workspace={workspace}
+          workspaceId={workspaces.activeWorkspaceId}
         />
       </div>
     </AnimationPreferencesProvider>

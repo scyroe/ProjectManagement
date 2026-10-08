@@ -5,7 +5,7 @@ import TaskFormDialog from '@/components/pages/tasks/TaskFormDialog';
 import KeyboardShortcutsDialog from './KeyboardShortcutsDialog';
 import SearchDialog from './SearchDialog';
 
-function WorkspaceDialogStack({ dialogs, workspace, workspaces }) {
+function WorkspaceDialogStack({ dialogs, workspace, workspaces, workspaceId }) {
   const {
     clientForm,
     handleSearchEntitySelect,
@@ -58,6 +58,7 @@ function WorkspaceDialogStack({ dialogs, workspace, workspaces }) {
         open={taskFormDialog.open}
         parentTask={taskFormDialog.parentTask}
         initialProjectId={taskFormDialog.initialProjectId}
+        workspaceId={workspaceId}
         onOpenChange={(open) =>
           setTaskFormDialog((current) => ({ ...current, open }))
         }
@@ -81,6 +82,7 @@ function WorkspaceDialogStack({ dialogs, workspace, workspaces }) {
         }
         onSaved={dialogs.onProjectSaved}
         project={projectForm.project}
+        workspaceId={workspaceId}
       />
     </>
   );
