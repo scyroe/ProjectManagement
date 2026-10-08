@@ -9,6 +9,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import WorkspaceSwitcher from '@/components/layout/WorkspaceSwitcher';
 import VirtualSelect from '@/components/ui/virtual-select';
 import { supportedLanguages, useLanguage } from '@/lib/i18n';
 import { supabaseTransferDiagnosticsStorageKey } from '@/lib/supabase-transfer-diagnostics';
@@ -245,6 +246,12 @@ function SettingsPage({
       </section>
 
       <section className="order-5 space-y-4 rounded-xl border bg-card p-4">
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold">
+            {workspaces.strings.switchLabel}
+          </h2>
+          <WorkspaceSwitcher workspaces={workspaces} />
+        </section>
         <section>
           <div className="mb-3">
             <h2 className="text-sm font-semibold">
