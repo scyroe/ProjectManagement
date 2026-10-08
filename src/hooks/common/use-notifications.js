@@ -266,6 +266,23 @@ export function useNotifications({ userId, enabled = true, workspaceId }) {
     });
   };
 
+  const markAllRead = async () => {
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read_at: new Date().toISOString() })
+      .eq('recipient_id', userId)
+      .eq('workspace_id', workspaceId)
+      .is('read_at', null);
+    if (error) {
+      toast.error(t.markAllReadError, { description: error.message });
+      return false;
+    }
+    await queryClient.invalidateQueries({
+      queryKey: notificationsQueryKey(userId, workspaceId),
+    });
+    return true;
+  };
+
   const notifications = useMemo(
     () => notificationsQuery.data?.pages.flat() ?? [],
     [notificationsQuery.data],
@@ -275,6 +292,7 @@ export function useNotifications({ userId, enabled = true, workspaceId }) {
     hasMoreNotifications: notificationsQuery.hasNextPage,
     loadMoreNotifications: notificationsQuery.fetchNextPage,
     loadingMoreNotifications: notificationsQuery.isFetchingNextPage,
+    markAllRead,
     markRead,
     notifications,
     profile: profileQuery.data,

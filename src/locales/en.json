@@ -127,6 +127,8 @@
       "notifications": "Notifications",
       "noNotifications": "You're all caught up.",
       "markNotificationRead": "Mark notification as read",
+      "markAllRead": "Mark all as read",
+      "markingAllRead": "Marking all as read...",
       "loadMoreNotifications": "Load more notifications",
       "loadingMoreNotifications": "Loading notifications...",
       "notificationKinds": {
@@ -141,6 +143,7 @@
       "loadError": "Could not load notifications.",
       "profileError": "Could not load your profile.",
       "markReadError": "Could not update the notification.",
+      "markAllReadError": "Could not mark all notifications as read.",
       "keyboardShortcuts": "Keyboard shortcuts",
       "account": "Account",
       "userName": "Alex Smith",

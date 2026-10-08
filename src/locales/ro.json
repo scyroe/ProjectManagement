@@ -127,6 +127,8 @@
       "notifications": "Notificări",
       "noNotifications": "Nu ai notificări noi.",
       "markNotificationRead": "Marchează notificarea ca citită",
+      "markAllRead": "Marchează toate ca citite",
+      "markingAllRead": "Se marchează toate ca citite...",
       "loadMoreNotifications": "Încarcă mai multe notificări",
       "loadingMoreNotifications": "Se încarcă notificările...",
       "notificationKinds": {
@@ -141,6 +143,7 @@
       "loadError": "Notificările nu au putut fi încărcate.",
       "profileError": "Profilul nu a putut fi încărcat.",
       "markReadError": "Notificarea nu a putut fi actualizată.",
+      "markAllReadError": "Notificările nu au putut fi marcate ca citite.",
       "keyboardShortcuts": "Scurtături de tastatură",
       "account": "Cont",
       "userName": "Alex Smith",

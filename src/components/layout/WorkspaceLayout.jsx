@@ -188,6 +188,7 @@ function WorkspaceLayout({
           loadingMoreNotifications={notificationState.loadingMoreNotifications}
           notifications={notificationState.notifications}
           onLoadMoreNotifications={notificationState.loadMoreNotifications}
+          onMarkAllNotificationsRead={notificationState.markAllRead}
           unreadCount={notificationState.unreadCount}
           profile={notificationState.profile}
           syncStatus={syncStatus}

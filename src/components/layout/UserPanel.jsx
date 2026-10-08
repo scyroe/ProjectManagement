@@ -21,6 +21,7 @@ function UserPanel({
   notifications,
   onLoadMoreNotifications,
   onExpand,
+  onMarkAllNotificationsRead,
   onMarkNotificationRead,
   onOpenNotification,
   onSettings,
@@ -116,6 +117,7 @@ function UserPanel({
                 loadingMoreNotifications={loadingMoreNotifications}
                 notifications={notifications}
                 onLoadMoreNotifications={onLoadMoreNotifications}
+                onMarkAllNotificationsRead={onMarkAllNotificationsRead}
                 onMarkNotificationRead={onMarkNotificationRead}
                 onOpenNotification={onOpenNotification}
                 t={t}

@@ -1,5 +1,5 @@
-import { Check } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { Check, CheckCheck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 function UserPanelNotifications({
@@ -7,12 +7,14 @@ function UserPanelNotifications({
   loadingMoreNotifications,
   notifications,
   onLoadMoreNotifications,
+  onMarkAllNotificationsRead,
   onMarkNotificationRead,
   onOpenNotification,
   t,
   unreadCount,
 }) {
   const loadMorePending = useRef(false);
+  const [markingAllRead, setMarkingAllRead] = useState(false);
 
   useEffect(() => {
     if (!loadingMoreNotifications) loadMorePending.current = false;
@@ -30,15 +32,40 @@ function UserPanelNotifications({
     onLoadMoreNotifications();
   };
 
+  const handleMarkAllRead = async () => {
+    if (markingAllRead) return;
+    setMarkingAllRead(true);
+    try {
+      await onMarkAllNotificationsRead();
+    } finally {
+      setMarkingAllRead(false);
+    }
+  };
+
   return (
     <section className="flex min-h-0 flex-1 flex-col px-5 pb-5 pt-6">
       <div className="mb-3 flex shrink-0 items-center justify-between">
         <h3 className="text-sm font-semibold">{t.notifications}</h3>
-        {unreadCount > 0 && (
-          <span className="rounded-full border border-warning/30 bg-warning/20 px-2 py-0.5 text-xs font-medium text-warning-foreground">
-            {unreadCount}
-          </span>
-        )}
+        <div className="flex items-center gap-1">
+          {unreadCount > 0 && (
+            <span className="rounded-full border border-warning/30 bg-warning/20 px-2 py-0.5 text-xs font-medium text-warning-foreground">
+              {unreadCount}
+            </span>
+          )}
+          {unreadCount > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1 px-2 text-xs"
+              disabled={markingAllRead}
+              onClick={handleMarkAllRead}
+            >
+              <CheckCheck aria-hidden="true" />
+              {markingAllRead ? t.markingAllRead : t.markAllRead}
+            </Button>
+          )}
+        </div>
       </div>
       <div
         className="min-h-0 flex-1 space-y-2 overflow-y-auto"
