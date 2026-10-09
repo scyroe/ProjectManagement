@@ -1,5 +1,5 @@
 import { Activity, CalendarDays, ClipboardList, ListTodo } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import {
   AnimatedTabIndicator,
   AnimatedTabPanel,
@@ -8,9 +8,6 @@ import {
   filterTasksByView,
   searchTasksByText,
 } from '@/components/Common/task-view-filters';
-import ProjectBoard from '@/components/pages/projects/ProjectBoard';
-import TaskActionNoteDialog from '@/components/pages/tasks/TaskActionNoteDialog';
-import TaskList from '@/components/pages/tasks/TaskList';
 import { Badge } from '@/components/reui/badge';
 import {
   Frame,
@@ -21,9 +18,17 @@ import {
 } from '@/components/reui/frame';
 import { useProjectActivity } from '@/hooks/projects/use-project-activity';
 import { useStrings } from '@/lib/i18n';
-import ProjectActivityPanel from './ProjectActivityPanel';
 import ProjectFormEditor from './ProjectFormEditor';
 import ProjectTemplateControls from './ProjectTemplateControls';
+
+const ProjectBoard = lazy(
+  () => import('@/components/pages/projects/ProjectBoard'),
+);
+const ProjectActivityPanel = lazy(() => import('./ProjectActivityPanel'));
+const TaskActionNoteDialog = lazy(
+  () => import('@/components/pages/tasks/TaskActionNoteDialog'),
+);
+const TaskList = lazy(() => import('@/components/pages/tasks/TaskList'));
 
 const ProjectWorkspace = ({
   onNewTask,
@@ -142,71 +147,92 @@ const ProjectWorkspace = ({
             activeId={tab}
             className={tab === 'details' ? 'min-h-full' : 'h-full min-h-0'}
           >
-            {tab === 'details' ? (
-              <div className="p-3 sm:p-4">
-                <ProjectFormEditor
-                  inline
-                  onSaved={onProjectSaved}
-                  open
-                  project={project}
-                  workspaceId={workspaceId}
+            <Suspense
+              fallback={
+                <p
+                  role="status"
+                  className="grid h-full min-h-32 place-items-center p-4 text-sm text-muted-foreground"
+                >
+                  {strings.workspaceManagement.loading}
+                </p>
+              }
+            >
+              {tab === 'details' ? (
+                <div className="p-3 sm:p-4">
+                  <ProjectFormEditor
+                    inline
+                    onSaved={onProjectSaved}
+                    open
+                    project={project}
+                    workspaceId={workspaceId}
+                  />
+                </div>
+              ) : tab === 'tasks' ? (
+                <div className="h-full min-h-0">
+                  <TaskList
+                    tasks={visibleTasks}
+                    loading={workspace.loading}
+                    error={workspace.error}
+                    selectedId={
+                      projectTasks.some(
+                        (task) => task.id === workspace.selected?.id,
+                      )
+                        ? workspace.selected?.id
+                        : undefined
+                    }
+                    onSelect={workspace.setSelectedId}
+                    query={taskQuery}
+                    onQueryChange={setTaskQuery}
+                    filter={taskFilter}
+                    onFilterChange={(value) =>
+                      setTaskFilter(value === 'active' ? 'current' : value)
+                    }
+                    runningTaskId={workspace.runningTaskId}
+                    onToggleTimer={handleTimerToggle}
+                    onNewTask={() => onNewTask(null, project.id)}
+                    showSummaryHeader={false}
+                    title={t.tasksTitle}
+                    showProjectFilter={false}
+                  />
+                </div>
+              ) : tab === 'activity' ? (
+                <ActivityContent
+                  entries={entries}
+                  error={error}
+                  loading={loading}
+                  tasks={tasks}
+                  t={strings.activity}
                 />
-              </div>
-            ) : tab === 'tasks' ? (
-              <div className="h-full min-h-0">
-                <TaskList
-                  tasks={visibleTasks}
-                  loading={workspace.loading}
-                  error={workspace.error}
-                  selectedId={
-                    projectTasks.some(
-                      (task) => task.id === workspace.selected?.id,
-                    )
-                      ? workspace.selected?.id
-                      : undefined
-                  }
-                  onSelect={workspace.setSelectedId}
-                  query={taskQuery}
-                  onQueryChange={setTaskQuery}
-                  filter={taskFilter}
-                  onFilterChange={(value) =>
-                    setTaskFilter(value === 'active' ? 'current' : value)
-                  }
-                  runningTaskId={workspace.runningTaskId}
-                  onToggleTimer={handleTimerToggle}
-                  onNewTask={() => onNewTask(null, project.id)}
-                  showSummaryHeader={false}
-                  title={t.tasksTitle}
-                  showProjectFilter={false}
-                />
-              </div>
-            ) : tab === 'activity' ? (
-              <ActivityContent
-                entries={entries}
-                error={error}
-                loading={loading}
-                tasks={tasks}
-                t={strings.activity}
-              />
-            ) : (
-              <div className="h-full min-h-0">
-                <ProjectBoard
-                  workspace={{
-                    ...workspace,
-                    tasks: projectTasks,
-                  }}
-                />
-              </div>
-            )}
+              ) : (
+                <div className="h-full min-h-0">
+                  <ProjectBoard
+                    workspace={{
+                      ...workspace,
+                      tasks: projectTasks,
+                    }}
+                  />
+                </div>
+              )}
+            </Suspense>
           </AnimatedTabPanel>
         </FramePanel>
       </Frame>
-      <TaskActionNoteDialog
-        request={actionRequest}
-        onOpenChange={(open) => {
-          if (!open) setActionRequest(null);
-        }}
-      />
+      {actionRequest && (
+        <Suspense
+          fallback={
+            <p role="status" className="sr-only">
+              {strings.workspaceManagement.loading}
+            </p>
+          }
+        >
+          <TaskActionNoteDialog
+            request={actionRequest}
+            onOpenChange={(open) => {
+              if (!open) setActionRequest(null);
+            }}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

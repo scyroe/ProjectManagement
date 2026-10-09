@@ -18,6 +18,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useStrings } from '@/lib/i18n';
@@ -106,17 +107,25 @@ const WorkspaceHeader = ({
                 <UserPlus aria-hidden="true" />
                 {t.newClient}
               </DropdownMenuItem>
-              {workspaces && (
-                <DropdownMenuItem onClick={() => setWorkspaceDialogOpen(true)}>
-                  <Building2 aria-hidden="true" />
-                  {workspaceT.create}
-                </DropdownMenuItem>
-              )}
               {workspaces?.canManageMembers && (
-                <DropdownMenuItem onClick={onAddUser}>
-                  <UserPlus aria-hidden="true" />
-                  {t.newUser}
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={onAddUser}>
+                    <UserPlus aria-hidden="true" />
+                    {t.newUser}
+                  </DropdownMenuItem>
+                </>
+              )}
+              {workspaces && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => setWorkspaceDialogOpen(true)}
+                  >
+                    <Building2 aria-hidden="true" />
+                    {workspaceT.create}
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

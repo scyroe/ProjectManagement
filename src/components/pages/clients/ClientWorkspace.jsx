@@ -1,19 +1,14 @@
 import {
   Activity,
-  AlertTriangle,
   Building2,
   ChartNoAxesCombined,
-  CheckCircle2,
   FolderKanban,
-  Pencil,
 } from 'lucide-react';
-import { useState } from 'react';
-import { MetricStrip } from '@/components/Common/analytics-ui';
+import { lazy, Suspense, useState } from 'react';
 import {
   AnimatedTabIndicator,
   AnimatedTabPanel,
 } from '@/components/Common/animated-tabs';
-import { Badge } from '@/components/reui/badge';
 import {
   Frame,
   FrameHeader,
@@ -21,12 +16,21 @@ import {
   FrameTitle,
 } from '@/components/reui/frame';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { VirtualList } from '@/components/ui/virtual-list';
 import { useClientActivity } from '@/hooks/clients/use-client-activity';
 import { useStrings } from '@/lib/i18n';
-import ClientActivityPanel from './ClientActivityPanel';
 import ClientFormEditor from './ClientFormEditor';
+
+const ClientActivityPanel = lazy(() => import('./ClientActivityPanel'));
+const ClientProjectsPanel = lazy(() =>
+  import('./ClientProjectsPanel').then((module) => ({
+    default: module.ClientProjectsPanel,
+  })),
+);
+const ClientStatisticsPanel = lazy(() =>
+  import('./ClientStatisticsPanel').then((module) => ({
+    default: module.ClientStatisticsPanel,
+  })),
+);
 
 const ClientWorkspace = ({ client, onClientUpdated, onEditProject }) => {
   const strings = useStrings();
@@ -102,34 +106,45 @@ const ClientWorkspace = ({ client, onClientUpdated, onEditProject }) => {
           activeId={tab}
           className={tab === 'details' ? 'min-h-full' : 'h-full min-h-0'}
         >
-          {tab === 'details' ? (
-            <ClientDetails client={client} onSaved={onClientUpdated} t={t} />
-          ) : (
-            <div className="h-full min-h-0 overflow-auto p-3 sm:p-4">
-              {tab === 'projects' ? (
-                <ClientProjects
-                  client={client}
-                  onEditProject={onEditProject}
-                  t={t}
-                />
-              ) : tab === 'activity' ? (
-                error ? (
-                  <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-                    {error}
-                  </p>
-                ) : (
-                  <ClientActivityPanel
-                    entries={entries}
-                    loading={loading}
-                    projects={projects}
-                    tasksByProject={tasksByProject}
+          <Suspense
+            fallback={
+              <p
+                role="status"
+                className="grid h-full min-h-32 place-items-center p-4 text-sm text-muted-foreground"
+              >
+                {strings.workspaceManagement.loading}
+              </p>
+            }
+          >
+            {tab === 'details' ? (
+              <ClientDetails client={client} onSaved={onClientUpdated} t={t} />
+            ) : (
+              <div className="h-full min-h-0 overflow-auto p-3 sm:p-4">
+                {tab === 'projects' ? (
+                  <ClientProjectsPanel
+                    client={client}
+                    onEditProject={onEditProject}
+                    t={t}
                   />
-                )
-              ) : (
-                <ClientStatistics client={client} t={t} />
-              )}
-            </div>
-          )}
+                ) : tab === 'activity' ? (
+                  error ? (
+                    <p className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                      {error}
+                    </p>
+                  ) : (
+                    <ClientActivityPanel
+                      entries={entries}
+                      loading={loading}
+                      projects={projects}
+                      tasksByProject={tasksByProject}
+                    />
+                  )
+                ) : (
+                  <ClientStatisticsPanel client={client} t={t} />
+                )}
+              </div>
+            )}
+          </Suspense>
         </AnimatedTabPanel>
       </FramePanel>
     </Frame>
@@ -146,140 +161,6 @@ function ClientDetails({ client, onSaved, t }) {
         </p>
       </div>
       <ClientFormEditor client={client} inline onSaved={onSaved} open />
-    </div>
-  );
-}
-
-function ClientProjects({ client, onEditProject, t }) {
-  if (!client.projects.length) {
-    return (
-      <div className="grid min-h-64 place-items-center rounded-lg border border-dashed p-8 text-center">
-        <div>
-          <FolderKanban className="mx-auto mb-3 size-7 text-muted-foreground" />
-          <p className="text-sm font-medium">{t.noProjects}</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <VirtualList
-      ariaLabel={t.projectsTitle}
-      className="max-h-[min(68vh,48rem)]"
-      estimateSize={116}
-      getItemKey={(project) => project.id}
-      itemClassName="pb-2"
-      items={client.projects}
-      renderItem={(project) => {
-        const progress = project.total
-          ? Math.round((project.completed / project.total) * 100)
-          : 0;
-        return (
-          <article className="rounded-lg border p-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="truncate text-sm font-semibold">
-                  {project.name}
-                </h3>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {project.code}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <Badge variant="secondary" size="sm">
-                  {project.status}
-                </Badge>
-                {onEditProject && (
-                  <Button
-                    type="button"
-                    size="icon-sm"
-                    variant="ghost"
-                    aria-label={`${t.editProject}: ${project.name}`}
-                    onClick={() => onEditProject(project)}
-                  >
-                    <Pencil />
-                  </Button>
-                )}
-              </div>
-            </div>
-            <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
-              <span>
-                {project.completed}/{project.total} {t.tasks}
-              </span>
-              <span>{progress}%</span>
-            </div>
-            <div
-              className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"
-              role="progressbar"
-              aria-label={`${project.name} ${t.progress}`}
-              aria-valuenow={progress}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              <div
-                className="h-full rounded-full bg-primary"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </article>
-        );
-      }}
-    />
-  );
-}
-
-function ClientStatistics({ client, t }) {
-  const completion = client.total
-    ? Math.round((client.completed / client.total) * 100)
-    : 0;
-  const activeProjects = client.projects.filter(
-    (project) => project.status === 'active',
-  ).length;
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-base font-semibold">{t.statisticsTitle}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t.statisticsDescription}
-        </p>
-      </div>
-      <MetricStrip
-        ariaLabel={t.statisticsTitle}
-        metrics={[
-          [t.projectCount, client.projectCount, Building2, 'text-primary'],
-          [t.activeProjects, activeProjects, FolderKanban, 'text-info'],
-          [t.completedTasks, client.completed, CheckCircle2, 'text-success'],
-          [t.overdueTasks, client.overdue, AlertTriangle, 'text-warning'],
-        ]}
-      />
-      <Frame stacked>
-        <FrameHeader>
-          <FrameTitle className="text-sm">{t.deliveryTitle}</FrameTitle>
-        </FrameHeader>
-        <FramePanel className="space-y-3 p-4 shadow-none">
-          <div className="flex items-center justify-between gap-2 text-sm">
-            <span>{t.completion}</span>
-            <span className="font-semibold">{completion}%</span>
-          </div>
-          <div
-            className="h-2 overflow-hidden rounded-full bg-muted"
-            role="progressbar"
-            aria-label={t.completion}
-            aria-valuenow={completion}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${completion}%` }}
-            />
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {client.dueSoon} {t.dueSoonTasks} · {client.total} {t.tasks}
-          </p>
-        </FramePanel>
-      </Frame>
     </div>
   );
 }
