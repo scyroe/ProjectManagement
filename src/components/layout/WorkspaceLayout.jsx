@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { AnimationPreferencesProvider } from '@/components/Common/animation-preferences';
 import { useWorkspaceLayout } from '@/hooks/common/use-workspace-layout';
 import Sidebar from './Sidebar';
@@ -14,6 +15,14 @@ function WorkspaceLayout({
   userId,
 }) {
   const layout = useWorkspaceLayout({ activeRoute, navigate, userId });
+  const [mobileDetailVisible, setMobileDetailVisible] = useState(false);
+  const previousRoute = useRef(activeRoute);
+  useEffect(() => {
+    if (previousRoute.current !== activeRoute) {
+      previousRoute.current = activeRoute;
+      setMobileDetailVisible(false);
+    }
+  }, [activeRoute]);
   const { appShell, preferences } = layout;
   const {
     accountPanelCollapsed,
@@ -123,6 +132,8 @@ function WorkspaceLayout({
             accountPanelCollapsed={accountPanelCollapsed}
             activeRoute={activeRoute}
             currentPage={currentPage}
+            mobileDetailVisible={mobileDetailVisible}
+            onMobileBack={() => setMobileDetailVisible(false)}
             onAccountPanelToggle={() =>
               setAccountPanelCollapsed((collapsed) => !collapsed)
             }
@@ -143,6 +154,8 @@ function WorkspaceLayout({
               activeRoute={activeRoute}
               calendarState={calendarState}
               clientsState={clientsState}
+              mobileDetailVisible={mobileDetailVisible}
+              onMobileDetailChange={setMobileDetailVisible}
               currentPage={currentPage}
               navigate={navigate}
               onAddSubtask={openTaskForm}

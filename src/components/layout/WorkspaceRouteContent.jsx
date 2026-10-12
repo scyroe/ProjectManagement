@@ -23,6 +23,8 @@ function WorkspaceRouteContent({
   activeRoute,
   calendarState,
   clientsState,
+  mobileDetailVisible,
+  onMobileDetailChange,
   onClientUpdated,
   onEditProject,
   onNewClient,
@@ -95,6 +97,8 @@ function WorkspaceRouteContent({
                   workspace={workspace}
                   onNewTask={onNewTask}
                   onAddSubtask={onAddSubtask}
+                  mobileDetailVisible={mobileDetailVisible}
+                  onMobileDetailChange={onMobileDetailChange}
                 />
               ) : activeRoute === 'projects' ? (
                 <Projects
@@ -108,6 +112,8 @@ function WorkspaceRouteContent({
                   clientLoading={clientsState.loading}
                   searchQuery={projectSearchQuery}
                   setSearchQuery={setProjectSearchQuery}
+                  mobileDetailVisible={mobileDetailVisible}
+                  onMobileDetailChange={onMobileDetailChange}
                 />
               ) : activeRoute === 'clients' ? (
                 <Clients
@@ -119,6 +125,8 @@ function WorkspaceRouteContent({
                   onNewClient={onNewClient}
                   query={clientsState.query}
                   setQuery={clientsState.setQuery}
+                  mobileDetailVisible={mobileDetailVisible}
+                  onMobileDetailChange={onMobileDetailChange}
                 />
               ) : activeRoute === 'calendar' ? (
                 <Calendar

@@ -4,7 +4,13 @@ import TaskActionNoteDialog from './TaskActionNoteDialog';
 import TaskInspector from './TaskInspector';
 import TaskList from './TaskList';
 
-const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
+const TaskWorkspace = ({
+  mobileDetailVisible,
+  onMobileDetailChange,
+  onAddSubtask,
+  onNewTask,
+  workspace,
+}) => {
   const [actionRequest, setActionRequest] = useState(null);
   const [projectFilter, setProjectFilter] = useState('all');
   const {
@@ -69,6 +75,11 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
     setActionRequest({ type: 'complete', task, onConfirm });
   };
 
+  const handleTaskSelect = (taskId) => {
+    setSelectedId(taskId);
+    onMobileDetailChange(window.matchMedia('(max-width: 767px)').matches);
+  };
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 sm:gap-5">
       <div className="min-h-0 flex-1">
@@ -79,7 +90,7 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
               loading={loading}
               error={error}
               selectedId={selected?.id}
-              onSelect={setSelectedId}
+              onSelect={handleTaskSelect}
               query={query}
               onQueryChange={setQuery}
               filter={filter}
@@ -111,6 +122,8 @@ const TaskWorkspace = ({ onAddSubtask, onNewTask, workspace }) => {
           defaultSize={46}
           minSize={28}
           maxSize={72}
+          mobileNavigation
+          mobileDetailVisible={mobileDetailVisible}
           className="h-full"
         />
       </div>

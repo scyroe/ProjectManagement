@@ -522,7 +522,14 @@ function WorkLog({ weekStartsOn, workspaceId, userId }) {
         <div className="min-h-[18rem] min-w-0 flex-1 overflow-hidden rounded-lg border bg-card">
           <Gantt
             key={`${preset}:${range.start.toISOString()}:${range.end.toISOString()}`}
-            className="h-full w-full"
+            className="h-full w-full [&_[data-slot=gantt-tree-cell]]:px-[10px] [&_[data-slot=gantt-tree-cell]>div>span:nth-of-type(2)]:hidden [&_[data-slot=gantt-tree-header]>div>div:first-child>div:first-child]:!ps-[10px] [&_[data-slot=gantt-tree-header]>div>div:first-child>div:first-child>span]:text-[11px] [&_[data-slot=gantt-tree-pane]_[data-slot=scroll-area-viewport]]:!overflow-x-clip [&_[data-slot=gantt-tree-pane]_[data-orientation=horizontal]]:hidden [&_[data-slot=gantt-tree-scrollbar-rail]]:hidden"
+            treePanel={{
+              width: 130,
+              minWidth: 130,
+              maxWidth: 130,
+              resizable: false,
+              nameColumnWidth: 130,
+            }}
             resources={ganttResources}
             events={ganttEvents}
             date={range.start}

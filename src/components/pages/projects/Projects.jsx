@@ -26,6 +26,8 @@ const Projects = ({
   setSearchQuery,
   workspaceId,
   workspace,
+  mobileDetailVisible,
+  onMobileDetailChange,
 }) => {
   const t = useStrings().projectsPage;
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -85,6 +87,10 @@ const Projects = ({
   const selectedProject =
     visibleProjects.find((project) => project.id === selectedProjectId) ??
     visibleProjects[0];
+  const handleProjectSelect = (projectId) => {
+    setSelectedProjectId(projectId);
+    onMobileDetailChange(window.matchMedia('(max-width: 767px)').matches);
+  };
 
   return (
     <div className="min-h-0 flex-1">
@@ -103,7 +109,7 @@ const Projects = ({
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             selectedId={selectedProject?.id}
-            setSelectedId={setSelectedProjectId}
+            setSelectedId={handleProjectSelect}
             t={t}
           />
         }
@@ -137,6 +143,8 @@ const Projects = ({
         defaultSize={34}
         minSize={24}
         maxSize={56}
+        mobileNavigation
+        mobileDetailVisible={mobileDetailVisible}
         className="h-full"
       />
     </div>

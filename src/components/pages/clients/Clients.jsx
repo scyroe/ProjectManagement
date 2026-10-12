@@ -23,6 +23,8 @@ const Clients = ({
   onClientUpdated,
   onEditProject,
   onNewClient,
+  mobileDetailVisible,
+  onMobileDetailChange,
   query,
   setQuery,
 }) => {
@@ -49,6 +51,10 @@ const Clients = ({
   const selectedClient =
     visibleClients.find((client) => client.id === selectedClientId) ??
     visibleClients[0];
+  const handleClientSelect = (clientId) => {
+    setSelectedClientId(clientId);
+    onMobileDetailChange(window.matchMedia('(max-width: 767px)').matches);
+  };
 
   return (
     <div className="min-h-0 flex-1">
@@ -66,7 +72,7 @@ const Clients = ({
             query={query}
             selectedId={selectedClient?.id}
             setQuery={setQuery}
-            setSelectedId={setSelectedClientId}
+            setSelectedId={handleClientSelect}
             t={t}
           />
         }
@@ -101,6 +107,8 @@ const Clients = ({
         defaultSize={34}
         minSize={24}
         maxSize={56}
+        mobileNavigation
+        mobileDetailVisible={mobileDetailVisible}
         className="h-full"
       />
     </div>

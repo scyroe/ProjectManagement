@@ -77,6 +77,8 @@ export function ResizableResponsive({
   defaultSize = 46,
   minSize = 28,
   maxSize = 72,
+  mobileNavigation = false,
+  mobileDetailVisible = false,
   className,
 }) {
   const [size, setSize] = useState(defaultSize);
@@ -115,7 +117,11 @@ export function ResizableResponsive({
       )}
     >
       <div
-        className="h-[var(--panel-size)] min-h-0 min-w-0 w-full shrink-0 overflow-x-hidden overflow-y-auto md:h-full md:w-[var(--panel-size)]"
+        className={cn(
+          'min-h-0 min-w-0 w-full shrink-0 overflow-x-hidden overflow-y-auto md:h-full md:w-[var(--panel-size)]',
+          mobileNavigation ? 'h-full md:h-full' : 'h-[var(--panel-size)]',
+          mobileNavigation && mobileDetailVisible && 'hidden md:block',
+        )}
         style={{ '--panel-size': `${size}%` }}
         data-resizable-first
       >
@@ -124,7 +130,10 @@ export function ResizableResponsive({
       <button
         type="button"
         aria-label="Resize task panels"
-        className="group relative z-10 flex h-3 w-full shrink-0 cursor-row-resize items-center justify-center border-y border-border bg-muted/40 hover:bg-primary/10 md:h-full md:w-3 md:cursor-col-resize md:border-y-0 md:border-x"
+        className={cn(
+          'group relative z-10 flex h-3 w-full shrink-0 cursor-row-resize items-center justify-center border-y border-border bg-muted/40 hover:bg-primary/10 md:h-full md:w-3 md:cursor-col-resize md:border-y-0 md:border-x',
+          mobileNavigation && 'hidden md:flex',
+        )}
         onPointerDown={() => {
           dragging.current = true;
           document.body.style.cursor = window.matchMedia('(min-width: 768px)')
@@ -137,8 +146,20 @@ export function ResizableResponsive({
         <GripHorizontal className="size-4 text-muted-foreground transition-colors group-hover:text-primary md:hidden" />
         <GripVertical className="hidden size-4 text-muted-foreground transition-colors group-hover:text-primary md:block" />
       </button>
-      <div className="min-h-0 min-w-0 w-full flex-1 overflow-x-hidden overflow-y-auto md:w-0">
-        {second}
+      <div
+        className={cn(
+          'min-h-0 min-w-0 w-full flex-1 overflow-x-hidden overflow-y-auto md:w-0',
+          mobileNavigation &&
+            (mobileDetailVisible ? 'flex flex-col' : 'hidden md:block'),
+        )}
+      >
+        {mobileNavigation ? (
+          <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto md:h-full">
+            {second}
+          </div>
+        ) : (
+          second
+        )}
       </div>
     </div>
   );

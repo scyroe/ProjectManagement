@@ -1,5 +1,6 @@
 {
   "common": {
+    "back": "Back",
     "noProject": "No project",
     "noState": "No state",
     "aTask": "a task",
