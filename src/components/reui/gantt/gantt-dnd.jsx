@@ -62,6 +62,8 @@ const activeGestureCancels = new Set();
 
 /** Cancel (and fully revert) every in-flight gantt pointer gesture. */
 function cancelActiveGanttGestures() {
+  // Cancel callbacks remove themselves from the set, so iterate a snapshot.
+  // oxlint-disable-next-line unicorn/no-useless-spread
   for (const cancel of [...activeGestureCancels]) cancel();
 }
 

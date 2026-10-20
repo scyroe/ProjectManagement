@@ -162,7 +162,7 @@ function GanttTitle({ className, render, format: formatTitle, ...props }) {
  */
 function GanttScaleSwitcher({
   className,
-  render,
+  _render,
   children,
   tooltip,
   scales = GANTT_SCALES,

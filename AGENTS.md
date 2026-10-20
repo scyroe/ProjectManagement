@@ -13,7 +13,8 @@
 
 ## Tools
 
-### Biome
+### Oxc
 
-- Run `nub run check` to lint your code
+- Run `nub run check` to lint and verify formatting
+- Run `nub run lint` to lint your code
 - Run `nub run format` to format your code

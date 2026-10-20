@@ -884,7 +884,7 @@ function DataGridTableHead({ children }) {
   );
 }
 
-function DataGridTableHeadRow({ children, rowId }) {
+function DataGridTableHeadRow({ children, rowId: _rowId }) {
   const { props } = useDataGrid();
 
   return (
@@ -1350,7 +1350,7 @@ function DataGridTableFootRowCell({ children, colSpan, className }) {
 }
 
 function DataGridTableBodyRowSkeleton({ children }) {
-  const { table, props } = useDataGrid();
+  const { props } = useDataGrid();
 
   return (
     <tr

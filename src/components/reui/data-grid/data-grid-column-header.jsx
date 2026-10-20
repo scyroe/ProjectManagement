@@ -291,7 +291,7 @@ function DataGridColumnHeaderInner({
                 className={headerButtonClassName}
                 disabled={isLoading}
               >
-                {icon && icon}
+                {icon}
                 {resolvedTitle}
                 {sortIcon}
               </Button>
@@ -326,7 +326,7 @@ function DataGridColumnHeaderInner({
           disabled={isLoading}
           onClick={handleSort}
         >
-          {icon && icon}
+          {icon}
           {resolvedTitle}
           {sortIcon}
         </Button>
@@ -336,7 +336,7 @@ function DataGridColumnHeaderInner({
 
   return (
     <div className={headerLabelClassName}>
-      {icon && icon}
+      {icon}
       {resolvedTitle}
     </div>
   );

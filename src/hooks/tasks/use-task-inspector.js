@@ -61,9 +61,9 @@ function useTaskHistoryQuery({ task, tab, mode }) {
     },
     enabled: Boolean(
       task &&
-        (isComments
-          ? tab === 'comments'
-          : ['calendar', 'activity', 'team'].includes(tab)),
+      (isComments
+        ? tab === 'comments'
+        : ['calendar', 'activity', 'team'].includes(tab)),
     ),
   });
 }

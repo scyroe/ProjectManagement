@@ -68,7 +68,8 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
         tags: task.tags ?? [],
         due_offset_days: task.due_date
           ? Math.round(
-              (new Date(`${task.due_date}T00:00:00`).getTime() - today.getTime()) /
+              (new Date(`${task.due_date}T00:00:00`).getTime() -
+                today.getTime()) /
                 dayInMs,
             )
           : null,
@@ -94,7 +95,9 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
 
   const handleApply = async (event) => {
     event.preventDefault();
-    const template = templatesQuery.data?.find((item) => item.id === templateId);
+    const template = templatesQuery.data?.find(
+      (item) => item.id === templateId,
+    );
     if (!template || !Array.isArray(template.template?.tasks)) return;
     if (!statesQuery.data?.id) {
       toast.error(t.noTaskState);
@@ -110,14 +113,11 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
       priority: task.priority,
       estimate_minutes: task.estimate_minutes,
       tags: Array.isArray(task.tags) ? task.tags : [],
-      due_date:
-        Number.isInteger(task.due_offset_days)
-          ? new Date(
-              today.getTime() + task.due_offset_days * dayInMs,
-            )
-              .toISOString()
-              .slice(0, 10)
-          : null,
+      due_date: Number.isInteger(task.due_offset_days)
+        ? new Date(today.getTime() + task.due_offset_days * dayInMs)
+            .toISOString()
+            .slice(0, 10)
+        : null,
     }));
     if (!rows.length) {
       toast.error(t.emptyTemplate);
@@ -139,7 +139,12 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
   return (
     <>
       <div className="flex flex-wrap gap-2">
-        <Button type="button" size="sm" variant="outline" onClick={() => setMode('save')}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => setMode('save')}
+        >
           {t.saveTemplate}
         </Button>
         <Button
@@ -152,14 +157,19 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
           {t.applyTemplate}
         </Button>
       </div>
-      <Dialog open={Boolean(mode)} onOpenChange={(open) => !open && setMode(null)}>
+      <Dialog
+        open={Boolean(mode)}
+        onOpenChange={(open) => !open && setMode(null)}
+      >
         <DialogContent className="max-w-md">
           <div className="space-y-1 pr-8">
             <DialogTitle className="text-xl font-semibold">
               {mode === 'save' ? t.saveTitle : t.applyTitle}
             </DialogTitle>
             <DialogDescription>
-              {mode === 'save' ? t.saveDescription : t.applyDescription.replace('{project}', project.name)}
+              {mode === 'save'
+                ? t.saveDescription
+                : t.applyDescription.replace('{project}', project.name)}
             </DialogDescription>
           </div>
           {mode === 'save' ? (
@@ -175,14 +185,24 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
                 />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setMode(null)}>{t.cancel}</Button>
-                <Button type="submit" disabled={!name.trim()}>{t.saveTemplate}</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setMode(null)}
+                >
+                  {t.cancel}
+                </Button>
+                <Button type="submit" disabled={!name.trim()}>
+                  {t.saveTemplate}
+                </Button>
               </div>
             </form>
           ) : (
             <form className="mt-4 space-y-4" onSubmit={handleApply}>
               <div className="space-y-2">
-                <Label htmlFor="project-template-select">{t.chooseTemplate}</Label>
+                <Label htmlFor="project-template-select">
+                  {t.chooseTemplate}
+                </Label>
                 <select
                   id="project-template-select"
                   className="h-9 w-full rounded-md border bg-background px-2 text-sm"
@@ -190,23 +210,38 @@ function ProjectTemplateControls({ project, tasks, workspaceId }) {
                   onChange={(event) => setTemplateId(event.target.value)}
                   required
                 >
-                  <option value="" disabled>{t.chooseTemplate}</option>
+                  <option value="" disabled>
+                    {t.chooseTemplate}
+                  </option>
                   {(templatesQuery.data ?? []).map((template) => (
-                    <option key={template.id} value={template.id}>{template.name}</option>
+                    <option key={template.id} value={template.id}>
+                      {template.name}
+                    </option>
                   ))}
                 </select>
               </div>
               <p className="text-xs text-muted-foreground">{t.applyNotice}</p>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setMode(null)}>{t.cancel}</Button>
-                <Button type="submit" disabled={!templateId}>{t.applyTemplate}</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setMode(null)}
+                >
+                  {t.cancel}
+                </Button>
+                <Button type="submit" disabled={!templateId}>
+                  {t.applyTemplate}
+                </Button>
               </div>
             </form>
           )}
         </DialogContent>
       </Dialog>
       {(templatesQuery.error || statesQuery.error) && (
-        <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs text-destructive">
+        <p
+          role="alert"
+          className="rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs text-destructive"
+        >
           {(templatesQuery.error ?? statesQuery.error).message}
         </p>
       )}
