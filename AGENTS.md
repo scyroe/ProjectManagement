@@ -2,9 +2,9 @@
 
 ## Commands
 
-- `npm run dev` - Start the dev server
-- `npm run build` - Build the app for production
-- `npm run preview` - Preview the production build locally
+- `nub run dev` - Start the dev server
+- `nub run build` - Build the app for production
+- `nub run preview` - Preview the production build locally
 
 ## Docs
 
@@ -15,5 +15,5 @@
 
 ### Biome
 
-- Run `npm run check` to lint your code
-- Run `npm run format` to format your code
+- Run `nub run check` to lint your code
+- Run `nub run format` to format your code

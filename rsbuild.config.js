@@ -9,6 +9,15 @@ export default defineConfig({
     }),
   ],
 
+  html: {
+    template: './src/index.html',
+    title: 'Projectly — Project Management',
+    meta: {
+      description:
+        'Projectly keeps clients, projects, tasks, and work logs organized in one focused workspace.',
+    },
+  },
+
   source: {
     alias: {
       '@': './src',

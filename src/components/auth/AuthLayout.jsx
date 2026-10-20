@@ -24,6 +24,7 @@ const AuthLayout = ({ children, onSwitch, signUp }) => {
         <img
           src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=85"
           alt="Team collaborating around a project plan"
+          loading="lazy"
           className="absolute inset-0 size-full object-cover opacity-75"
         />
         <div className="absolute inset-0 bg-slate-950/55" />
